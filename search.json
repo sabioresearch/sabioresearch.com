@@ -1,0 +1,79 @@
+[
+  {
+    "objectID": "rice.html",
+    "href": "rice.html",
+    "title": "Rice Grain Classification",
+    "section": "",
+    "text": "Path: C:\\Users\\james.choi\\Dropbox\\Projects\\SabioResearch.com\\rice.qmd"
+  },
+  {
+    "objectID": "rice.html#markdown",
+    "href": "rice.html#markdown",
+    "title": "Rice Grain Classification",
+    "section": "```markdown",
+    "text": "```markdown"
+  },
+  {
+    "objectID": "rice.html#title-rice-grain-classification",
+    "href": "rice.html#title-rice-grain-classification",
+    "title": "Rice Grain Classification",
+    "section": "title: “Rice Grain Classification”",
+    "text": "title: “Rice Grain Classification”"
+  },
+  {
+    "objectID": "rice.html#hybrid-inspection-pipeline",
+    "href": "rice.html#hybrid-inspection-pipeline",
+    "title": "Rice Grain Classification",
+    "section": "Hybrid Inspection Pipeline",
+    "text": "Hybrid Inspection Pipeline\nFor rice quality control, we combine rule-based morphological analysis with a YOLOv8-pose model to identify “stuck” grains.\n```pwvbklhsm graph LR A[Raw Image] –&gt; B{Rule-Based} B –&gt; C[Single Grains] B –&gt; D[Clustered Grains] D –&gt; E[ML Pose Estimation] E –&gt; F[Segmentation]"
+  },
+  {
+    "objectID": "garlic.html",
+    "href": "garlic.html",
+    "title": "6DoF Pose Estimation for Garlic Bulbs Using Synthetic Data",
+    "section": "",
+    "text": "The goal is to estimate the 6DoF pose \\(\\mathbf{T} = [\\mathbf{R} | \\mathbf{t}] \\in SE(3)\\) of a garlic bulb from a single RGB-D image.\nThe rigid transformation is solved by minimizing:\n\\[\nE(\\mathbf{T}) = \\sum_{i} \\left\\| \\mathbf{p}_i - \\mathbf{T} \\cdot \\mathbf{m}_i \\right\\|^2 + \\lambda \\cdot L_{\\text{feature}}(\\mathbf{I}, \\mathbf{T})\n\\]\nwhere \\(\\mathbf{p}_i\\) are observed 3D points from RealSense, \\(\\mathbf{m}_i\\) are model points from the CAD garlic, and \\(L_{\\text{feature}}\\) is a deep feature matching loss."
+  },
+  {
+    "objectID": "garlic.html#problem-formulation",
+    "href": "garlic.html#problem-formulation",
+    "title": "6DoF Pose Estimation for Garlic Bulbs Using Synthetic Data",
+    "section": "",
+    "text": "The goal is to estimate the 6DoF pose \\(\\mathbf{T} = [\\mathbf{R} | \\mathbf{t}] \\in SE(3)\\) of a garlic bulb from a single RGB-D image.\nThe rigid transformation is solved by minimizing:\n\\[\nE(\\mathbf{T}) = \\sum_{i} \\left\\| \\mathbf{p}_i - \\mathbf{T} \\cdot \\mathbf{m}_i \\right\\|^2 + \\lambda \\cdot L_{\\text{feature}}(\\mathbf{I}, \\mathbf{T})\n\\]\nwhere \\(\\mathbf{p}_i\\) are observed 3D points from RealSense, \\(\\mathbf{m}_i\\) are model points from the CAD garlic, and \\(L_{\\text{feature}}\\) is a deep feature matching loss."
+  },
+  {
+    "objectID": "garlic.html#synthetic-data-generation-wolfram-language",
+    "href": "garlic.html#synthetic-data-generation-wolfram-language",
+    "title": "6DoF Pose Estimation for Garlic Bulbs Using Synthetic Data",
+    "section": "2 Synthetic Data Generation (Wolfram Language)",
+    "text": "2 Synthetic Data Generation (Wolfram Language)\n(* Generate randomized garlic bulb meshes *)\ngarlicModel = \n  RegionUnion[\n    Ball[{0,0,0}, 0.035], \n    Table[Cylinder[{{0,0,z}, {0,0,z+0.015}}, 0.008], {z, -0.03, 0.03, 0.005}]\n  ];\n\nRandomGarlicPose := \n  Composition[\n    TranslationTransform[RandomReal[{-0.1, 0.1}, 3]],\n    RotationTransform[RandomReal[0, 2 Pi], RandomReal[{-1,1},3] // Normalize]\n  ];\n\n(* Export 5000 synthetic RGB-D pairs *)\nDo[\n  pose = RandomGarlicPose;\n  Export[\"synth/rgb_\" &lt;&gt; ToString[i] &lt;&gt; \".png\", \n    Rasterize[Graphics3D[{garlicModel}, ViewPoint -&gt; pose]]],\n  {i, 5000}\n]"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this site"
+  },
+  {
+    "objectID": "coffee.html",
+    "href": "coffee.html",
+    "title": "Your Name",
+    "section": "",
+    "text": "I develop high-performance machine vision and robotics systems for agricultural product inspection and automation (rice, garlic, coffee, etc.).\nCore expertise: - 6DoF pose estimation - Synthetic data generation (Isaac Sim + Replicator) - Real-time OpenCV + CUDA pipelines (C++26 / C#) - Hybrid rule-based + deep learning inspection - ROS 2 + Isaac Sim integration\nCurrently focused on building reliable agent-driven development workflows and open research via Quarto + GitHub.\n\n\n\n\nNew preprint on garlic 6DoF pose estimation using synthetic data — March 2026\nOpen-source C++26 vision library for RTX 4080 Super\n\n\n\n\n\n\n\n\nTipLooking for collaboration or licensing?\n\n\n\nI selectively open-source core algorithms and sell production-ready libraries + datasets via Gumroad."
+  },
+  {
+    "objectID": "coffee.html#latest",
+    "href": "coffee.html#latest",
+    "title": "Your Name",
+    "section": "",
+    "text": "New preprint on garlic 6DoF pose estimation using synthetic data — March 2026\nOpen-source C++26 vision library for RTX 4080 Super\n\n\n\n\n\n\n\n\nTipLooking for collaboration or licensing?\n\n\n\nI selectively open-source core algorithms and sell production-ready libraries + datasets via Gumroad."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Sabio Research",
+    "section": "",
+    "text": "This is a Quarto website.\nTo learn more about Quarto websites visit https://quarto.org/docs/websites."
+  }
+]
