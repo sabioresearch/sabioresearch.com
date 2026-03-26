@@ -1,0 +1,37 @@
+project:
+  type: website
+  output-dir: _site
+
+website:
+  title: "Sabio Research"
+  site-url: "https://sabioresearch.com"
+  
+  navbar:
+    background: primary
+    left:
+      - href: index.qmd
+        text: Home
+      - text: "Inspections"
+        menu:
+          - href: garlic.qmd
+            text: Garlic
+          - href: rice.qmd
+            text: Rice
+          - href: coffee.qmd
+            text: Coffee
+      - href: about.qmd
+        text: About
+    right:
+      - icon: github
+        href: https://github.com/sabioresearch/sabioresearch.com
+      - text: "Library"
+        href: https://gumroad.com/sabioresearch
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+    code-fold: true      # Hides code behind a "Click to view" button
+    code-summary: "View Algorithm"
+    mathjax: true        # Renders LaTeX math for your research

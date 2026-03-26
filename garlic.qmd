@@ -1,0 +1,50 @@
+---
+title: "6DoF Pose Estimation for Garlic Bulbs Using Synthetic Data"
+subtitle: "Hybrid Vision Pipeline (Rule-based + Deep Learning)"
+author: "Your Name, PhD"
+date: today
+format:
+  html:
+    theme: cosmo
+    toc: true
+    code-fold: true
+    code-tools: true
+    number-sections: true
+---
+
+## Problem Formulation
+
+The goal is to estimate the 6DoF pose $\mathbf{T} = [\mathbf{R} | \mathbf{t}] \in SE(3)$ of a garlic bulb from a single RGB-D image.
+
+The rigid transformation is solved by minimizing:
+
+$$
+E(\mathbf{T}) = \sum_{i} \left\| \mathbf{p}_i - \mathbf{T} \cdot \mathbf{m}_i \right\|^2 + \lambda \cdot L_{\text{feature}}(\mathbf{I}, \mathbf{T})
+$$
+
+where $\mathbf{p}_i$ are observed 3D points from RealSense, $\mathbf{m}_i$ are model points from the CAD garlic, and $L_{\text{feature}}$ is a deep feature matching loss.
+
+## Synthetic Data Generation (Wolfram Language)
+
+```wolfram
+(* Generate randomized garlic bulb meshes *)
+garlicModel = 
+  RegionUnion[
+    Ball[{0,0,0}, 0.035], 
+    Table[Cylinder[{{0,0,z}, {0,0,z+0.015}}, 0.008], {z, -0.03, 0.03, 0.005}]
+  ];
+
+RandomGarlicPose := 
+  Composition[
+    TranslationTransform[RandomReal[{-0.1, 0.1}, 3]],
+    RotationTransform[RandomReal[0, 2 Pi], RandomReal[{-1,1},3] // Normalize]
+  ];
+
+(* Export 5000 synthetic RGB-D pairs *)
+Do[
+  pose = RandomGarlicPose;
+  Export["synth/rgb_" <> ToString[i] <> ".png", 
+    Rasterize[Graphics3D[{garlicModel}, ViewPoint -> pose]]],
+  {i, 5000}
+]
+```

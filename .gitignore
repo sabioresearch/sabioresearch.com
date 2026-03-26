@@ -1,0 +1,54 @@
+# Quarto
+/_site/
+/.quarto/
+/site_libs/
+/objects.json
+/search.json
+/listings.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv
+venv/
+ENV/
+env/
+.env
+.pytest_cache/
+
+# Visual Studio
+.vs/
+[Bb]in/
+[Oo]bj/
+*.user
+*.suo
+*.pdb
+*.ilk
+*.exe
+
+# ML Data & Models
+*.onnx
+*.pt
+*.pth
+*.weights
+/data/raw/
+/data/processed/
+
+# OS files
+Thumbs.db
+Desktop.ini
+
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Dropbox
+*conflicted copy*
+.dropbox
+.dropbox.attr
+
+**/*.quarto_ipynb

@@ -1,0 +1,62 @@
+---
+title: "Your Name"
+subtitle: "Machine Vision • Robotics • Agricultural Automation"
+author: "Your Name, PhD"
+date: today
+format:
+  html:
+    theme: 
+      - cosmo
+      - custom.scss
+    css: styles.css
+    toc: true
+    grid:
+      sidebar-width: 250px
+      body-width: 800px
+      margin-width: 250px
+    navbar:
+      background: primary
+      search: true
+      left:
+        - text: "Home"
+          href: index.qmd
+        - text: "Research"
+          href: research.qmd
+        - text: "Publications"
+          href: publications.qmd
+        - text: "Code"
+          href: code.qmd
+      right:
+        - icon: github
+          href: https://github.com/yourusername
+        - icon: arxiv
+          href: https://arxiv.org/a/yourid
+---
+
+# Welcome
+
+I develop high-performance machine vision and robotics systems for agricultural product inspection and automation (rice, garlic, coffee, etc.).
+
+**Core expertise:**
+- 6DoF pose estimation
+- Synthetic data generation (Isaac Sim + Replicator)
+- Real-time OpenCV + CUDA pipelines (C++26 / C#)
+- Hybrid rule-based + deep learning inspection
+- ROS 2 + Isaac Sim integration
+
+Currently focused on building reliable agent-driven development workflows and open research via Quarto + GitHub.
+
+---
+
+## Latest
+
+- [New preprint on garlic 6DoF pose estimation using synthetic data](publications.qmd) — March 2026
+- [Open-source C++26 vision library for RTX 4080 Super](code.qmd)
+
+---
+
+::: {.callout-tip}
+## Looking for collaboration or licensing?
+
+I selectively open-source core algorithms and sell production-ready libraries + datasets via Gumroad.
+:::

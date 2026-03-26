@@ -1,0 +1,19 @@
+### 2. `rice.qmd`
+**Path:** `C:\Users\james.choi\Dropbox\Projects\SabioResearch.com\rice.qmd`
+
+```markdown
+---
+title: "Rice Grain Classification"
+---
+
+## Hybrid Inspection Pipeline
+
+For rice quality control, we combine rule-based morphological analysis with a YOLOv8-pose model to identify "stuck" grains.
+
+```{mermaid}
+graph LR
+  A[Raw Image] --> B{Rule-Based}
+  B --> C[Single Grains]
+  B --> D[Clustered Grains]
+  D --> E[ML Pose Estimation]
+  E --> F[Segmentation]
