@@ -25,7 +25,7 @@
     "href": "rice.html#hybrid-inspection-pipeline",
     "title": "Rice Grain Classification",
     "section": "Hybrid Inspection Pipeline",
-    "text": "Hybrid Inspection Pipeline\nFor rice quality control, we combine rule-based morphological analysis with a YOLOv8-pose model to identify “stuck” grains.\n```hvgnnmnqt graph LR A[Raw Image] –&gt; B{Rule-Based} B –&gt; C[Single Grains] B –&gt; D[Clustered Grains] D –&gt; E[ML Pose Estimation] E –&gt; F[Segmentation]"
+    "text": "Hybrid Inspection Pipeline\nFor rice quality control, we combine rule-based morphological analysis with a YOLOv8-pose model to identify “stuck” grains.\n```thghkspua graph LR A[Raw Image] –&gt; B{Rule-Based} B –&gt; C[Single Grains] B –&gt; D[Clustered Grains] D –&gt; E[ML Pose Estimation] E –&gt; F[Segmentation]"
   },
   {
     "objectID": "garlic.html",
@@ -51,14 +51,14 @@
   {
     "objectID": "about.html",
     "href": "about.html",
-    "title": "My Page",
+    "title": "으쓰까빠",
     "section": "",
     "text": "Please enable JavaScript to experience the dynamic code cell content on this page."
   },
   {
     "objectID": "about.html#now-i-can-run-live-python-code-right-inside-my-webpage.-orai.",
     "href": "about.html#now-i-can-run-live-python-code-right-inside-my-webpage.-orai.",
-    "title": "My Page",
+    "title": "으쓰까빠",
     "section": "",
     "text": "Please enable JavaScript to experience the dynamic code cell content on this page."
   },
