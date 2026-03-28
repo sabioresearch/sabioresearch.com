@@ -6,6 +6,7 @@ filters:
 ---
 # 으쓰까빠.
 ## Now I can run live Python code right inside my webpage.  Orai.
+### You can make changes to the code below, then press the green play button to run it
 ```{pyodide-python}
 import numpy as np
 x = np.linspace(0, 10, 100)
