@@ -1,8 +1,12 @@
 ---
 title: "My Page"
 format: html
+filters:
+  - pyodide
 ---
-```{python}
+# 으쓰까빠.
+## Now I can run live Python code right inside my webpage.  Orai.
+```{pyodide-python}
 import numpy as np
 x = np.linspace(0, 10, 100)
 print(x[:5])

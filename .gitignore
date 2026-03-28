@@ -5,6 +5,7 @@
 /objects.json
 /search.json
 /listings.json
+/_extensions
 
 # Python
 __pycache__/
