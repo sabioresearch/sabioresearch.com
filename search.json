@@ -25,7 +25,7 @@
     "href": "rice.html#hybrid-inspection-pipeline",
     "title": "Rice Grain Classification",
     "section": "Hybrid Inspection Pipeline",
-    "text": "Hybrid Inspection Pipeline\nFor rice quality control, we combine rule-based morphological analysis with a YOLOv8-pose model to identify “stuck” grains.\n```pwvbklhsm graph LR A[Raw Image] –&gt; B{Rule-Based} B –&gt; C[Single Grains] B –&gt; D[Clustered Grains] D –&gt; E[ML Pose Estimation] E –&gt; F[Segmentation]"
+    "text": "Hybrid Inspection Pipeline\nFor rice quality control, we combine rule-based morphological analysis with a YOLOv8-pose model to identify “stuck” grains.\n```mxwhpgtpw graph LR A[Raw Image] –&gt; B{Rule-Based} B –&gt; C[Single Grains] B –&gt; D[Clustered Grains] D –&gt; E[ML Pose Estimation] E –&gt; F[Segmentation]"
   },
   {
     "objectID": "garlic.html",
@@ -51,9 +51,9 @@
   {
     "objectID": "about.html",
     "href": "about.html",
-    "title": "About",
+    "title": "My Page",
     "section": "",
-    "text": "About this site"
+    "text": "View Algorithm\nimport numpy as np\nx = np.linspace(0, 10, 100)\nprint(x[:5])\n\n\n[0.        0.1010101 0.2020202 0.3030303 0.4040404]"
   },
   {
     "objectID": "coffee.html",
@@ -74,6 +74,6 @@
     "href": "index.html",
     "title": "Sabio Research",
     "section": "",
-    "text": "This is a Quarto website.\nTo learn more about Quarto websites visit https://quarto.org/docs/websites."
+    "text": "This is a Quarto website. Hello.\nTo learn more about Quarto websites visit https://quarto.org/docs/websites."
   }
 ]
