@@ -1,10 +1,10 @@
 ---
-title: "My Page"
+title: "으쓰까빠"
 format: html
 filters:
   - pyodide
 ---
-# 으쓰까빠.
+
 ## Now I can run live Python code right inside my webpage.  Orai.
 ### You can make changes to the code below, then press the green play button to run it
 ```{pyodide-python}
