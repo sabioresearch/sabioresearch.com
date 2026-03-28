@@ -1,5 +1,11 @@
 ---
-title: "About"
+title: "My Page"
+format: html
+filters:
+  - pyodide
 ---
-
-About this site
+```{pyodide-python}
+import numpy as np
+x = np.linspace(0, 10, 100)
+print(x[:5])
+```
