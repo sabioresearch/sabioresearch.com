@@ -25,7 +25,7 @@
     "href": "rice.html#hybrid-inspection-pipeline",
     "title": "Rice Grain Classification",
     "section": "Hybrid Inspection Pipeline",
-    "text": "Hybrid Inspection Pipeline\nFor rice quality control, we combine rule-based morphological analysis with a YOLOv8-pose model to identify “stuck” grains.\n```mxwhpgtpw graph LR A[Raw Image] –&gt; B{Rule-Based} B –&gt; C[Single Grains] B –&gt; D[Clustered Grains] D –&gt; E[ML Pose Estimation] E –&gt; F[Segmentation]"
+    "text": "Hybrid Inspection Pipeline\nFor rice quality control, we combine rule-based morphological analysis with a YOLOv8-pose model to identify “stuck” grains.\n```lchsjebpb graph LR A[Raw Image] –&gt; B{Rule-Based} B –&gt; C[Single Grains] B –&gt; D[Clustered Grains] D –&gt; E[ML Pose Estimation] E –&gt; F[Segmentation]"
   },
   {
     "objectID": "garlic.html",
