@@ -1,6 +1,7 @@
 ---
 title: "으쓰까빠"
 format: html
+  code-fold: true
 filters:
   - pyodide
 ---
@@ -12,3 +13,5 @@ import numpy as np
 x = np.linspace(0, 10, 100)
 print(x[:5])
 ```
+
+[![Launch VSCode](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/sabioresearch/sabioresearch.com/HEAD?urlpath=vscode)
