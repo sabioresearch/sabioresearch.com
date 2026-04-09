@@ -25,7 +25,7 @@
     "href": "rice.html#hybrid-inspection-pipeline",
     "title": "Rice Grain Classification",
     "section": "Hybrid Inspection Pipeline",
-    "text": "Hybrid Inspection Pipeline\nFor rice quality control, we combine rule-based morphological analysis with a YOLOv8-pose model to identify “stuck” grains.\n```wawxnayap graph LR A[Raw Image] –&gt; B{Rule-Based} B –&gt; C[Single Grains] B –&gt; D[Clustered Grains] D –&gt; E[ML Pose Estimation] E –&gt; F[Segmentation]"
+    "text": "Hybrid Inspection Pipeline\nFor rice quality control, we combine rule-based morphological analysis with a YOLOv8-pose model to identify “stuck” grains.\n```viutzxdck graph LR A[Raw Image] –&gt; B{Rule-Based} B –&gt; C[Single Grains] B –&gt; D[Clustered Grains] D –&gt; E[ML Pose Estimation] E –&gt; F[Segmentation]"
   },
   {
     "objectID": "garlic.html",
@@ -53,26 +53,26 @@
     "href": "about.html",
     "title": "으쓰까빠",
     "section": "",
-    "text": "Please enable JavaScript to experience the dynamic code cell content on this page.\n\n\n\nLaunch VSCode"
+    "text": "Please enable JavaScript to experience the dynamic code cell content on this page.\n\n\n\nLaunch VSCode\n\n\n\n\n\nOpen In Colab"
   },
   {
     "objectID": "about.html#now-i-can-run-live-python-code-right-inside-my-webpage.-orai.",
     "href": "about.html#now-i-can-run-live-python-code-right-inside-my-webpage.-orai.",
     "title": "으쓰까빠",
     "section": "",
-    "text": "Please enable JavaScript to experience the dynamic code cell content on this page.\n\n\n\nLaunch VSCode"
+    "text": "Please enable JavaScript to experience the dynamic code cell content on this page.\n\n\n\nLaunch VSCode\n\n\n\n\n\nOpen In Colab"
   },
   {
     "objectID": "coffee.html",
     "href": "coffee.html",
-    "title": "Your Name",
+    "title": "Coffee",
     "section": "",
     "text": "I develop high-performance machine vision and robotics systems for agricultural product inspection and automation (rice, garlic, coffee, etc.).\nCore expertise: - 6DoF pose estimation - Synthetic data generation (Isaac Sim + Replicator) - Real-time OpenCV + CUDA pipelines (C++26 / C#) - Hybrid rule-based + deep learning inspection - ROS 2 + Isaac Sim integration\nCurrently focused on building reliable agent-driven development workflows and open research via Quarto + GitHub.\n\n\n\n\nNew preprint on garlic 6DoF pose estimation using synthetic data — March 2026\nOpen-source C++26 vision library for RTX 4080 Super\n\n\n\n\n\n\n\n\nTipLooking for collaboration or licensing?\n\n\n\nI selectively open-source core algorithms and sell production-ready libraries + datasets via Gumroad."
   },
   {
     "objectID": "coffee.html#latest",
     "href": "coffee.html#latest",
-    "title": "Your Name",
+    "title": "Coffee",
     "section": "",
     "text": "New preprint on garlic 6DoF pose estimation using synthetic data — March 2026\nOpen-source C++26 vision library for RTX 4080 Super\n\n\n\n\n\n\n\n\nTipLooking for collaboration or licensing?\n\n\n\nI selectively open-source core algorithms and sell production-ready libraries + datasets via Gumroad."
   },
@@ -81,6 +81,6 @@
     "href": "index.html",
     "title": "Sabio Research",
     "section": "",
-    "text": "This is a Quarto website. Hello.\nTo learn more about Quarto websites visit https://quarto.org/docs/websites."
+    "text": "Welcome to our brand new Sabio Research site!\nWe are changing our direction to computer vision and machine learning. Please revisit us later to see the updates.\nThank you!\nSabio Research"
   }
 ]
