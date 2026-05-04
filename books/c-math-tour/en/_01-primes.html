@@ -104,11 +104,11 @@ div.csl-indent {
 <link href="site_libs/bootstrap/bootstrap-dark-3ad2471a7a4e743c0fe3ccec74349440.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <link href="site_libs/bootstrap/bootstrap-be5fefa566fe9d9633354bab18b56f42.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
-  "location": "navbar",
+  "location": "sidebar",
   "copy-button": false,
   "collapse-after": 3,
-  "panel-placement": "end",
-  "type": "overlay",
+  "panel-placement": "start",
+  "type": "textbox",
   "limit": 50,
   "keyboard-shortcut": [
     "f",
@@ -170,10 +170,9 @@ window.Quarto = {
 };
 </script>
 
-<link rel="stylesheet" href="custom.css">
 </head>
 
-<body class="nav-sidebar floating nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
     const toggleBodyColorMode = (bsSheetEl) => {
       const mode = bsSheetEl.getAttribute("data-mode");
       const bodyEl = window.document.querySelector("body");
@@ -339,30 +338,6 @@ window.Quarto = {
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
-      <div class="navbar-container container-fluid">
-      <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
-    <span class="navbar-title">A Tour of Computational Mathematical Research</span>
-    </a>
-  </div>
-            <div id="quarto-search" class="" title="Search"></div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
-  <span class="navbar-toggler-icon"></span>
-</button>
-          <div class="collapse navbar-collapse" id="navbarCollapse">
-            <ul class="navbar-nav navbar-nav-scroll me-auto">
-  <li class="nav-item">
-    <a class="nav-link" href="https://sabioresearch.com/en"> 
-<span class="menu-text">&lt;- SabioResearch.com</span></a>
-  </li>  
-</ul>
-          </div> <!-- /navcollapse -->
-            <div class="quarto-navbar-tools">
-  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
-</div>
-      </div> <!-- /container-fluid -->
-    </nav>
   <nav class="quarto-secondary-nav">
     <div class="container-fluid d-flex">
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
@@ -371,13 +346,29 @@ window.Quarto = {
         <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./_01-primes.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Prime Numbers: The Atoms of Arithmetic</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
     </div>
   </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">A Tour of Computational Mathematical Research</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
@@ -571,7 +562,7 @@ window.Quarto = {
 <p>The <strong>Fundamental Theorem of Arithmetic</strong> guarantees that every integer <span class="math inline">\(n \geq 2\)</span> can be written as a product of primes in exactly one way (up to reordering). For example:</p>
 <p><span class="math display">\[360 = 2^3 \cdot 3^2 \cdot 5\]</span></p>
 <p>SymPy’s <code>isprime</code> and <code>factorint</code> make it easy to explore factorizations.</p>
-<div id="f5f4b8d8" class="cell" data-execution_count="2">
+<div id="1f20d3f2" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sympy <span class="im">import</span> isprime, factorint, nextprime</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> n <span class="kw">in</span> [<span class="dv">2</span>, <span class="dv">17</span>, <span class="dv">18</span>, <span class="dv">360</span>, <span class="dv">1001</span>]:</span>
@@ -590,7 +581,7 @@ window.Quarto = {
 <p><code>factorint</code> returns a dictionary whose keys are prime factors and whose values are exponents. So <code>{2: 3, 3: 2, 5: 1}</code> means <span class="math inline">\(2^3 \cdot 3^2 \cdot
 5^1 = 360\)</span>.</p>
 <p>We can collect the first 25 primes using <code>nextprime</code>, which returns the smallest prime larger than its argument.</p>
-<div id="b41f9c0a" class="cell" data-execution_count="3">
+<div id="4037b32e" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pprint</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>primes_25 <span class="op">=</span> []</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> <span class="dv">2</span></span>
@@ -616,7 +607,7 @@ window.Quarto = {
 </div>
 <p>Calling <code>isprime</code> one number at a time is fine for a few values, but slow if you need <em>all</em> primes up to a million. The <strong>Sieve of Eratosthenes</strong>, invented around 240 BCE, is dramatically faster: start with a list of all integers from <span class="math inline">\(2\)</span> to some limit, then repeatedly cross out all multiples of each prime you find. In other words, it does not find prime numbers. It knocks out what is <em>not</em> prime number repeatedly until all are gone, so that the survivors can be called prime. There is something brutal and satisfying about this 2260-year-old algorithm.</p>
 <p>But how many numbers and their multiples do we knock down? Suppose we are looking all prime number under <span class="math inline">\(1000\)</span>, we would start knocking out all multiples of <span class="math inline">\(2\)</span>, of <span class="math inline">\(3\)</span>, … up to? Certainly we don’t have to go as high as <span class="math inline">\(999\)</span> because there is no number that one could multiply to <span class="math inline">\(999\)</span> to get <span class="math inline">\(1000\)</span>. How about 500? Sure, <span class="math inline">\(500 \cdot 2 = 1000\)</span>. But <span class="math inline">\(500\)</span> was already knocked out when the multiples of <span class="math inline">\(2\)</span> were worked on. The same goes for <span class="math inline">\(250\)</span>.</p>
-<div id="6145e8bd" class="cell" data-execution_count="5">
+<div id="16dee64f" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> factor_pairs(n):</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    pairs <span class="op">=</span> []</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> left <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, n <span class="op">+</span> <span class="dv">1</span>):</span>
@@ -648,7 +639,7 @@ window.Quarto = {
 </div>
 </div>
 <p>The key insight is that if <span class="math inline">\(n\)</span> is composite, it must have a prime factor <span class="math inline">\(p \leq \sqrt{n}\)</span>. So we only need to sieve with primes up to <span class="math inline">\(\sqrt{\text{limit}}\)</span>, after which every surviving number is prime.</p>
-<div id="0005204f" class="cell" data-execution_count="6">
+<div id="59fb6076" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sieve(limit):</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Return list of all primes up to limit."""</span></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    is_prime <span class="op">=</span> [<span class="va">True</span>] <span class="op">*</span> (limit <span class="op">+</span> <span class="dv">1</span>)</span>
@@ -669,7 +660,7 @@ window.Quarto = {
 <section id="research-example-who-gets-knocked-out-first" class="level3 unnumbered unlisted">
 <h3 class="unnumbered unlisted anchored" data-anchor-id="research-example-who-gets-knocked-out-first">Research Example: Who Gets Knocked Out First?</h3>
 <p>Which prime claims the most territory in the sieve — and how much do the later primes even contribute? Color every composite by the first prime that eliminates it and the answer jumps off the page.</p>
-<div id="06631d83" class="cell" data-execution_count="7">
+<div id="ddbb7568" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># uses: sieve()</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.patches <span class="im">as</span> mpatches</span>
@@ -850,7 +841,7 @@ Figure&nbsp;1.2: Survivor count among integers 2–9,999 as each prime divisor i
 </div>
 <p>The curve flatlines at <span class="math inline">\(p = 97\)</span> — the last prime below <span class="math inline">\(\sqrt{10{,}000} = 100\)</span> — and every composite below 10,000 is already gone. You just proved, in a single graph, why the sieve only needs primes up to the square root. Not bad for a Saturday afternoon with Python.</p>
 <p>Notice that the inner loop starts at <code>i * i</code>, not at <code>2 * i</code>. Every multiple <span class="math inline">\(m \cdot i\)</span> with <span class="math inline">\(m &lt; i\)</span> has already been crossed off when we processed the prime <span class="math inline">\(m\)</span> earlier, so starting at <span class="math inline">\(i^2\)</span> saves redundant work.</p>
-<div id="6b758619" class="cell" data-execution_count="10">
+<div id="0f0c9dff" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># uses: sieve()</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -864,7 +855,7 @@ Figure&nbsp;1.2: Survivor count among integers 2–9,999 as each prime divisor i
 <div class="cell-output cell-output-stdout">
 <pre><code>Primes up to 1,000,000: 78498
 Largest prime found:    999983
-Time elapsed:           0.0655 s</code></pre>
+Time elapsed:           0.0640 s</code></pre>
 </div>
 </div>
 <p>The sieve finds all 78,498 primes below one million in a fraction of a second. That speed will be essential for the experiments later in this chapter.</p>
@@ -874,7 +865,7 @@ Time elapsed:           0.0655 s</code></pre>
 <h2 data-number="1.3" class="anchored" data-anchor-id="sec-primes-trialdiv"><span class="header-section-number">1.3</span> How Fast Is Trial Division?</h2>
 <p>Before we use the sieve, let’s build primality testing the hard way — by hand — just to see how much work it really takes.</p>
 <p>The simplest idea: to test whether <span class="math inline">\(n\)</span> is prime, try dividing it by every integer from 2 up to <span class="math inline">\(n - 1\)</span>. If nothing divides evenly, <span class="math inline">\(n\)</span> is prime.</p>
-<div id="999daf6f" class="cell" data-execution_count="11">
+<div id="9f7c50bc" class="cell" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> my_isprime(n):</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> n <span class="op">&lt;</span> <span class="dv">2</span>:</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">False</span></span>
@@ -893,7 +884,7 @@ my_isprime(97) = True</code></pre>
 </div>
 </div>
 <p>It works. But it is painfully slow for large <span class="math inline">\(n\)</span>. How slow? Let’s race four hand-built variants — plus Python’s own built-in <code>isprime</code> — against the same large prime, the largest below <span class="math inline">\(100{,}000{,}000\)</span>, and find out.</p>
-<div id="68cd7a6a" class="cell" data-cache="true" data-execution_count="12">
+<div id="f4d31d2f" class="cell" data-cache="true" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sympy <span class="im">import</span> primerange, isprime</span>
@@ -958,9 +949,9 @@ my_isprime(97) = True</code></pre>
 <span id="cb16-62"><a href="#cb16-62" aria-hidden="true" tabindex="-1"></a>    timing.append(t1 <span class="op">-</span> t0)</span>
 <span id="cb16-63"><a href="#cb16-63" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>label<span class="sc">:13s}</span><span class="ss">: </span><span class="sc">{</span>t1<span class="op">-</span>t0<span class="sc">:.4f}</span><span class="ss"> s  → </span><span class="sc">{</span>ok<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>all i &lt; n    : 3.6833 s  → True
+<pre><code>all i &lt; n    : 3.9023 s  → True
 i ≤ √n       : 0.0004 s  → True
-primes &lt; n   : 0.2432 s  → True
+primes &lt; n   : 0.2637 s  → True
 primes ≤ √n  : 0.0001 s  → True
 isprime      : 0.0000 s  → True</code></pre>
 </div>
@@ -1071,7 +1062,7 @@ Figure&nbsp;1.4: Same data on a log scale. Now the improvement at each step is c
 <section id="research-example-did-gauss-get-it-right" class="level3 unnumbered unlisted">
 <h3 class="unnumbered unlisted anchored" data-anchor-id="research-example-did-gauss-get-it-right">Research Example: Did Gauss Get It Right?</h3>
 <p>Gauss claimed that <span class="math inline">\(x / \ln x\)</span> tracks the prime count — but how close is it, really? Plot both curves together and see for yourself whether a teenager’s conjecture from 1792 holds up.</p>
-<div id="eb6fbf09" class="cell" data-execution_count="16">
+<div id="2869380a" class="cell" data-execution_count="16">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># uses: sieve()</span></span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
@@ -1128,7 +1119,7 @@ Figure&nbsp;1.4: Same data on a log scale. Now the improvement at each step is c
 </div>
 <p>The <strong>gap</strong> between consecutive primes <span class="math inline">\(p\)</span> and <span class="math inline">\(q\)</span> (the next prime after <span class="math inline">\(p\)</span>) is simply <span class="math inline">\(q - p\)</span>. Small gaps like <span class="math inline">\(2\)</span> (twin primes: <span class="math inline">\(3, 5\)</span> or <span class="math inline">\(11, 13\)</span>) appear endlessly as far as we can compute, though no one has proved there are infinitely many.</p>
 <p>Large gaps also appear. By a simple argument: for any <span class="math inline">\(k \geq 2\)</span>, the <span class="math inline">\(k\)</span> consecutive integers <span class="math inline">\(k!+2,\ k!+3,\ \ldots,\ k!+k\)</span> are all composite (the <span class="math inline">\(j\)</span>-th one is divisible by <span class="math inline">\(j\)</span>). So prime gaps can be arbitrarily large. But where do they actually occur?</p>
-<div id="f1031525" class="cell" data-execution_count="18">
+<div id="5810148c" class="cell" data-execution_count="18">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># uses: sieve()</span></span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>primes_10k <span class="op">=</span> sieve(<span class="dv">10_000</span>)</span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>gaps <span class="op">=</span> [</span>
@@ -1147,7 +1138,7 @@ Largest gap:          36
 Average gap:          8.12</code></pre>
 </div>
 </div>
-<div id="5c9bcde5" class="cell" data-execution_count="19">
+<div id="12eb2999" class="cell" data-execution_count="19">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>top5 <span class="op">=</span> <span class="bu">sorted</span>(</span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">enumerate</span>(gaps), key<span class="op">=</span><span class="kw">lambda</span> t: t[<span class="dv">1</span>],</span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    reverse<span class="op">=</span><span class="va">True</span></span>
@@ -1170,7 +1161,7 @@ Average gap:          8.12</code></pre>
 <section id="research-example-do-prime-gaps-grow-forever" class="level3 unnumbered unlisted">
 <h3 class="unnumbered unlisted anchored" data-anchor-id="research-example-do-prime-gaps-grow-forever">Research Example: Do Prime Gaps Grow Forever?</h3>
 <p>We know primes thin out, so gaps should grow — but does the scatter plot actually show that trend, or is it hidden in noise? Plot every gap below 10,000 against its starting prime and find out.</p>
-<div id="b07233c6" class="cell" data-execution_count="20">
+<div id="d9f0e090" class="cell" data-execution_count="20">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># uses: primes_10k, gaps</span></span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1225,7 +1216,7 @@ Extra footage exploring why prime gaps grow without bound and what statistical p
 <p><strong>Goldbach’s Conjecture</strong>: Every even integer <span class="math inline">\(n \geq 4\)</span> is the sum of two primes <span class="citation" data-cites="goldbach1742">(<a href="references.html#ref-goldbach1742" role="doc-biblioref">Goldbach 1742</a>)</span>.</p>
 <p>This conjecture is 280 years old and still unproven. It has been verified by computer for all even numbers up to <span class="math inline">\(4 \times 10^{18}\)</span> <span class="citation" data-cites="oliveira2014">(<a href="references.html#ref-oliveira2014" role="doc-biblioref">Oliveira e Silva et al. 2014</a>)</span>, but no proof exists. It is one of the most famous open problems in mathematics.</p>
 <p>Let us verify it for small values and count how many ways each even number can be decomposed.</p>
-<div id="01f1e4fa" class="cell" data-execution_count="23">
+<div id="857d5a4f" class="cell" data-execution_count="23">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sympy <span class="im">import</span> isprime</span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> goldbach_pairs(n):</span>
@@ -1259,7 +1250,7 @@ Extra footage exploring why prime gaps grow without bound and what statistical p
 <section id="research-example-the-goldbach-comet" class="level3 unnumbered unlisted">
 <h3 class="unnumbered unlisted anchored" data-anchor-id="research-example-the-goldbach-comet">Research Example: The Goldbach Comet</h3>
 <p>Every even number seems expressible as a sum of two primes — but does the <em>number</em> of such representations grow, shrink, or scatter randomly as <span class="math inline">\(n\)</span> increases? Plot the representation count for every even number up to 3,000 and discover one of mathematics’ most striking shapes.</p>
-<div id="556bf14e" class="cell" data-execution_count="24">
+<div id="79342279" class="cell" data-execution_count="24">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># uses: sieve()</span></span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1316,7 +1307,7 @@ Extra footage exploring why prime gaps grow without bound and what statistical p
 </div>
 <p>In 1963, the mathematician Stanislaw Ulam was sitting through a boring meeting and began doodling: he wrote the integers in a spiral on grid paper and circled all the primes. To his surprise, the circled numbers lined up along diagonal stripes. The pattern was too pronounced to be coincidence. Ulam (1909–1984) was a Polish-American mathematician whose other major contributions include the Monte Carlo method and nuclear weapon design — a reminder that mathematical discovery can emerge from the most unexpected moments.</p>
 <p>The <strong>Ulam spiral</strong> arranges integers <span class="math inline">\(1, 2, 3, \ldots\)</span> in a square spiral centered at <span class="math inline">\(1\)</span>, then marks which positions are prime. We will build it with NumPy and display it with <code>imshow</code>.</p>
-<div id="ac638f48" class="cell" data-execution_count="26">
+<div id="652e8a44" class="cell" data-execution_count="26">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> ulam_spiral(size):</span>
