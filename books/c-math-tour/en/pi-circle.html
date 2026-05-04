@@ -104,11 +104,11 @@ div.csl-indent {
 <link href="site_libs/bootstrap/bootstrap-dark-3ad2471a7a4e743c0fe3ccec74349440.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <link href="site_libs/bootstrap/bootstrap-be5fefa566fe9d9633354bab18b56f42.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
-  "location": "sidebar",
+  "location": "navbar",
   "copy-button": false,
   "collapse-after": 3,
-  "panel-placement": "start",
-  "type": "textbox",
+  "panel-placement": "end",
+  "type": "overlay",
   "limit": 50,
   "keyboard-shortcut": [
     "f",
@@ -170,9 +170,10 @@ window.Quarto = {
 };
 </script>
 
+<link rel="stylesheet" href="custom.css">
 </head>
 
-<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+<body class="nav-sidebar floating nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
     const toggleBodyColorMode = (bsSheetEl) => {
       const mode = bsSheetEl.getAttribute("data-mode");
       const bodyEl = window.document.querySelector("body");
@@ -338,6 +339,30 @@ window.Quarto = {
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">A Tour of Computational Mathematical Research</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="https://sabioresearch.com/en"> 
+<span class="menu-text">&lt;- SabioResearch.com</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
   <nav class="quarto-secondary-nav">
     <div class="container-fluid d-flex">
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
@@ -346,29 +371,13 @@ window.Quarto = {
         <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./pi-circle.html"><span class="math inline">\(\pi\)</span> Contains a Circle Inside?</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
-      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
-        <i class="bi bi-search"></i>
-      </button>
     </div>
   </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
-    <div class="pt-lg-2 mt-2 text-left sidebar-header">
-    <div class="sidebar-title mb-0 py-0">
-      <a href="./">A Tour of Computational Mathematical Research</a> 
-        <div class="sidebar-tools-main">
-  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
-</div>
-    </div>
-      </div>
-        <div class="mt-2 flex-shrink-0 align-items-center">
-        <div class="sidebar-search">
-        <div id="quarto-search" class="" title="Search"></div>
-        </div>
-        </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
@@ -403,97 +412,97 @@ window.Quarto = {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./_01-primes.html" class="sidebar-item-text sidebar-link">
+  <a href="./ch01-primes.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Prime Numbers: The Atoms of Arithmetic</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./_02-modular.html" class="sidebar-item-text sidebar-link">
+  <a href="./ch02-modular.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Modular Arithmetic and Check Digits</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./_03-crypto.html" class="sidebar-item-text sidebar-link">
+  <a href="./ch03-crypto.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Cryptography and Steganography: The Art of Hidden Messages</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./_04-bases.html" class="sidebar-item-text sidebar-link">
+  <a href="./ch04-bases.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Number Bases</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./_05-collatz.html" class="sidebar-item-text sidebar-link">
+  <a href="./ch05-collatz.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">The Collatz Conjecture: Simple Rules, Deep Mystery</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./_06-fib.html" class="sidebar-item-text sidebar-link">
+  <a href="./ch06-fib.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Fibonacci Numbers and Their Cousins</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./_07-pascal.html" class="sidebar-item-text sidebar-link">
+  <a href="./ch07-pascal.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Pascal’s Triangle: Arithmetic in a Grid</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./_08-cfrac.html" class="sidebar-item-text sidebar-link">
+  <a href="./ch08-cfrac.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Continued Fractions: Fractions of Fractions</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./_09-oeis.html" class="sidebar-item-text sidebar-link">
+  <a href="./ch09-oeis.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Integer Sequences and the OEIS</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./_10-constants.html" class="sidebar-item-text sidebar-link">
+  <a href="./ch10-constants.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title"><span class="math inline">\(\pi\)</span> and Mathematical Constants</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./_11-automata.html" class="sidebar-item-text sidebar-link">
+  <a href="./ch11-automata.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Cellular Automata: Order from Simple Rules</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./_12-logistic.html" class="sidebar-item-text sidebar-link">
+  <a href="./ch12-logistic.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">The Logistic Map: Chaos from a Simple Equation</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./_13-fractals.html" class="sidebar-item-text sidebar-link">
+  <a href="./ch13-fractals.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Fractals: Infinite Detail at Every Scale</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./_14-walks.html" class="sidebar-item-text sidebar-link">
+  <a href="./ch14-walks.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Random Walks: Wandering with Purpose</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./_15-misleads.html" class="sidebar-item-text sidebar-link">
+  <a href="./ch15-misleads.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Computational Misleads: When Computers Lie</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./_16-comm.html" class="sidebar-item-text sidebar-link">
+  <a href="./ch16-comm.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Communicating Mathematics</span></span></a>
   </div>
 </li>
@@ -561,7 +570,7 @@ window.Quarto = {
 </div>
 </div>
 <p>In late Dr.&nbsp;Carl Sagan’s science fiction novel <em>Contact</em> <span class="citation" data-cites="sagan1985contact">(<a href="references.html#ref-sagan1985contact" role="doc-biblioref">Sagan 1985</a>)</span>, a radio telescope picks up a signal from the star Vega, 26 light years away. The signal has layers.</p>
-<p>The first layer is prime numbers: 2, 3, 5, 7, 11, 13… broadcast as deliberate pulses. Primes are the aliens’ way of saying <em>we are here and we are not an accident</em> — because only an intelligent mind would single out exactly those numbers. Any civilization that builds a radio telescope already recognizes them as special. You will meet primes in <a href="_01-primes.html" class="quarto-xref"><span>1&nbsp; Prime Numbers: The Atoms of Arithmetic</span></a>.</p>
+<p>The first layer is prime numbers: 2, 3, 5, 7, 11, 13… broadcast as deliberate pulses. Primes are the aliens’ way of saying <em>we are here and we are not an accident</em> — because only an intelligent mind would single out exactly those numbers. Any civilization that builds a radio telescope already recognizes them as special. You will meet primes in <a href="ch01-primes.html" class="quarto-xref"><span>1&nbsp; Prime Numbers: The Atoms of Arithmetic</span></a>.</p>
 <p>The second layer is stranger: a retransmission of humanity’s own 1936 Olympic broadcast from Berlin — the first television signal ever powerful enough to escape Earth’s atmosphere — bounced back from 26 light years away. The message: <em>we have been listening</em>.</p>
 <p>The third layer, decoded with a mathematical primer hidden in the signal’s phase modulation, is a set of blueprints: 30,000 pages of instructions for building a machine. A five-seat machine. The nations of Earth argue, build it, and send five people inside.</p>
 <p>Ellie Arroway — astronomer, SETI researcher, protagonist — is one of them. What happens inside the machine is the heart of the novel. At the end of the journey, she meets an entity that takes the form of her late father. And it tells her something:</p>
@@ -572,7 +581,7 @@ window.Quarto = {
 <p>The anomaly showed up most starkly in Base 11 arithmetic, where it could be written out entirely as zeros and ones. […] The program reassembled the digits into a square raster, an equal number across and down. The first line was an uninterrupted file of zeros, left to right. The second line showed a single numeral one, exactly in the middle, with zeros to the borders, left and right. After a few more lines, an unmistakable arc had formed, composed of ones. The simple geometrical figure had been quickly constructed, line by line, self-reflexive, rich with promise. The last line of the figure emerged, all zeros except for a single centered one.</p>
 </blockquote>
 <p>The circle was already there, baked into <span class="math inline">\(\pi\)</span> itself, as if placed by whoever wrote the laws of the universe. If this were to ever happen in your career, the tools needed to find it: an understanding of prime numbers, the digits of <span class="math inline">\(\pi\)</span>, and the ability to read base 11. All of it <strong>computational</strong> mathematics. All of it things you will learn in this book.</p>
-<p>How to compute <span class="math inline">\(\pi\)</span> to such depths is covered in <a href="_10-constants.html#sec-constants-machin" class="quarto-xref"><span>Computing π: Machin’s Formula</span></a> and <a href="_10-constants.html#sec-constants-bbp" class="quarto-xref"><span>The BBP Formula: Extracting Any Digit of π</span></a>. You will learn how number bases work and how to read base 11 in <a href="_04-bases.html#sec-bases-conversion" class="quarto-xref"><span>Positional Notation and Base Conversion</span></a>.</p>
+<p>How to compute <span class="math inline">\(\pi\)</span> to such depths is covered in <a href="ch10-constants.html#sec-constants-machin" class="quarto-xref"><span>Computing π: Machin’s Formula</span></a> and <a href="ch10-constants.html#sec-constants-bbp" class="quarto-xref"><span>The BBP Formula: Extracting Any Digit of π</span></a>. You will learn how number bases work and how to read base 11 in <a href="ch04-bases.html#sec-bases-conversion" class="quarto-xref"><span>Positional Notation and Base Conversion</span></a>.</p>
 <section id="sec-pi-circle-math" class="level2">
 <h2 class="anchored" data-anchor-id="sec-pi-circle-math">Computational Math Is Useful</h2>
 <p>Mathematics is a lens. Through computation, it reveals structure invisible to the naked eye: patterns inside the digits of <span class="math inline">\(\pi\)</span>, order concealed in the primes, secrets encoded in ordinary integers. Students who <em>use</em> mathematics — who run the experiments, generate the sequences, and look for the patterns themselves — understand it in a way no textbook delivers. You do not memorize a secret. You discover it. That changes everything.</p>
@@ -587,8 +596,8 @@ window.Quarto = {
 <p>“No discovery of mine has made, or is likely to make, directly or indirectly, for good or ill, the least difference to the amenity of the world.”</p>
 </blockquote>
 <p>Hardy specialized in number theory: the study of integers, primes, and their hidden relationships. He called pure mathematics a form of art, valuable the way poetry or chess is valuable — for its beauty, not its utility. The “great bulk of higher mathematics,” he wrote, is useless in any practical sense, and he celebrated that fact.</p>
-<p>He wrote those words in 1940. That same year, Alan Turing was using number theory and modular arithmetic to break the Nazi Enigma cipher at Bletchley Park. The Enigma machine encrypted every German military communication during World War II. Turing’s team cracked it using precisely the kind of abstract mathematical reasoning Hardy celebrated as useless. Historians estimate that breaking Enigma shortened the war by two years and saved millions of lives. You will see where this long tradition of cryptography leads in <a href="_03-crypto.html" class="quarto-xref"><span>3&nbsp; Cryptography and Steganography: The Art of Hidden Messages</span></a>.</p>
-<p>The story did not stop there. In 1978, three mathematicians — Rivest, Shamir, and Adleman — published an encryption scheme built on a single observation from number theory: multiplying two enormous prime numbers together is easy, but working backwards to recover those primes from the product is practically impossible <span class="citation" data-cites="rivest1978">(<a href="references.html#ref-rivest1978" role="doc-biblioref">Rivest et al. 1978</a>)</span>. That method is RSA encryption. It protects nearly every private transaction on the internet today — your passwords, your credit card numbers, your money transfers. You will build it yourself in <a href="_03-crypto.html#sec-crypto-rsa" class="quarto-xref"><span>RSA: The Lock That Anyone Can Close</span></a>.</p>
+<p>He wrote those words in 1940. That same year, Alan Turing was using number theory and modular arithmetic to break the Nazi Enigma cipher at Bletchley Park. The Enigma machine encrypted every German military communication during World War II. Turing’s team cracked it using precisely the kind of abstract mathematical reasoning Hardy celebrated as useless. Historians estimate that breaking Enigma shortened the war by two years and saved millions of lives. You will see where this long tradition of cryptography leads in <a href="ch03-crypto.html" class="quarto-xref"><span>3&nbsp; Cryptography and Steganography: The Art of Hidden Messages</span></a>.</p>
+<p>The story did not stop there. In 1978, three mathematicians — Rivest, Shamir, and Adleman — published an encryption scheme built on a single observation from number theory: multiplying two enormous prime numbers together is easy, but working backwards to recover those primes from the product is practically impossible <span class="citation" data-cites="rivest1978">(<a href="references.html#ref-rivest1978" role="doc-biblioref">Rivest et al. 1978</a>)</span>. That method is RSA encryption. It protects nearly every private transaction on the internet today — your passwords, your credit card numbers, your money transfers. You will build it yourself in <a href="ch03-crypto.html#sec-crypto-rsa" class="quarto-xref"><span>RSA: The Lock That Anyone Can Close</span></a>.</p>
 <p>Number theory: the art Hardy called useless. Nation-saving in 1940. Internet-saving from 1978 onward. And possibly alien-connecting at the <span class="math inline">\(10^{20}\)</span>th digit of <span class="math inline">\(\pi\)</span>.</p>
 <p>All of this useful mathematics has one thing in common: it is <strong>computational</strong>. Don’t worry that your high school does not teach computational math yet. You will learn it in this book.</p>
 </section>
@@ -596,7 +605,7 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="a-computational-note-on-the-circle-inside-pis-digits">A Computational Note on the Circle Inside <span class="math inline">\(\pi\)</span>’s Digits</h2>
 <p>Let’s examine the circle inside <span class="math inline">\(\pi\)</span> described in <em>Contact</em>. No, I did not compute <span class="math inline">\(\pi\)</span> to the <span class="math inline">\(10^{20}\)</span>th digit. What follows is my simulation based on what Sagan wrote — “a circle drawn in zeros and ones” with “an equal number across and down.”</p>
 <p>Although I arbitrarily chose <code>20</code>, you can change <code>rows</code> and <code>cols</code> value to any other numbers to find out what happens. Fair warning about what you will see: the output looks stretched, not square, because a text character is taller than it is wide. And the novel’s detail of a lone <code>1</code> on the very first and last lines cannot happen with any sizable circle because the top and bottom arcs of a circle are famously flat, i.e., the derivative is zero. You get that lone <code>1</code> only when the circle is very small. Try it yourself running the code below.</p>
-<div id="a22771c9" class="cell" data-execution_count="2">
+<div id="e1ac77f3" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>rows <span class="op">=</span> <span class="dv">20</span></span>
@@ -622,7 +631,7 @@ window.Quarto = {
 <span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>.join(output))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="939f64e1" class="cell" data-execution_count="3">
+<div id="b9a7b645" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># uses: output</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>.join(output))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -650,7 +659,7 @@ window.Quarto = {
 </div>
 </div>
 <p>Could we really see the output above inside the good old <span class="math inline">\(\pi\)</span>?</p>
-<p>We do not know yet. This is supposed to happens at the <span class="math inline">\(10^{20}\)</span>th digit of <span class="math inline">\(\pi\)</span> in base 11. Currently, farthest the humanity has reached is <span class="math inline">\(314{,}000{,}000{,}000{,}000\)</span> digits, which is in the order of <span class="math inline">\(10^{14}\)</span> in base 10 <span class="citation" data-cites="StorageReviewPi2025">(<a href="references.html#ref-StorageReviewPi2025" role="doc-biblioref">O’Brien and Beeler 2025</a>)</span>. Six more orders of magnitude to go. Want to give it a try using algorithms explained in <a href="_10-constants.html#sec-constants-machin" class="quarto-xref"><span>Computing π: Machin’s Formula</span></a> and <a href="_10-constants.html#sec-constants-bbp" class="quarto-xref"><span>The BBP Formula: Extracting Any Digit of π</span></a>?</p>
+<p>We do not know yet. This is supposed to happens at the <span class="math inline">\(10^{20}\)</span>th digit of <span class="math inline">\(\pi\)</span> in base 11. Currently, farthest the humanity has reached is <span class="math inline">\(314{,}000{,}000{,}000{,}000\)</span> digits, which is in the order of <span class="math inline">\(10^{14}\)</span> in base 10 <span class="citation" data-cites="StorageReviewPi2025">(<a href="references.html#ref-StorageReviewPi2025" role="doc-biblioref">O’Brien and Beeler 2025</a>)</span>. Six more orders of magnitude to go. Want to give it a try using algorithms explained in <a href="ch10-constants.html#sec-constants-machin" class="quarto-xref"><span>Computing π: Machin’s Formula</span></a> and <a href="ch10-constants.html#sec-constants-bbp" class="quarto-xref"><span>The BBP Formula: Extracting Any Digit of π</span></a>?</p>
 <p>Maybe you will be the the first to get there.</p>
 <div style="display:flex; align-items:flex-start; margin:1em 0; gap:12px; width:100%;">
 <div style="flex:0 0 200px;">
