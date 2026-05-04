@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>3&nbsp; Setting Up the Tools – Runge-Kutta 4th Order: A Complete Derivation in Wolfram Language</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./04_RK1_Eulers_Method.html" rel="next">
+<link href="./02_ODEs_and_IVPs.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-f418161beb48e0141c760e455f12af2c.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-8d20c3fcccb0af3a9d8e3221c7f78825.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-ad5b63c385a99ad8da6bf58b133208b3.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-8d20c3fcccb0af3a9d8e3221c7f78825.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="custom.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Runge-Kutta 4th Order: A Complete Derivation in Wolfram Language</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="https://sabioresearch.com/en"> 
+<span class="menu-text">&lt;- SabioResearch.com</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./03_Setting_Up_the_Tools.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Setting Up the Tools</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./00_Preface.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01_Historical_Background.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">The Problem That Launched a Century of Mathematics</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02_ODEs_and_IVPs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Ordinary Differential Equations and Initial Value Problems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03_Setting_Up_the_Tools.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Setting Up the Tools</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04_RK1_Eulers_Method.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Euler’s Method — Runge-Kutta Order 1</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05_RK2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Second-Order Runge-Kutta — A Family of Methods</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06_RK3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Third-Order Runge-Kutta — The Pattern Deepens</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07_RK4_Derivation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Deriving Runge-Kutta 4th Order</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./08_RK4_in_Wolfram.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">RK4 in Wolfram Language</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./09_RK5_And_Beyond.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Beyond RK4 — Where the Method Breaks Down</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">In This Chapter</h2>
+   
+  <ul>
+  <li><a href="#the-one-formula-that-drives-everything-expanding-fx-ah-y-bk" id="toc-the-one-formula-that-drives-everything-expanding-fx-ah-y-bk" class="nav-link active" data-scroll-target="#the-one-formula-that-drives-everything-expanding-fx-ah-y-bk"><span class="header-section-number">3.1</span> The One Formula That Drives Everything: Expanding <span class="math inline">\(f(x + ah, y + bk)\)</span></a></li>
+  <li><a href="#big-o-notation-and-truncation-error" id="toc-big-o-notation-and-truncation-error" class="nav-link" data-scroll-target="#big-o-notation-and-truncation-error"><span class="header-section-number">3.2</span> Big-O Notation and Truncation Error</a></li>
+  <li><a href="#what-order-means-a-method-is-order-p-if-the-global-error-is-ohp" id="toc-what-order-means-a-method-is-order-p-if-the-global-error-is-ohp" class="nav-link" data-scroll-target="#what-order-means-a-method-is-order-p-if-the-global-error-is-ohp"><span class="header-section-number">3.3</span> What “Order” Means: A Method Is Order <span class="math inline">\(p\)</span> If the Global Error Is <span class="math inline">\(O(h^p)\)</span></a></li>
+  <li><a href="#introducing-the-wl-symbolic-pipeline-series-collect-and-coefficient" id="toc-introducing-the-wl-symbolic-pipeline-series-collect-and-coefficient" class="nav-link" data-scroll-target="#introducing-the-wl-symbolic-pipeline-series-collect-and-coefficient"><span class="header-section-number">3.4</span> Introducing the WL Symbolic Pipeline: <code>Series[]</code>, <code>Collect[]</code>, and <code>Coefficient[]</code></a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Setting Up the Tools</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Every method in this book — Euler, RK2, RK3, and RK4 — is derived from one idea: expand a function of two variables as a power series in the step size <span class="math inline">\(h\)</span>, then choose coefficients so that the numerical approximation matches the exact Taylor expansion through as many powers of <span class="math inline">\(h\)</span> as possible. This chapter establishes the three tools that make that program precise: the two-variable Taylor expansion in the form we will actually use, Big-O notation for measuring what we throw away, and a formal definition of “order <span class="math inline">\(p\)</span>.” At the end of the chapter we introduce the Wolfram Language pipeline that will carry all the symbolic algebra from Chapter 4 onward.</p>
+<section id="the-one-formula-that-drives-everything-expanding-fx-ah-y-bk" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="the-one-formula-that-drives-everything-expanding-fx-ah-y-bk"><span class="header-section-number">3.1</span> The One Formula That Drives Everything: Expanding <span class="math inline">\(f(x + ah, y + bk)\)</span></h2>
+<p>Every Runge–Kutta scheme evaluates the right-hand side <span class="math inline">\(f\)</span> at a point that is displaced from <span class="math inline">\((x, y)\)</span> by some multiple of the step size <span class="math inline">\(h\)</span> in the <span class="math inline">\(x\)</span>-direction and some multiple in the <span class="math inline">\(y\)</span>-direction. We need to know how <span class="math inline">\(f\)</span> changes at such a displaced point. That question is answered by the two-variable Taylor series.</p>
+<p>You already know the single-variable Taylor series: if <span class="math inline">\(g\)</span> is smooth, then <span class="math inline">\(g(x + \varepsilon) = g(x) + \varepsilon\, g'(x) + \tfrac{\varepsilon^2}{2!} g''(x) + \cdots\)</span> The two-variable version works the same way, but we expand in two directions at once. Given a smooth function <span class="math inline">\(f(x, y)\)</span>, a displacement <span class="math inline">\(a h\)</span> in <span class="math inline">\(x\)</span>, and a displacement <span class="math inline">\(b k\)</span> in <span class="math inline">\(y\)</span>:</p>
+<p><span class="math display">\[f(x + a h,\ y + b k) = f(x, y) + a h\, f_x + b k\, f_y + \tfrac{1}{2}\!\left(a^2 h^2 f_{xx} + 2 a b\, h k\, f_{xy} + b^2 k^2 f_{yy}\right) + \cdots\]</span></p>
+<p>Here the subscripts denote partial derivatives: <span class="math inline">\(f_x = \partial f/\partial x\)</span>, <span class="math inline">\(f_{xx} = \partial^2 f/\partial x^2\)</span>, <span class="math inline">\(f_{xy} = \partial^2 f/(\partial x\, \partial y)\)</span>, and so on, all evaluated at <span class="math inline">\((x, y)\)</span>. This is exactly the formula you saw when you studied multivariable Taylor series; no new mathematics is required.</p>
+<p>In our IVP setting the independent variable is <span class="math inline">\(t\)</span> (or <span class="math inline">\(x\)</span>), the dependent variable is <span class="math inline">\(y\)</span>, and <span class="math inline">\(f(x, y)\)</span> is the right-hand side of <span class="math inline">\(y' = f(x, y)\)</span>. The displacement in <span class="math inline">\(x\)</span> will always be a multiple of <span class="math inline">\(h\)</span> (the step size), and the displacement in <span class="math inline">\(y\)</span> will always be a multiple of <span class="math inline">\(k\)</span> where <span class="math inline">\(k = h\, f(x, y)\)</span> or some related slope estimate. So <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> are just rational numbers whose values we will solve for in each chapter. Collecting by power of <span class="math inline">\(h\)</span> is how we read off the order conditions.</p>
+<p>Let’s verify this expansion in Wolfram Language so there is nothing to take on faith. We ask <code>Series[]</code> to expand <span class="math inline">\(f(x + a h,\ y + b k)\)</span> around <span class="math inline">\(h = 0\)</span> up to order <span class="math inline">\(h^2\)</span>:</p>
+<div id="4c05856d" class="cell" data-execution_count="1">
+<pre class="wolfram cell-code"><code>expandF = Series[f[x + a*h, y + b*k], {h, 0, 2}]</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<div><img alt="Output" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkQAAAAnCAIAAABhfcDQAAAAz3pUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjabU/RbUQhDPtnihshJMGBcXh3nNQNOv6ZB1VFVUvEjkkCSeP7650eE5oleYmKBgjhzZt2iioLi7O0O95wF93u4SeNJXKnVX4vMLZ/nX5gsdY/g/Z8sfkCtflu2INMl5/7yq9dr73Wc1CTA/gR+f/cLRQFOZzRVSLQqGuiJKGolMAbT4CFGS8Vf5IHItiGmBXWZ+OEjjirR4LReM0VbB5YJ5c78j3GTF3I3eZnLqp23851Phi1WpPENo1DAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAPHRFWHRTb2Z0d2FyZQBDcmVhdGVkIHdpdGggdGhlIFdvbGZyYW0gTGFuZ3VhZ2UgOiB3d3cud29sZnJhbS5jb21coqaFAAAAIXRFWHRDcmVhdGlvbiBUaW1lADIwMjY6MDU6MDQgMDE6NTA6NDe21YRrAAAL/0lEQVR4Xu2dz84PSxPHz3MuQd6ViAiuwUKwsMAFWGBlJWH5RkjeWNpwASRWVli4ACwsEAvXgIiI23A+yfeknn5npntq/s/8fjWLkzk/3dXV36qpqq6u7ufgz58/f8UTCAQCm0Lg1atX169fP3Xq1NevXzfFeDAbCEyFwN9TEQ66gUAgMA0CBwcHHz58uHz58jTkg2ogsEkEwpltUmzB9N4icPr06Y8fPz558mRvEYiJBwKNCIQzC8UIBLaEAHnFc+fObYnj4DUQmAWBcGazwByDBAKBQCAQCEyJQDizKdEN2oFAIBAIBAKzIBDObBaYY5BAIBAIBAKBKREIZzYlukE7EAgEAoFAYBYEwpnNAvPEg3z69OnOnTs2CIeQqN6+cuVKedjv37/TTE/al+4T8xvk14IAmiMFoEhyCE/oUqpvvItsqy6ZBkJBDMDS48ePhzATfcsIjCX0BXGWiavoWDizBSUy2tCfP3+2Wm0MwfPnz1++fNlK/dKlSxR5c2qexmaJrl279vPnz9a+0WA3ELh58+a3b9/QAZQhjYe6zu7169dv3rxRLwzNyZMnoQllTnabl6rTROvQPVqihzCgBlGr2RX8ru3HEnrXcUdsj5lCbaRjDx48EOVwZiMivAypirG4d++emZUCQ0RnZjg4gfv27Vujc/bsWf1rPCtEAJejgBSR8SU7F0C5iVDoj+PhX0+cODFksj9+/LDuGBqFVqKce9A3pkBjGhCNMRfTuqtXr7Yu6YZwu+d9xxL6GmD8/fu3JRXCma1BIoN4+PLlC+6nK4lfv34pFtaajIuRUAsRITR+8eJFV4LRfh4E8BOKSdNHLmHI8/79+wsXLvSjgBNq7Mvv6FXOpaFvusQE98zovKOTYoAuBFj9mIlefgSGCN0/ykQtFdWdP3/eklL/58zSRGTrjsvoLMKZJ1eunZ49DNxsH6IyfbKCvTMz0Lx48WL9OomBcfoQ3UBHnfs3/pZD+OnRV3sSG1rd6rtr9Yi2KKx8qjihM2fO1IHC0JDxLgOo3GY9l7CgBoJGuotc4N/fsocWDeniMZJOoQ9ho9x34GeiqI4FPQGTskqHzgzSJLiVwuapqxcmplIsMN0810Z58bnzzZOTsWC81e60Anjs2LGnT5+SPSctSWN0wukRLeLxRB6tbGyrwU7OHTk+e/asNTVNMxRGG2w8UpvCg63AmBSU6ujRo6g0TkuxFLmvRo9YH2InpeD8EMaau1PoTq7SKKdxmWElJ532ZT29WMSzpldW6dCZkbbGxRWsJAZdeuyc4S4140tj4rdv315qUu/evXv06FHj6MePHy/ssVsXaYZ5IKwM4pb54MdOt9Yq4mk1Z0thNd242nbGoE83xMyUZdQ8V++TkkL/G3OGBEaWoxb/8mQVY1LRQJkhZchlAct7bCkyoYFD9MQvdM8oZHewTnINFPKwImoMczFfNOh0pyg2qtXjaOdVMdOhM0u3cD1ziDZzIlAwoDgkts2MGcVuqBQyrngv2mCSrCUpIPwZbSqBOfqBg5xzdjHWUgjcv3/fqkjQhEJUVHB4mBJCYZuCbBkaqESOBeOyOKkGYtpIRUpdPQ51KZR2bFy/0FsnjrXBzuDM1BIR47Sg39pxYAMleHmwYLa+GlQAolAr3eHQenNIAspWrM6NE83K2bgRQVn/yuo4/QgH4p7rnu5QDuGfeDYtprei1Xo6iECYHTLjxwKfih2hzLprGlP7eYahnWDrDZ1lGPybTwPr+mAVKVQEIe3yLHwbZ2rZ6U7Zld6gFTqmG67p51kpJPGvjQpjsWRPyabBeEUDVcFfj75RJAoaO+FQtzzSh96yS09hOnfoJe4h1m90DTS5pzUQIwpdf4ooVRsJzomYRNzjM0l17FBPcgeSdAIpfWC68ovWldDSElLvtutWb1z+RTyRylAzXK69px21RtEoyvvVWa0MBHuW62/kgbHS2QmTestGfhoJto7IECm13GQbs38KRtIHahJB7pFoPPy3kqJBo4jFqhjgvc6kUx8sl6v2Sq429qWlRpFKNOpnpWMZAck9VSfo14FlOA/apqUCv6ylDN2qxk4A681Axoh7mEkp5FLrlVEgW8bWr4GtpHIaKFb1peu9H2KWzxcpaUWjAUmVkzYenZ9HAy2RI0VNbWZXTMoMNxou8wg2FjKtfzJSCc9n4jFcjHUobzMNudnmjIWZAKe5zNGvdM9ZMROMrGfZS5lBLDer6CuUG+FzYioT7GHMoGgFv64fXZVyrPY5UwJ9xQQSXKfp162n/VL4DgWa30rKxpVxSD9OUa5PxOnMUpffKr5JnVllyq3MNEKUi7fG0is/nYIGKoqqByV+4hY/pXLPIWaq7oylZtNAfTWp/+gtvqmdmeczaf1sJd9BaUb5VVJSDEbuG7w67e+pe/qk9bjatsllCbQnhMxGSYwoq0Z6TSNC+e7du3X2xv0lzfxQJzYu8UWokToHOjLmKOgQuaBIxr/o5C4lQQFQPNRvoOLZcLdu3TJZcNguV/LggZeyCE8zf5uHDx/+N/8U6KQZM2fRuZ+rVbWkJlPXjmDHndW5Of5TBUYhCyUFiuFay0GdQI2ogZvY+R7xMxnBmZnLmbPKC3OpKKygIrZJiHlVpUNhAwazRR2EXFpvE+YfEU+WltovWCfp/MY8zaykbbYLsbQyw/2UNyokeh5a6iV3jDLN+NN46pjG9k2xvyqFqG/fGvJsC/0v/+QEhCerROUeUW60jcW+c5azYff4lsvboqvVwJygbR/LPpnGfX1+rKw39L89rnEYrnIjODM7AsU3M+JRawxi4foAZk4oJBeVQ8E2CdOkXy5ew2zpQh1c2o0bN/oh6x8R7c+V2vcbevFeKDHmmEkRZxA9jHVkuPXbQKAaseDP0nSu3nNxNPE4gQV1nriZys72FAhbtU6aZsxV3xw5cuQ/+SfHnipdp/bKU4DTg6bctuKbTjUI5bGwDIXrUdAZjVjwZ6vVwNzEdRgpzYs2lptyUDW9CU+LAaQwcFncQ/R0GerM0BikqN0FZZnqEi0viRr5xhRinsirlGelktAhpYBGX6deMMdQm0ESyNtqlEFsB9KMXI4FgLhzSztXQjbVm3Wt6xPZskQ0Igoziv0ilEGNWSrZBab9Pq2V9FIaxw5v7HCakUhaOx0qEEeClYhKiZOuAbfIlut7NWJrhsCpEhvSQGABHPuonXbbiUPXZoOcGcqBxmBHZGvwB5JoxWCpUqP1uj+aYY/k+XAqOMjWAnHFRDoo07sG1yAjyuBd/536kePXZBkrV1M6NRtj0WcWSME2rvSClqdCUWzb6rZplp58wpl5diMYEf1BG7s6yzoCOk6+VHQ5lkSMjll2KRvfS6cD8qPzMxFBYlA+KLs9i6AKCWJGUn+m3FdlJVHnR80sMci75wwcIyqi6uost66BgMPTyW5PpAMdqlc9pc+NVUOy1OVq5k7lRhM1zlXk11MEEzGwCbKFWrJW/uXhWpst3gAmC+raWs24OP+7zcAQDdQu+/rx2TENbCzN90thvmrGVjerdM3Kbz+yqylbpxMN+iGgPa3W1HE/4iP2UmS9cnUdcb77Q4ostAKRlU85NLCfgDqkGW0t6R9J2yQKhfy9Zm6pTHo5sanantYU2cycLzWcbiry33Sg6zzIwHhSx0tNyjJLhbSSig/LNbQL8r8/Q3fVQB1O0EXqaw5TbN8hl9jcrgZqC6nTLoBdA+RU7IM1uxnnHKJZIBAIBAKBwJ4j0GFltudIxfQDgZUgkPu7YithL9gIBBZBIJzZIrDHoIFATwTwZCTNtHmuA3ajHEjoyU10CwRWg0CkGVcjimAkEOiOgO5Z95xe6E47egQCW0IgVmZbklbwGghUEBjlxoBANRDYAQTCme2AEGMK+4sAR4CH3Om8v8DFzHcOgXBmOyfSmNDeIKBC595Xie4NTjHRvUAgnNleiDkmuXsIcM6Pg4/D/9bJ7iETM9pPBKIAZD/lHrPeNgJUMOpa1LH+kNu24QjuA4Hht+YHhoFAIDAzAuHJZgY8htsEArEy24SYgslA4F8EuOOHq9dG/NPGgWwgsBsIxJ7ZbsgxZrEvCOimZvv7QbrNL85N74v4Y555BP4Bww8ulARMGcQAAAAASUVORK5CYII="></div>
+</div>
+</div>
+<p>The output shows the constant term <span class="math inline">\(f(x, y)\)</span>, the first-order terms in <span class="math inline">\(h\)</span> (coefficients <span class="math inline">\(a\, f_x\)</span> and <span class="math inline">\(b k\, f_y\)</span>), and the second-order terms in <span class="math inline">\(h^2\)</span> involving <span class="math inline">\(f_{xx}\)</span>, <span class="math inline">\(f_{xy}\)</span>, <span class="math inline">\(f_{yy}\)</span>. (Note that <span class="math inline">\(k\)</span> still appears as a symbol here; in later chapters we will substitute <span class="math inline">\(k = h\, f(x, y)\)</span> or an analogous expression before collecting terms.)</p>
+<p>One subtlety: in the Runge–Kutta context, <span class="math inline">\(k\)</span> is also proportional to <span class="math inline">\(h\)</span> because <span class="math inline">\(k = h\, f(x, y)\)</span>. When we substitute that in, the <span class="math inline">\(b k\)</span> term becomes <span class="math inline">\(b h\, f(x, y)\)</span>, so the entire first-order piece is proportional to <span class="math inline">\(h\)</span>. The second-order piece becomes proportional to <span class="math inline">\(h^2\)</span>, and so on. Every term groups cleanly by power of <span class="math inline">\(h\)</span>, which is what makes the order-condition approach work.</p>
+</section>
+<section id="big-o-notation-and-truncation-error" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="big-o-notation-and-truncation-error"><span class="header-section-number">3.2</span> Big-O Notation and Truncation Error</h2>
+<p>When we truncate the Taylor series after the <span class="math inline">\(h^p\)</span> term, all remaining terms have <span class="math inline">\(h^{p+1}\)</span> or higher as a factor. Big-O notation is a compact way to say exactly that.</p>
+<p><span class="math display">\[g(h) = O(h^p) \quad\text{means}\quad \left|\frac{g(h)}{h^p}\right| \le C \quad\text{for}\quad h \to 0\]</span></p>
+<p>In plain language: <span class="math inline">\(g(h)\)</span> is <span class="math inline">\(O(h^p)\)</span> if <span class="math inline">\(g\)</span> shrinks at least as fast as <span class="math inline">\(h^p\)</span> as <span class="math inline">\(h \to 0\)</span>, for some constant <span class="math inline">\(C\)</span> that does not depend on <span class="math inline">\(h\)</span>. The constant <span class="math inline">\(C\)</span> may depend on derivatives of <span class="math inline">\(f\)</span>, on the interval length, and on other fixed quantities — but not on <span class="math inline">\(h\)</span> itself.</p>
+<p>When a numerical method approximates one step of the ODE, the difference between the numerical answer and the exact answer is called the local truncation error (LTE). The LTE is the error committed in a single step, assuming we start the step with the exact value of <span class="math inline">\(y\)</span>. If the LTE is <span class="math inline">\(O(h^{p+1})\)</span>, we say the method has order <span class="math inline">\(p\)</span>.</p>
+<p>Why <span class="math inline">\(p+1\)</span> in the LTE but <span class="math inline">\(p\)</span> for the order? Because the LTE is the error per step, but we take roughly <span class="math inline">\(1/h\)</span> steps to cover a fixed interval. Multiplying the per-step error <span class="math inline">\(O(h^{p+1})\)</span> by the <span class="math inline">\(1/h\)</span> steps gives <span class="math inline">\(O(h^p)\)</span> for the total accumulated error over the interval. That accumulated (global) error is the number that actually matters for practical accuracy, and it is <span class="math inline">\(O(h^p)\)</span>. So a method with LTE <span class="math inline">\(O(h^{p+1})\)</span> gives global error <span class="math inline">\(O(h^p)\)</span>, and we call it an order-<span class="math inline">\(p\)</span> method.</p>
+<p>Example: if a method has order 4, and we halve the step size, the global error is multiplied by <span class="math inline">\((1/2)^4 = 1/16\)</span>. That is a 16-fold accuracy gain from a 2-fold increase in computation. This is the essential payoff of high-order methods.</p>
+<p>Let’s make this concrete. Wolfram Language’s <code>Series[]</code> returns an object that includes a symbolic remainder term <span class="math inline">\(O(h^{p+1})\)</span>. We can use <code>Normal[]</code> to strip it off and inspect just the polynomial part:</p>
+<div id="24b4b1ee" class="cell" data-execution_count="2">
+<pre class="wolfram cell-code"><code>eulerExpansion = Series[y[x + h], {h, 0, 3}]</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<div><img alt="Output" src="data:image/png;base64,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"></div>
+</div>
+</div>
+<p>The output displays <span class="math inline">\(y(x) + h\, y'(x) + \tfrac{h^2}{2}\, y''(x) + \tfrac{h^3}{6}\, y'''(x) + O(h^4)\)</span>. Euler’s method keeps only <span class="math inline">\(y(x) + h\, y'(x)\)</span>. The error per step is therefore <span class="math inline">\(\tfrac{h^2}{2}\, y''(x) + \cdots = O(h^2)\)</span>. Global error is <span class="math inline">\(O(h)\)</span>. This is order 1.</p>
+</section>
+<section id="what-order-means-a-method-is-order-p-if-the-global-error-is-ohp" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="what-order-means-a-method-is-order-p-if-the-global-error-is-ohp"><span class="header-section-number">3.3</span> What “Order” Means: A Method Is Order <span class="math inline">\(p\)</span> If the Global Error Is <span class="math inline">\(O(h^p)\)</span></h2>
+<p>We now state the definition precisely, because every derivation in this book is ultimately an argument that a certain method satisfies it.</p>
+<p>Definition. A one-step numerical method is said to have order <span class="math inline">\(p\)</span> (or to be an order-<span class="math inline">\(p\)</span> method) if its global error satisfies:</p>
+<p><span class="math display">\[\left|y_N - y(t_N)\right| \le C\, h^p\]</span></p>
+<p>for all step sizes <span class="math inline">\(h\)</span> smaller than some threshold, where <span class="math inline">\(C\)</span> is a constant independent of <span class="math inline">\(h\)</span>, <span class="math inline">\(y_N\)</span> is the numerical solution after <span class="math inline">\(N\)</span> steps, and <span class="math inline">\(y(t_N)\)</span> is the exact solution at the same final time. (<span class="math inline">\(N = (t_N - t_0)/h\)</span> so <span class="math inline">\(N\)</span> grows as <span class="math inline">\(h\)</span> shrinks.)</p>
+<p>Equivalently, and more practically: a method is order <span class="math inline">\(p\)</span> if and only if its local truncation error is <span class="math inline">\(O(h^{p+1})\)</span>. The local condition is what we can actually verify algebraically, step by step, which is why all our derivations will focus on the LTE.</p>
+<p>The strategy for deriving any RK method is now clear:</p>
+<ol type="1">
+<li>Write down the general form of the method (a weighted sum of slopes <span class="math inline">\(k_1, k_2, \ldots\)</span>).</li>
+<li>Expand each slope <span class="math inline">\(k_i\)</span> as a two-variable Taylor series in <span class="math inline">\(h\)</span>.</li>
+<li>Collect by power of <span class="math inline">\(h\)</span>.</li>
+<li>Demand that every coefficient through <span class="math inline">\(h^p\)</span> matches the corresponding coefficient in the exact Taylor expansion of <span class="math inline">\(y(x + h)\)</span>.</li>
+<li>Solve the resulting system of equations for the free parameters.</li>
+</ol>
+<p>Each step in that list is mechanical once the formulas are set up. In Chapter 4 we do it entirely by hand for Euler’s method. By Chapter 7 the algebra is too large for a human to track reliably, and Wolfram Language takes over.</p>
+<p>A critical observation about condition counting. At order <span class="math inline">\(p\)</span> the exact Taylor expansion has a certain number of independent derivative terms, each of which must be matched. These are the order conditions. The number of conditions grows rapidly with <span class="math inline">\(p\)</span>:</p>
+<div id="67560d1b" class="cell" data-execution_count="3">
+<pre class="wolfram cell-code"><code>Grid[
+  Prepend[
+    Table[{p, {1, 1, 2, 4, 8, 17, 37}[[p]]}, {p, 1, 7}],
+    {"Order p", "# conditions"}],
+  Frame -&gt; All, Background -&gt; {None, {LightBlue, None}}]</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="3">
+<div><img alt="Output" src="data:image/png;base64,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"></div>
+</div>
+</div>
+<p>The explosion from 8 conditions at order 4 to 17 at order 5 is not a coincidence — it reflects a deep combinatorial structure (rooted trees) that Chapter 9 explains. For now, note that order 4 is the last level where the system is small enough to solve by hand. That is exactly why RK4 is the method everyone uses.</p>
+</section>
+<section id="introducing-the-wl-symbolic-pipeline-series-collect-and-coefficient" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="introducing-the-wl-symbolic-pipeline-series-collect-and-coefficient"><span class="header-section-number">3.4</span> Introducing the WL Symbolic Pipeline: <code>Series[]</code>, <code>Collect[]</code>, and <code>Coefficient[]</code></h2>
+<p>Starting in Chapter 4 we will use Wolfram Language not just to compute numerical answers, but to carry the symbolic algebra of the derivations. Three functions form the backbone of that pipeline. This section introduces them on a simple example so that when they appear mid-derivation you will already know what each one does.</p>
+<p><code>Series[expr, {var, point, order}]</code> expands <code>expr</code> as a power series in <code>var</code> around the given point, up to the given order. The result is a <code>SeriesData</code> object that carries both the polynomial part and the remainder term <span class="math inline">\(O((\text{var} - \text{point})^{\text{order}+1})\)</span>.</p>
+<div id="647c3b1f" class="cell" data-execution_count="4">
+<pre class="wolfram cell-code"><code>Series[Sin[h], {h, 0, 5}]</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<div><img alt="Output" src="data:image/png;base64,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"></div>
+</div>
+</div>
+<p>The output is <span class="math inline">\(h - h^3/6 + h^5/120 + O(h^6)\)</span>. We recognize the first three terms of the Taylor series for sine. <code>Series[]</code> is exact for functions Mathematica knows, and it also works on user-defined symbolic functions like <code>f[x, y]</code> where the derivatives <span class="math inline">\(f^{(n)}[x, y]\)</span> appear as symbols.</p>
+<p><code>Normal[series]</code> strips the <span class="math inline">\(O(\cdots)\)</span> remainder and returns the polynomial part as an ordinary expression. This is useful when we want to do further algebra on the truncated expansion without carrying the remainder.</p>
+<div id="19138784" class="cell" data-execution_count="5">
+<pre class="wolfram cell-code"><code>Normal[Series[Sin[h], {h, 0, 5}]]</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<div><img alt="Output" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGcAAAArCAIAAADquQG5AAAAz3pUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjabU/RbUQhDPtnihshJMGBcXh3nNQNOv6ZB6pKVUvEjkkCSeP7650eE5oleYmKBgjhzZt2iioLi7O0O95A7Lt8+kmv7Xda5VfD2P51+oHFWv8MEl3C5gvU5rthDzJdfu4rv3a99lrPQU0OQH6+/m/uFoqCHM7oKhFo1DVRklBUSuCNJ8DCjJeKP8kDEWxDzArrs3FCR5zVI8FovOYKNg+sk8sd+R5jpi7kbm5VL6p23851PlhWWsLMYFxIAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAPHRFWHRTb2Z0d2FyZQBDcmVhdGVkIHdpdGggdGhlIFdvbGZyYW0gTGFuZ3VhZ2UgOiB3d3cud29sZnJhbS5jb21coqaFAAAAIXRFWHRDcmVhdGlvbiBUaW1lADIwMjY6MDU6MDQgMDE6NTA6NDgmapn6AAADwUlEQVRoQ+1bvZIpQRRet0oikSuFwjNshEDAfQQ/T8ADkHgBHoBU4ieQqkIgIRKKEQjkAvG9nz1bZ/vOjJnRdI/dOx1sjZn++frr06fPOX327Y93JZVKvX0UPHiH4jryaDQiJC7B/OLa+h92ux2RVSgUxuOxfgDiiLVajcAAlSMSL1ljcIfDIRqNOmJ9nQpqWYMEBQIBkGI5YbzHV5RkMpnJZFST8vuj3Bql1+sRGDdSr5Y1eyJAFm0KVKvX66pZs+m/VCoRkv1+Xy6Xby0z9+AlawyiUqk4AtXDKRYSR9PpdLIf7iVYGw6H+XxeDy/2o2B7Qtwc1YUm1khloHQ6HcbNLxOJRKPR0MMaqVoqLOBARW+wPUljOBSlhhLbQavVis0iLKbSQW91XiwWRXMMP1HkkOiQNVBGMv/+/o6/m83GaSlVfYfOYnMMOmE+n8uNpIO1SCQiB+7prdLp9FP61MHaU4C+VCc+azLL4bPmsybDgEybgCvzRKbnn9zmukPt3dqfPHvZufl6TYY5nzWfNRkGZNp8yZqlWyvT5f/QBmfoE91aOWfYfSt4/u122319RTWvlgfOUPi07NYibNJsNh+0SM7ns2NszyCUwWDQ0U9EbGcymdiHlY7H4+VyebrEx+PxUChE3X6yhqfZbEavbFjDrLDaIiAxiiC+32630+n0LujhcNgxDu6GtcFgAOLuGtpN5Wq1GovFPmvSDhUjTdgC+KZItuW6NSwVQee7OLk+H2n1PSwPvpcR9Vq323UjIyrqfA/WVMz8kT591mTY8713GdZ8WfNZk2FApo0HssbXkTZZFzJTsWqzXq9pOPNHhiFejHI1WKZcwaLjR8yWe9uSJUh3oxoKLHDYoTDrzOYn3uCuljCQQyniEY1B89er16QBPQ1Blqo2yjBb4sWSNXHWgCSSiKUVsxAJNlNMDfXtUPiPmIljCsWz9iYcRGQKuenNcF27XC6RhcgNARvP/X5f7Eofa0ADEx+6jPUFlI6bWamuQ7kAnHaIC3nkndCg8IsBG9JqSKDUxxoGRmZdq9UiIcdGyGazr5CAhYwYbEnzJqDDioMa3sgaqVgGR9Eekn8PC8WmFouFAQM2BBJBbrm6+mTNHDvjHHCvWIM0QdnjNIDqYAxAhfAi1D9H8bAhRE2HmvpYAzLDkgLxV8RKO3OgDCqM8514fBAE4sSTBNVyudw/ADVbHhy/xm7V828GlpYHvTTYE6KFxME7nPtmnPrsNTbZaNGkM+5cLjNZ1IZCa2YZ40RNg6Frg9OPeciohr8iuN2gWqgcEwAAAABJRU5ErkJggg=="></div>
+</div>
+</div>
+<p><code>Collect[expr, var]</code> rewrites an expanded polynomial expression by grouping terms that share the same power of <code>var</code>. This is the tool we use after a large expansion to read off the coefficient of each <span class="math inline">\(h^k\)</span> separately.</p>
+<div id="30852a24" class="cell" data-execution_count="6">
+<pre class="wolfram cell-code"><code>expr = 3 h + 5 h^2 + 2 h + h^2 + 7 h^3;
+Collect[expr, h]</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="7">
+<div><img alt="Output" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHkAAAAVCAIAAADtrtY/AAAA0XpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjabU9bjgMhDPvnFHuEkAQHjsO0VNob7PHXDLTVVLVEbJwXpPH3+0g/E5oleYmKBgjhzZt2iioLi7O0M56ItnP56qdctt9plXcCY/vH1Q8s1voxSHQJmxuozXfDHmS6/NzX/dj12mu9Dno+dQPyevrXu1soCnI4o6tEoFHXRElCUSmBB24ACzPuKn4jD0SwDTErrM/GCR1xrR4JRuM+v2DzwDq5nJH7GDN1IXdzq3pQtTM7v/MPHYFal7u4CfAAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAA8dEVYdFNvZnR3YXJlAENyZWF0ZWQgd2l0aCB0aGUgV29sZnJhbSBMYW5ndWFnZSA6IHd3dy53b2xmcmFtLmNvbVyipoUAAAAhdEVYdENyZWF0aW9uIFRpbWUAMjAyNjowNTowNCAwMTo1MDo0OCZqmfoAAAKeSURBVFhH7ZhPkilBEMbNO4nAGaxYcwSOwAHYWNo8YU2ElRWOwJpjINxk3q/ne1FT03Srqm49QshVj67M/PLLf9VT+nwJqVarpS/Z7/fPEFCv1xMe5HQ6CVLpGZBlxPD3SzAC0cSW0Vq+6uv1Gt5l8yPi+1XkfD5T4E8V0WQygd3BYBBxnG8af9caRdRqtX4Xg/Gusabch8wQlNWtxQskpvPIWLSHYwEIXdgg/YbuPyhsNpuPn9Lv9wueK7VaTRB4CHCt6cG8rlQqAeq2SowK/QlFYWY7nY6KAIm4ltiFMJvNwkwHaCnT4/FYAI7Ho68RQ3Sj0fDVvT4fawgKkzP1ej3MMtHRjnGuw2xl1+p2u8RD/oNNTadTdJvNpmpQ6ygvGY1GkOXbLu12W2CWy+V2u/0uZ6XOZcBxjHltLo/24HdRvz5jj7N0C5rXgiox99Yw1y5aukQm3dl92YgotgOQfhIOBWkujOmHMQJKjKdEhSkYtG/+SefViSa7d1dlklOic09SuhdfNuLlrEwaNmOIY6/uBnyXazFo+FXWb9YRJ+02gjLHXoyF4M61qEipFV82vnejssR6Ac18Pk+ad+VyOelV2O+QaIY1DxC6Wq1umgq7ooShQot1DZj0ReLFRpxrg4zlHozycDhoM7CvWH0pK+t65zyIUBamYAyHQxjUMziTYuTVbreD7mASrhVvcH25XEDju3lt0zSHOteeIf+/U39CoC4Iyf6NO59XsThygXdBsmdIyh1RvZXldnSfa/LPAOGm4hhDxmNKgPl0wjuL62ZWMjryUqenIUErIUeJ6tr0F221WCxIfi4fBY4ocUdgamp5d1R83DHlPveUv9T/+R7Hfi6WE3djLtbfRmwG3lwXVw9vrt9cF8dAcZ7+AWmBzCEtZ6m+AAAAAElFTkSuQmCC"></div>
+</div>
+</div>
+<p>The result is <span class="math inline">\(5 h + 6 h^2 + 7 h^3\)</span>. <code>Collect[]</code> has combined like powers. In the RK derivations the expressions will involve symbolic partial derivatives of <span class="math inline">\(f\)</span> rather than numbers, so <code>Collect[]</code> will group those derivative terms under each <span class="math inline">\(h^k\)</span> heading.</p>
+<p><code>Coefficient[expr, var, n]</code> extracts the coefficient of <span class="math inline">\(\text{var}^n\)</span> in <code>expr</code>. This is how we will isolate individual order conditions: the coefficient of <span class="math inline">\(h^2\)</span> must match between the numerical expansion and the exact expansion.</p>
+<div id="0d5dfeac" class="cell" data-execution_count="7">
+<pre class="wolfram cell-code"><code>Coefficient[5 h + 6 h^2 + 7 h^3, h, 2]</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="8">
+<div><pre style="font-family: &quot;Courier New&quot;,Courier,monospace;">6</pre></div>
+</div>
+</div>
+<p>The result is <code>6</code>. In the RK context the extracted coefficient will be a symbolic expression involving the free parameters (<span class="math inline">\(b_1, b_2, a_{21}, \ldots\)</span>) and we will set it equal to the corresponding coefficient from the exact expansion, producing one algebraic equation per order condition.</p>
+<p>Now let’s run the three-function pipeline together on a preview of what we will do in Chapter 4. The exact Taylor expansion of <span class="math inline">\(y(x + h)\)</span> begins:</p>
+<div id="16dc681a" class="cell" data-execution_count="8">
+<pre class="wolfram cell-code"><code>ClearAll[f, x, y, h]
+exactExpansion = y + h * f[x, y] +
+  (h^2/2) * (D[f[x, y], x] + D[f[x, y], y] * f[x, y]) +
+  O[h]^3;
+Collect[Normal[exactExpansion], h]</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="11">
+<div><img alt="Output" src="data:image/png;base64,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"></div>
+</div>
+</div>
+<p>The output shows the exact Taylor expansion through <span class="math inline">\(h^2\)</span>. The <span class="math inline">\(h^1\)</span> term is <span class="math inline">\(h\, f(x, y)\)</span> — that is the slope times the step. The <span class="math inline">\(h^2\)</span> term involves the partial derivatives of <span class="math inline">\(f\)</span>. In Chapter 4 we will show that Euler’s method matches the <span class="math inline">\(h^1\)</span> term and nothing more, giving order 1. In Chapter 5 we will match both terms, giving order 2.</p>
+<p>Let’s also verify the <code>Coefficient[]</code> extraction on this expression:</p>
+<div id="c2591efe" class="cell" data-execution_count="9">
+<pre class="wolfram cell-code"><code>coeff1 = Coefficient[Normal[exactExpansion], h, 1]</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="12">
+<div><img alt="Output" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEEAAAAVCAIAAACWihTzAAAAz3pUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjabU/tbUQhDPvPFDdCSIID4/DuOKkbdPwzD9SKqpaIHecDSOP7650eE5oleYmKBgjhzZt2iioLi7O0O97wzcwPP+Wy/U6r/BYwtn+dfmCx1j+LRJeweQO1+R7Yi0yXn/vKr92vvdZzUZMDkJ+n/5u7haIghzO6SgQadU2UJBSVEnjjCbAx46XiT/JABMcQs8P6HJzQEWf3SDAar/kFmwfWyeWOvI8xUxdyN7eqF1W7q/M7Hw1LWozs9FV6AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAPHRFWHRTb2Z0d2FyZQBDcmVhdGVkIHdpdGggdGhlIFdvbGZyYW0gTGFuZ3VhZ2UgOiB3d3cud29sZnJhbS5jb21coqaFAAAAIXRFWHRDcmVhdGlvbiBUaW1lADIwMjY6MDU6MDQgMDE6NTA6NDgmapn6AAABtUlEQVRYR+1Wy42DMBBdthSgDO6hAA6kBKgjF9IAV05AC+QKoougdJJ9q6c1rIM/AbIi0vqEzHhm3sx7Yzv3+/3jzdfnm+f/nf4/hn008Vcf6rp2flYYhvvI0CILaJqrbVuYV1UldqQPz/PoT2Xw0v3r9croh8NBCjT2oe97ZBnHsQq47/s8bFGZ7U1c12V0fEjeRwy32237yH/icdVc6roO8kF/RKppmmLnfD4/mzwPDsMgDtI5JGp2BQHMGkEeEu0eiShUlGWZjaI0giHd6YcrSZLZiNiX/IwCxT/oQRNm1iPsWQWOhMcA9kKXElANmJdgYM0QUl8CIxhWgf1HXVTeHjGs0oMgIXksxp+ZwXMWQRAg77Is8bMoitPpZOtnyr9lXGIT4AfHVXwzNoEGpCVroTqyfR8wN/I8Jw0ul0vTNJgwUv149WPOGOvK2wm1gLiNxsJgFZcwQ4/HIwoDGsAjbh/EBiQJBpqDvySJcbGrURQZLUcDyy7DbDFPyJDp3NQEVY3UKeeVs9UIZjEGPrSM/mFACkEPepDLMSx489nPXPJNA1Xz5nOA6Qnm7dJ0laZ3gugL9GWeAMk//0gAAAAASUVORK5CYII="></div>
+</div>
+</div>
+<p>The result is <code>f[x, y]</code> — the slope. <code>Coefficient[expr, h, 2]</code> would give the second-order term. These are exactly the quantities we will match against the numerical method’s own expansion.</p>
+<p>Summary of the pipeline. For every RK derivation in Chapters 4 through 7 we will follow exactly these steps in Wolfram Language:</p>
+<ol type="1">
+<li>Write the numerical method symbolically: <span class="math inline">\(y_{n+1} = y_n + h (b_1 k_1 + b_2 k_2 + \ldots)\)</span> where <span class="math inline">\(k_i\)</span> are expressed in terms of <span class="math inline">\(f\)</span> evaluated at displaced points.</li>
+<li>Expand each <span class="math inline">\(k_i\)</span> using <code>Series[]</code> around <span class="math inline">\(h = 0\)</span>.</li>
+<li>Collect the full expression by powers of <span class="math inline">\(h\)</span> using <code>Normal[]</code> and <code>Collect[]</code>.</li>
+<li>Extract the coefficient of each <span class="math inline">\(h^k\)</span> using <code>Coefficient[]</code>.</li>
+<li>Form the order conditions: set each extracted coefficient equal to the corresponding coefficient from the exact expansion.</li>
+<li>Solve the system with <code>Solve[]</code>.</li>
+</ol>
+<p>Every derivation in this book is an instance of this six-step program. The next chapter runs it for Euler’s method, where the algebra is minimal and every step is transparent.</p>
+<p>One final note on Wolfram Language conventions. Throughout the book we write <code>f[x, y]</code> (using square brackets, as WL requires) when we mean the mathematical function <span class="math inline">\(f(x, y)\)</span>. Partial derivatives are expressed with <code>D[]</code>: <code>D[f[x, y], x]</code> gives <span class="math inline">\(f_x\)</span>, and <code>D[f[x, y], x, y]</code> gives <span class="math inline">\(f_{xy}\)</span>. When a formula appears in display math we use standard mathematical notation (parentheses, subscripts); when it appears in a code cell we use WL syntax. The correspondence is exact.</p>
+<div id="d398e2c2" class="cell" data-execution_count="10">
+<pre class="wolfram cell-code"><code>ClearAll[f, x, y]
+D[f[x, y], x]</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="14">
+<div><img alt="Output" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGUAAAAVCAIAAADQPLdZAAAAz3pUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjabU/ZbUQhEPunii1hDvBAObxdVkoHKX/NA0UhiiXGxnNBGt9f7/SYMJWUS1Q0QIjccrNOUWVhsUq74w2UndPTT7oT2mmVXw1j+9fpBxZb/TNIbAmfG6g974Y9yG352tf92vXWaz0HNTkA+Xn6v/fsYSjQyIzZJAKNuiZKEopJCbzxBFioeJnkJ3kggm2IWeF9Nk7YiLN6JDiN1/yCzwPv5HJH7mNU6kLunr3aRdXu7PzOBxYjWpK4KxEbAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAPHRFWHRTb2Z0d2FyZQBDcmVhdGVkIHdpdGggdGhlIFdvbGZyYW0gTGFuZ3VhZ2UgOiB3d3cud29sZnJhbS5jb21coqaFAAAAIXRFWHRDcmVhdGlvbiBUaW1lADIwMjY6MDU6MDQgMDE6NTA6NDgmapn6AAACnklEQVRYR+WYPY4iQQyFZ/YgBMAZiICAADgAAVwACWJExAXgAkhERMARIF7EKQAhLjLz7Vhrarv6x93AbLNbQatUctnl1/azq94+zKNUKqns6XR6+xqJu1utlkiu12sVZjFxYz4Fkh2Wc//8GjrHf4Es3qvpdDoYDERGtvja8olL1KmseKnbgRCL95aQFJT5ghfwqbw7fyHIfkiyPGkQUNVqdbPZ1Go1ALpcLmrInT/J+jPU/oEXjr3/Hu12W+2dz+d6vZ7NPDonk4nkoztQiNpsOv/irhte+/2+1+spK2+32/uPRT4ul8vj8YgqAsoOuvy1crl8/xkyaNC4mc1mge03vA6HA+51u13fQLFYvF6vFsN46DrZ7/cbjQYbCaX5fF6pVFQJClEbpVMKqAD9/QMQsK49gHuAG152QsF5fj7gooiJm7nNZhMzmmjj8XixWIgwlB8D0PeDks2ile8LhYKigNtuRXMzl4wDGhcXYkSEIX6XEFGY6sSSI+6/Yc4K66n0IBxIAlbIO1SZ+BTCCrWn3ZZC4/aroR2ARJylOUhUFdrQylGFYWXuH9Ji3d/Lefz+hkTxF2/u0WElumE5zUNkoi4AOCAw8b2ng8NT7ShFm/bSboPpm7DmY9qYf5I8hAiUdHN8mWe2QiGi/sj21WoFdkZufTG8cE+K5p2ls9PpoES4D+BGo5ER+hfDS/heiv1wODQ66YsRTcQUvSGQEarG4PqlR9M1//wl5CVEE0phsmisOSocVTRem+/5nQGO91f01uW+HcXUH1g/psQl4PWQuvYoJZkfyAREY58R2kb8U/UxnrDk1gXWbm8ctUWoMG2RzSnf73a7tPdtunbpqhJfCuQyH1Nk5S4h7XdgvPsvLZmLzv+wMafxlVvoPwFSDWmJZQEF4QAAAABJRU5ErkJggg=="></div>
+</div>
+</div>
+<div id="ff7961f4" class="cell" data-execution_count="11">
+<pre class="wolfram cell-code"><code>D[f[x, y], y]</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="15">
+<div><img alt="Output" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGUAAAAVCAIAAADQPLdZAAAAz3pUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjabU/ZbUQhEPunii1hDvBAObxdVkoHKX/NA0UhiiXGxnNBGt9f7/SYMJWUS1Q0QIjccrNOUWVhsUq74w2UndPTT7oT2mmVXw1j+9fpBxZb/TNIbAmfG6g974Y9yG352tf92vXWaz0HNTkA+Xn6v/fsYSjQyIzZJAKNuiZKEopJCbzxBFioeJnkJ3kggm2IWeF9Nk7YiLN6JDiN1/yCzwPv5HJH7mNU6kLunr3aRdXu7PzOBxYjWpK4KxEbAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAPHRFWHRTb2Z0d2FyZQBDcmVhdGVkIHdpdGggdGhlIFdvbGZyYW0gTGFuZ3VhZ2UgOiB3d3cud29sZnJhbS5jb21coqaFAAAAIXRFWHRDcmVhdGlvbiBUaW1lADIwMjY6MDU6MDQgMDE6NTA6NDgmapn6AAACrklEQVRYR+WYQbIhQRCGnzmIEDgGFhY4gAUXEMFacAEbDsDWCkdgTTgFQli4xsw3kxGpprtVp34989pMLUSr/iur8q+sP7P647u5lUolxa7X649frdls+g1Mp1Ng/X7fhcWOMi/qbwNzTCie+9vhcABQqVT4vVwuwh3Pg8GgUCiMRqPI4bylH8D1ep3P54pxrcXNnLH3xg1yA4SQ0b8Q58ZdpDUXrwA6jVNnCvYtwfYRLLVajYG5XK7X653P52RGEoz68iG/8bXZbKBAWqvV0sVxAIUgt4HZ7/ftdjuZDxjEbLKxXzjqwRea0u12EXKJ/+12+2xZ6BFIwgo5u9/viHfqDsielcvl1C1bDGrczGazAP7B1/F4RIk6nU7YYrFYvN1u2k9MgaSTnslkUq/X9RUeGp3EoFiIbJJAT6eTxb3UMZDA7JE68+ALVTJOjJ/IloQAz25ybDQaTKMHjf0BMx6PF4sFD+ybcYrMwqx6n8/nXbmBIzm2bpWAk6iShh5/FSZgDV5MYfAlUuSMuKrKc7I9CB8C2VeTnmrlGVg9Wh5I5LF1AwCMWNJ/rKnIglaWKgorz+FFWmYPj2U94fqGgxLufLhHSRXrhmU1qWCeXQDktgBN/H6mgsNTLSHFGuwEVh7Jl/U8vnR2/hyYAw6V1WqV32eXCsvs6C+SKsjVagV3nuTjGnwzvli6JM1Ppk4pGyX/QNxwOLSwDObN+BK9l2Qvl9NkjWgippbLJZQRqsbg+jmXHtrs65eIlwhNpIRJpzHnKPhZ0nhvvWc7Axof7tFvLXpL8Scf/8eCGL5SyWtpGUn8gUxINNYZkWWEuvAv5Ee/WlFwIt5wLd/p/E2k8NUkm1G93+12r963qdqlqvJ8KRAG5SbnSbJyl5DyO9Cs31fjdut/eZ/R+Mos/T8ArflbUXfV44cAAAAASUVORK5CYII="></div>
+</div>
+</div>
+<div id="6b15662d" class="cell" data-execution_count="12">
+<pre class="wolfram cell-code"><code>D[f[x, y], x, x]</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="16">
+<div><img alt="Output" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGUAAAAVCAIAAADQPLdZAAAAz3pUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjabU/ZbUQhEPunii1hDvBAObxdVkoHKX/NA0UhiiXGxnNBGt9f7/SYMJWUS1Q0QIjccrNOUWVhsUq74w2UndPTT7oT2mmVXw1j+9fpBxZb/TNIbAmfG6g974Y9yG352tf92vXWaz0HNTkA+Xn6v/fsYSjQyIzZJAKNuiZKEopJCbzxBFioeJnkJ3kggm2IWeF9Nk7YiLN6JDiN1/yCzwPv5HJH7mNU6kLunr3aRdXu7PzOBxYjWpK4KxEbAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAPHRFWHRTb2Z0d2FyZQBDcmVhdGVkIHdpdGggdGhlIFdvbGZyYW0gTGFuZ3VhZ2UgOiB3d3cud29sZnJhbS5jb21coqaFAAAAIXRFWHRDcmVhdGlvbiBUaW1lADIwMjY6MDU6MDQgMDE6NTA6NDgmapn6AAACz0lEQVRYR+WYMW7qQBCGSQ5CAZyBCigogANQAAdAghpRcQE4AEhUVEDBAaAO4hSAEBd573sZvWHjtddrEiKTuLCs9b+zO79n/pl15o/3lc/nFTsejzPvV6/Xcxuo1+uCXK1WimTQe9l0ATOe23l7vwR8Op2UOx5MIgLWoFUJhTImCsC05rmBlMBe5ePHXsvlslQqCSyXyx2PR3kuFAqOufP5vNPpANjv99w3m42AMXU4HGIXTSHAl6+ore92u2KxGPWWgIKa9XpdLpeJtcvlokjzOYW8RG3pA1849vL/ajQaOud8PlcqFdsEGFgg3BwOY3M0GpFNAQwGMftETMlWb3yRMu12W8Vou926nYEsmBoOhw4Y6rZYLCR5CahQ0kOny1dzJ/vjuNa4mUwmgVVufCEouNdqtex9wMv1ejXHhazpdBoA46HpZLfbrVarYAil2WxmZi4GHYEpBVRV8nHUhFqGBClr9tsbX/6CQiQiW/hvR0GtVmMZTTSiD8kHxpegJroz95tJuW85X73PZrPKAhJuVnczCsg4qDF54a2AtbxKuGEw0Y4lR0xV5ZkRxhPZARxIAkbIO0x56SmCFbqedltKjdmvhnZDADDl0yjFmgptaGWrorDybG/SZ3V7LvuhcAXmkij24M09GstYN3x28yWYqAOAnCugibvtjP/SeKqNtFjTXlqNhPLlm49JY/5BeAQRKunmuLtLs3sDFCL0VzC04nDnqa1PxhfuiVx+snQ2m02MiPZB3GAw8PzAT8aX6L0U+36/7+mkDSOaiCl6QygjVD2D658dTdf065eIlwhNqITJoGfNUXBU0XhuvedzBjTeHtFTl+OXiVkTUH1HiYvhy7+4fAPy7h9kQqJnnxHaRvyo+ugWLDl1wbXZG0dNESlMWmRTqvect5Ket+napauK/VMgxzhHkZWzhLTfgevF/tNyd9H5DRNTGl+ppf4vHn9nWIfXflwAAAAASUVORK5CYII="></div>
+</div>
+</div>
+<div id="aed7789b" class="cell" data-execution_count="13">
+<pre class="wolfram cell-code"><code>D[f[x, y], x, y]</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="17">
+<div><img alt="Output" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGUAAAAVCAIAAADQPLdZAAAAz3pUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjabU/ZbUQhEPunii1hDvBAObxdVkoHKX/NA0UhiiXGxnNBGt9f7/SYMJWUS1Q0QIjccrNOUWVhsUq74w2UndPTT7oT2mmVXw1j+9fpBxZb/TNIbAmfG6g974Y9yG352tf92vXWaz0HNTkA+Xn6v/fsYSjQyIzZJAKNuiZKEopJCbzxBFioeJnkJ3kggm2IWeF9Nk7YiLN6JDiN1/yCzwPv5HJH7mNU6kLunr3aRdXu7PzOBxYjWpK4KxEbAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAPHRFWHRTb2Z0d2FyZQBDcmVhdGVkIHdpdGggdGhlIFdvbGZyYW0gTGFuZ3VhZ2UgOiB3d3cud29sZnJhbS5jb21coqaFAAAAIXRFWHRDcmVhdGlvbiBUaW1lADIwMjY6MDU6MDQgMDE6NTA6NDgmapn6AAACgElEQVRYR92YzW3CQBCFQwpBCCgDOAIFcIAGkOCMoAYoAK6cgBLgDKIKQIhGki8ZZbyxjT04jmOyB2tlz87P29k3s355M49KpaKy5/P55XPErp5Op4gNBgNXstVqxS7Mp0ABtyTy6HE4HBCo1Wo8mdfrdSATBCMWDodDvpZKpev1Op/PVdLVFmc5X99fje6sVisBS1AzogxGLkxqCw3H49FoOldiVrxSd5qMS11nBgq/4bXZbApfo91uq/nL5dJoNNL1BoWoTVdnBto8vOCUXq+3Xq+FaLfbbQbm75mQXatWq3/ig+bNbDbzOeDhBaHA391uN+hiuVy+3W4W14nQGCQKUXtPpxTQ0+lkMZq6DCBgXXsAV7+Hl51QOEdsPuCiiIl7cpvNJmb0oLE/CEwmk8ViwYR9Sz22jBVa+b5YLCoK5IXbHLknF1YCR02c8XjsSmryogqFD4UqZ8TdG+bJ9iB4CGRfTXwKYYX6vd/vfR2j26+GNpOScZY+M1ZVaEMrrgrDyjzopMV6cC3+0Ff71nJQgi+98GjBY8OweJOKzL0LgNwWgIlnMBi7aSLVK4doAx0LXtbz+NDZ+T1hDjhQcrvgyTyxoX6/D6XKclpxsIsoPuF8n9h2xgulaP6wdHY6HZRI/QG40WhkjOLJ8kv4Xoq9XE6TDbKJnFoul0BGqhqT68OWHtr885eQlxBNKIXJS2PNUeF7ReO5+Z7t9HF88I3+BdBbSnQFgPUjSlwMXvbikoFk4h9kAqKxzwhtIzS6ULyejL+i2YqGE/IGa/31FCEvVPhokc0pXrvd7tH7Nl27dFWxfwrkMh9RZOUuIe23b1j/ryYrQ/9vVU7zK7dAvwONGzrJoD6CkAAAAABJRU5ErkJggg=="></div>
+</div>
+</div>
+<p>We now have everything we need to begin the derivations. The next chapter applies this machinery to the simplest possible case: Euler’s method, which is Runge–Kutta of order 1.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./02_ODEs_and_IVPs.html" class="pagination-link" aria-label="Ordinary Differential Equations and Initial Value Problems">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Ordinary Differential Equations and Initial Value Problems</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./04_RK1_Eulers_Method.html" class="pagination-link" aria-label="Euler's Method --- Runge-Kutta Order 1">
+        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Euler’s Method — Runge-Kutta Order 1</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

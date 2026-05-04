@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>4&nbsp; Euler’s Method — Runge-Kutta Order 1 – Runge-Kutta 4th Order: A Complete Derivation in Python</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./05_RK2.html" rel="next">
+<link href="./03_Setting_Up_the_Tools.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-f418161beb48e0141c760e455f12af2c.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-8d20c3fcccb0af3a9d8e3221c7f78825.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-ad5b63c385a99ad8da6bf58b133208b3.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-8d20c3fcccb0af3a9d8e3221c7f78825.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="custom.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Runge-Kutta 4th Order: A Complete Derivation in Python</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="https://sabioresearch.com/en"> 
+<span class="menu-text">&lt;- SabioResearch.com</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./04_RK1_Eulers_Method.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Euler’s Method — Runge-Kutta Order 1</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./00_Preface.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01_Historical_Background.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">The Problem That Launched a Century of Mathematics</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02_ODEs_and_IVPs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Ordinary Differential Equations and Initial Value Problems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03_Setting_Up_the_Tools.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Setting Up the Tools</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04_RK1_Eulers_Method.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Euler’s Method — Runge-Kutta Order 1</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05_RK2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Second-Order Runge-Kutta — A Family of Methods</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06_RK3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Third-Order Runge-Kutta — The Pattern Deepens</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07_RK4_Derivation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Deriving Runge-Kutta 4th Order</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./08_RK4_in_Python.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">RK4 in Python</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./09_RK5_And_Beyond.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Beyond RK4 — Where the Method Breaks Down</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">In This Chapter</h2>
+   
+  <ul>
+  <li><a href="#the-unifying-structure-a-weighted-sum-of-slopes" id="toc-the-unifying-structure-a-weighted-sum-of-slopes" class="nav-link active" data-scroll-target="#the-unifying-structure-a-weighted-sum-of-slopes"><span class="header-section-number">4.1</span> The Unifying Structure: A Weighted Sum of Slopes</a></li>
+  <li><a href="#the-geometric-idea-following-the-slope" id="toc-the-geometric-idea-following-the-slope" class="nav-link" data-scroll-target="#the-geometric-idea-following-the-slope"><span class="header-section-number">4.2</span> The Geometric Idea: Following the Slope</a></li>
+  <li><a href="#deriving-eulers-method-from-the-taylor-series-in-python" id="toc-deriving-eulers-method-from-the-taylor-series-in-python" class="nav-link" data-scroll-target="#deriving-eulers-method-from-the-taylor-series-in-python"><span class="header-section-number">4.3</span> Deriving Euler’s Method from the Taylor Series in Python</a></li>
+  <li><a href="#local-truncation-error-how-much-we-lose-each-step" id="toc-local-truncation-error-how-much-we-lose-each-step" class="nav-link" data-scroll-target="#local-truncation-error-how-much-we-lose-each-step"><span class="header-section-number">4.4</span> Local Truncation Error: How Much We Lose Each Step</a></li>
+  <li><a href="#global-error-how-mistakes-accumulate" id="toc-global-error-how-mistakes-accumulate" class="nav-link" data-scroll-target="#global-error-how-mistakes-accumulate"><span class="header-section-number">4.5</span> Global Error: How Mistakes Accumulate</a></li>
+  <li><a href="#a-worked-example-numerical-vs.-exact-solution" id="toc-a-worked-example-numerical-vs.-exact-solution" class="nav-link" data-scroll-target="#a-worked-example-numerical-vs.-exact-solution"><span class="header-section-number">4.6</span> A Worked Example: Numerical vs.&nbsp;Exact Solution</a></li>
+  <li><a href="#visualizing-the-error-as-step-size-changes" id="toc-visualizing-the-error-as-step-size-changes" class="nav-link" data-scroll-target="#visualizing-the-error-as-step-size-changes"><span class="header-section-number">4.7</span> Visualizing the Error as Step Size Changes</a></li>
+  <li><a href="#the-limitations-that-motivate-everything-that-follows" id="toc-the-limitations-that-motivate-everything-that-follows" class="nav-link" data-scroll-target="#the-limitations-that-motivate-everything-that-follows"><span class="header-section-number">4.8</span> The Limitations That Motivate Everything That Follows</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Euler’s Method — Runge-Kutta Order 1</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Every Runge–Kutta method, from the simplest to the most elaborate, is a recipe of the same form: take a weighted sum of slope estimates, multiply by the step size, and add the result to the current value. Euler’s method is the degenerate case of that recipe — one slope estimate, weight one. Deriving it carefully from the Taylor series accomplishes three things at once: we see exactly where the formula comes from, we measure how much error one step introduces, and we establish the pattern that every subsequent chapter will refine.</p>
+<section id="the-unifying-structure-a-weighted-sum-of-slopes" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="the-unifying-structure-a-weighted-sum-of-slopes"><span class="header-section-number">4.1</span> The Unifying Structure: A Weighted Sum of Slopes</h2>
+<p>Before deriving anything, we name the pattern that connects Euler’s method to every Runge–Kutta method in this book. Every RK method advances the solution from <span class="math inline">\(x_n\)</span> to <span class="math inline">\(x_{n+1} = x_n + h\)</span> by exactly one formula:</p>
+<p><span class="math display">\[y_{n+1} = y_n + h\, \sum_{i=1}^{s} b_i\, k_i\]</span></p>
+<p>Here <span class="math inline">\(s\)</span> is the number of stages — the number of times the right-hand side <span class="math inline">\(f\)</span> is evaluated per step. The <span class="math inline">\(b_i\)</span> are weights (they must sum to 1). Each <span class="math inline">\(k_i\)</span> is a slope estimate: a value of <span class="math inline">\(f\)</span> computed at some point near <span class="math inline">\((x_n, y_n)\)</span>. Different choices of <span class="math inline">\(s\)</span>, the weights <span class="math inline">\(b_i\)</span>, and where the <span class="math inline">\(k_i\)</span> are sampled produce different RK methods with different orders of accuracy. The conditions the coefficients must satisfy are what each chapter derives from the Taylor series.</p>
+<p>For Euler’s method the answer is immediate: <span class="math inline">\(s = 1\)</span>, <span class="math inline">\(b_1 = 1\)</span>, and <span class="math inline">\(k_1 = f(x_n, y_n)\)</span> — the slope at the current point. Substituting into the unifying formula gives the Euler step:</p>
+<p><span class="math display">\[y_{n+1} = y_n + h\, f(x_n, y_n)\]</span></p>
+<p>This formula will reappear in Section 4.3 as the direct output of a Taylor expansion — derived, not assumed. Seeing it here first means the algebra in Section 4.3 produces a result you already recognize.</p>
+</section>
+<section id="the-geometric-idea-following-the-slope" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="the-geometric-idea-following-the-slope"><span class="header-section-number">4.2</span> The Geometric Idea: Following the Slope</h2>
+<p>The solution curve <span class="math inline">\(y(x)\)</span> passes through the initial point <span class="math inline">\((x_0, y_0)\)</span>. We do not know the curve, but the ODE tells us its slope at that point: <span class="math inline">\(y'(x_0) = f(x_0, y_0)\)</span>. The tangent line at <span class="math inline">\((x_0, y_0)\)</span> has that slope. Euler’s method says: walk along the tangent line for one step of width <span class="math inline">\(h\)</span>, then stop. The endpoint of that walk is <span class="math inline">\(y_1\)</span>.</p>
+<p>At <span class="math inline">\((x_1, y_1)\)</span> the ODE supplies a new slope — <span class="math inline">\(f(x_1, y_1)\)</span> — and we repeat. Each step follows the tangent line at the current approximate point. Because a tangent line is only a first-order approximation to the curve, the solution drifts away from the truth, but for small <span class="math inline">\(h\)</span> the drift is slow. The plot below shows what this looks like on our benchmark problem <span class="math inline">\(y' = y\)</span>, <span class="math inline">\(y(0) = 1\)</span>, whose exact solution is <span class="math inline">\(e^x\)</span>.</p>
+<div id="bcac6da8" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> f(x, y):</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> y</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> exact_solution(x):</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.exp(x)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>x0 <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span> y0 <span class="op">=</span> <span class="fl">1.0</span><span class="op">;</span> x_end <span class="op">=</span> <span class="fl">2.0</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> euler_step(fx, x, y, h):</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> y <span class="op">+</span> h <span class="op">*</span> fx(x, y)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> euler_method(fx, x0, y0, x_end, h):</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    xs <span class="op">=</span> [x0]<span class="op">;</span> ys <span class="op">=</span> [y0]</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> xs[<span class="op">-</span><span class="dv">1</span>] <span class="op">&lt;</span> x_end <span class="op">-</span> h<span class="op">/</span><span class="dv">2</span>:</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>        ys.append(euler_step(fx, xs[<span class="op">-</span><span class="dv">1</span>], ys[<span class="op">-</span><span class="dv">1</span>], h))</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>        xs.append(xs[<span class="op">-</span><span class="dv">1</span>] <span class="op">+</span> h)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.array(xs), np.array(ys)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>xs_h, ys_h <span class="op">=</span> euler_method(f, x0, y0, x_end, <span class="fl">0.25</span>)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>xc <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">200</span>)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">4</span>))</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>ax.plot(xc, np.exp(xc), color<span class="op">=</span><span class="st">'blue'</span>, linewidth<span class="op">=</span><span class="fl">2.2</span>, label<span class="op">=</span><span class="st">'Exact: $e^x$'</span>)</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>ax.plot(xs_h, ys_h, color<span class="op">=</span><span class="st">'red'</span>, linewidth<span class="op">=</span><span class="dv">2</span>, marker<span class="op">=</span><span class="st">'o'</span>, markersize<span class="op">=</span><span class="dv">4</span>,</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>        label<span class="op">=</span><span class="st">'Euler (h = 0.25)'</span>)</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">'x'</span>)<span class="op">;</span> ax.set_ylabel(<span class="st">'y'</span>)</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">'Euler method vs. exact solution'</span>)</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>fig.savefig(<span class="st">"04_RK1_Eulers_Method/euler-vs-exact.pdf"</span>)</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>fig.savefig(<span class="st">"04_RK1_Eulers_Method/euler-vs-exact.svg"</span>)</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>plt.close(fig)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="04_RK1_Eulers_Method/euler-vs-exact.svg" class="img-fluid figure-img"></p>
+<figcaption>Euler approximation (red) vs.&nbsp;exact solution (blue) for <span class="math inline">\(y' = y\)</span>, <span class="math inline">\(y(0) = 1\)</span> with <span class="math inline">\(h = 0.25\)</span>.</figcaption>
+</figure>
+</div>
+<p>The red polyline is the Euler approximation; the blue curve is the exact solution. Each segment of the polyline is one tangent-line step. Notice that the approximation consistently falls below the exact curve: the exact solution is concave up (<span class="math inline">\(y'' = e^x &gt; 0\)</span>), so the tangent line always undershoots. Section 4.6 will show, side by side, how the error shrinks as <span class="math inline">\(h\)</span> decreases.</p>
+</section>
+<section id="deriving-eulers-method-from-the-taylor-series-in-python" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="deriving-eulers-method-from-the-taylor-series-in-python"><span class="header-section-number">4.3</span> Deriving Euler’s Method from the Taylor Series in Python</h2>
+<p>Chapter 3 established that every RK derivation is a Taylor expansion in the step size <span class="math inline">\(h\)</span>. We apply that idea directly: expand <span class="math inline">\(y(x + h)\)</span> as a power series around <span class="math inline">\(h = 0\)</span>, use the ODE to eliminate <span class="math inline">\(y'(x)\)</span>, and truncate. The result is the Euler formula. The full Taylor series is:</p>
+<p><span class="math display">\[y(x + h) = y(x) + h\, y'(x) + \frac{h^2}{2}\, y''(x) + O(h^3)\]</span></p>
+<p>We ask SymPy’s <code>series()</code> to produce this expansion. We treat <span class="math inline">\(y\)</span> as an unspecified smooth function — SymPy will keep <span class="math inline">\(y'(x)\)</span> as a formal derivative because it does not yet know the ODE:</p>
+<div id="8598760e" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sympy <span class="im">as</span> sp</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>x_s, h_s <span class="op">=</span> sp.symbols(<span class="st">'x h'</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>y_func <span class="op">=</span> sp.Function(<span class="st">'y'</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>sp.series(y_func(x_s <span class="op">+</span> h_s), h_s, <span class="dv">0</span>, <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display cell-output-markdown" data-execution_count="3">
+<p><span class="math inline">\(\displaystyle y{\left(x \right)} + h \left. \frac{d}{d \xi_{1}} y{\left(\xi_{1} \right)} \right|_{\substack{ \xi_{1}=x }} + O\left(h^{2}\right)\)</span></p>
+</div>
+</div>
+<p>The output is <code>y(x) + h*Subs(Derivative(y(_xi_1), _xi_1), _xi_1, x) + O(h^2)</code>, which is SymPy’s way of writing <span class="math inline">\(y(x) + h\, y'(x) + O(h^2)\)</span>. Now we supply the ODE. The rule <span class="math inline">\(y' = f(x, y)\)</span> tells us <span class="math inline">\(y'(x)\)</span> should be replaced by <span class="math inline">\(f(x, y(x))\)</span>. We strip the <span class="math inline">\(O(\cdot)\)</span> remainder, then substitute the formal derivative with <span class="math inline">\(f(x, y(x))\)</span>:</p>
+<div id="feee4aa2" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>f_sym <span class="op">=</span> sp.Function(<span class="st">'f'</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>expansion <span class="op">=</span> sp.series(y_func(x_s <span class="op">+</span> h_s), h_s, <span class="dv">0</span>, <span class="dv">2</span>).removeO()</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>yprime <span class="op">=</span> y_func(x_s).diff(x_s)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>expansion.subs(yprime, f_sym(x_s, y_func(x_s)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display cell-output-markdown" data-execution_count="4">
+<p><span class="math inline">\(\displaystyle h \left. \frac{d}{d \xi_{1}} y{\left(\xi_{1} \right)} \right|_{\substack{ \xi_{1}=x }} + y{\left(x \right)}\)</span></p>
+</div>
+</div>
+<p>The output is <code>y(x) + h*f(x, y(x))</code>. Translating the continuous notation to the discrete stepping notation — <span class="math inline">\(x\)</span> becomes <span class="math inline">\(x_n\)</span>, <span class="math inline">\(y(x)\)</span> becomes <span class="math inline">\(y_n\)</span>, and <span class="math inline">\(y(x + h)\)</span> becomes <span class="math inline">\(y_{n+1}\)</span> — gives exactly the Euler formula from Section 4.1:</p>
+<p><span class="math display">\[y_{n+1} = y_n + h\, f(x_n, y_n)\]</span></p>
+<p>This formula was not assumed — it fell out of the Taylor series when we kept only the <span class="math inline">\(O(h)\)</span> term and used the ODE to replace <span class="math inline">\(y'(x_n)\)</span>. The term we discarded, starting at <span class="math inline">\(\tfrac{h^2}{2}\, y''(x_n)\)</span>, is the local truncation error. Section 4.4 measures it precisely.</p>
+</section>
+<section id="local-truncation-error-how-much-we-lose-each-step" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="local-truncation-error-how-much-we-lose-each-step"><span class="header-section-number">4.4</span> Local Truncation Error: How Much We Lose Each Step</h2>
+<p>The local truncation error (LTE) is the gap between the exact value <span class="math inline">\(y(x_n + h)\)</span> and the Euler approximation <span class="math inline">\(y_{n+1}\)</span>, measured in one isolated step that starts from an exact value of <span class="math inline">\(y_n\)</span>. It quantifies how much a single step departs from the truth before errors begin to interact.</p>
+<p>We already have both quantities. The exact value is the full Taylor series; the Euler value keeps only the first two terms. The LTE is everything we dropped. We ask SymPy to expand to one order higher to make the dropped term visible:</p>
+<div id="9b445f7c" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>sp.series(y_func(x_s <span class="op">+</span> h_s), h_s, <span class="dv">0</span>, <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display cell-output-markdown" data-execution_count="5">
+<p><span class="math inline">\(\displaystyle y{\left(x \right)} + h \left. \frac{d}{d \xi_{1}} y{\left(\xi_{1} \right)} \right|_{\substack{ \xi_{1}=x }} + \frac{h^{2} \left. \frac{d^{2}}{d \xi_{1}^{2}} y{\left(\xi_{1} \right)} \right|_{\substack{ \xi_{1}=x }}}{2} + O\left(h^{3}\right)\)</span></p>
+</div>
+</div>
+<p>The output includes the term <span class="math inline">\(\tfrac{h^2}{2}\, y''(x)\)</span>. That is the leading term of the LTE. Since <span class="math inline">\(y''(x_n)\)</span> does not depend on <span class="math inline">\(h\)</span> (it is determined by the ODE and the exact solution at <span class="math inline">\(x_n\)</span>), the <span class="math inline">\(h^2\)</span> factor tells us the LTE is <span class="math inline">\(O(h^2)\)</span>:</p>
+<p><span class="math display">\[\text{LTE} = \frac{h^2}{2}\, y''(x_n) + O(h^3)\]</span></p>
+<p>For the benchmark <span class="math inline">\(y' = y\)</span> we have <span class="math inline">\(y''(x) = e^x\)</span>, which is positive on the whole interval <span class="math inline">\([0, 2]\)</span>. That is why the Euler approximation always undershoots: the LTE is always positive. Halving <span class="math inline">\(h\)</span> reduces the LTE by a factor of four. This is a local statement about one isolated step. The next section asks what happens when we chain many steps together.</p>
+</section>
+<section id="global-error-how-mistakes-accumulate" class="level2" data-number="4.5">
+<h2 data-number="4.5" class="anchored" data-anchor-id="global-error-how-mistakes-accumulate"><span class="header-section-number">4.5</span> Global Error: How Mistakes Accumulate</h2>
+<p>The global error is the total deviation from the exact solution after integrating from <span class="math inline">\(x_0\)</span> to <span class="math inline">\(x_\text{end}\)</span>. We take <span class="math inline">\(N = (x_\text{end} - x_0) / h\)</span> steps, so <span class="math inline">\(N\)</span> grows as <span class="math inline">\(h\)</span> shrinks. A rough but instructive argument: if each step introduces an LTE of order <span class="math inline">\(h^2\)</span> and the errors accumulate additively, the total is proportional to <span class="math inline">\(N\)</span> times the LTE per step.</p>
+<p><span class="math display">\[\text{Global Error} \approx N \cdot \text{LTE} = \frac{x_\text{end} - x_0}{h} \cdot O(h^2) = O(h)\]</span></p>
+<p>One power of <span class="math inline">\(h\)</span> in the numerator of LTE cancels the <span class="math inline">\(1/h\)</span> from the step count, and the interval length <span class="math inline">\((x_\text{end} - x_0)\)</span> is a fixed constant. The result is a global error proportional to <span class="math inline">\(h\)</span>. Halving <span class="math inline">\(h\)</span> halves the global error — but it also doubles the number of steps, so the computation doubles. Euler’s method is therefore a first-order method.</p>
+<p>Critical distinction: LTE is <span class="math inline">\(O(h^2)\)</span> per step, but global error is <span class="math inline">\(O(h)\)</span>. A method’s order is defined by its global error, not its LTE. A reader who sees the <span class="math inline">\(h^2\)</span> in the LTE and concludes the method is second order is making a common mistake. The order drops by one because the error accumulation over <span class="math inline">\(N = O(1/h)\)</span> steps costs us one power of <span class="math inline">\(h\)</span>.</p>
+</section>
+<section id="a-worked-example-numerical-vs.-exact-solution" class="level2" data-number="4.6">
+<h2 data-number="4.6" class="anchored" data-anchor-id="a-worked-example-numerical-vs.-exact-solution"><span class="header-section-number">4.6</span> A Worked Example: Numerical vs.&nbsp;Exact Solution</h2>
+<p>We apply Euler’s method to the benchmark IVP from Chapter 2: <span class="math inline">\(y' = y\)</span>, <span class="math inline">\(y(0) = 1\)</span>, exact solution <span class="math inline">\(y(x) = e^x\)</span>, integrated over <span class="math inline">\([0, 2]\)</span>. We reload the definitions so this notebook runs independently.</p>
+<div id="77fbd3cb" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> f(x, y):</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> y</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> exact_solution(x):</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.exp(x)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>x0 <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span> y0 <span class="op">=</span> <span class="fl">1.0</span><span class="op">;</span> x_end <span class="op">=</span> <span class="fl">2.0</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><code>euler_step</code> translates the Euler formula directly. It takes the slope function <code>fx</code>, the current position <code>x</code>, the current value <code>y</code>, and the step size <code>h</code>, and returns the next value:</p>
+<div id="07664f96" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> euler_step(fx, x, y, h):</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> y <span class="op">+</span> h <span class="op">*</span> fx(x, y)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><code>euler_method</code> chains <code>euler_step</code> from <span class="math inline">\(x_0\)</span> to <span class="math inline">\(x_\text{end}\)</span> and collects all solution points. The internal lists <code>xs</code> and <code>ys</code> are local to the function so they do not pollute the global namespace. The <code>while</code> loop stops when the current <span class="math inline">\(x\)</span> reaches <span class="math inline">\(x_\text{end}\)</span> to within half a step, which avoids floating-point overshoot:</p>
+<div id="22d3f749" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> euler_method(fx, x0, y0, x_end, h):</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    xs <span class="op">=</span> [x0]<span class="op">;</span> ys <span class="op">=</span> [y0]</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> xs[<span class="op">-</span><span class="dv">1</span>] <span class="op">&lt;</span> x_end <span class="op">-</span> h<span class="op">/</span><span class="dv">2</span>:</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>        ys.append(euler_step(fx, xs[<span class="op">-</span><span class="dv">1</span>], ys[<span class="op">-</span><span class="dv">1</span>], h))</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>        xs.append(xs[<span class="op">-</span><span class="dv">1</span>] <span class="op">+</span> h)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.array(xs), np.array(ys)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>We run the method with step size <span class="math inline">\(h = 0.25\)</span> and compare the Euler value at <span class="math inline">\(x = 2\)</span> to the exact answer <span class="math inline">\(e^2 \approx 7.389\)</span>:</p>
+<div id="2b85a7ce" class="cell" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>xs_e, ys_e <span class="op">=</span> euler_method(f, x0, y0, x_end, <span class="fl">0.25</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>y_euler <span class="op">=</span> ys_e[<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>pd.DataFrame({</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Euler y(2)"</span>: [y_euler],</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Exact y(2)"</span>: [np.exp(<span class="dv">2</span>)],</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Absolute error"</span>: [<span class="bu">abs</span>(y_euler <span class="op">-</span> np.exp(<span class="dv">2</span>))]</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="9">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Euler y(2)</th>
+<th data-quarto-table-cell-role="th">Exact y(2)</th>
+<th data-quarto-table-cell-role="th">Absolute error</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>5.960464</td>
+<td>7.389056</td>
+<td>1.428592</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="visualizing-the-error-as-step-size-changes" class="level2" data-number="4.7">
+<h2 data-number="4.7" class="anchored" data-anchor-id="visualizing-the-error-as-step-size-changes"><span class="header-section-number">4.7</span> Visualizing the Error as Step Size Changes</h2>
+<p>The figure below shows Euler approximations at four step sizes overlaid on the exact solution. Two things to watch: how the red polyline approaches the blue exact curve as <span class="math inline">\(h\)</span> decreases, and how the absolute error at <span class="math inline">\(x = 2\)</span> shrinks. If global error is truly <span class="math inline">\(O(h)\)</span>, halving <span class="math inline">\(h\)</span> should halve the error.</p>
+<div id="2f83f64b" class="cell" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>h_panels <span class="op">=</span> [<span class="fl">0.5</span>, <span class="fl">0.25</span>, <span class="fl">0.125</span>, <span class="fl">0.0625</span>]</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>xc <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">400</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>exact_curve <span class="op">=</span> np.exp(xc)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">6</span>))</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax, hp <span class="kw">in</span> <span class="bu">zip</span>(axes.flat, h_panels):</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    xs_p, ys_p <span class="op">=</span> euler_method(f, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>, hp)</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    err <span class="op">=</span> <span class="bu">abs</span>(ys_p[<span class="op">-</span><span class="dv">1</span>] <span class="op">-</span> np.exp(<span class="dv">2</span>))</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    ax.plot(xc, exact_curve, color<span class="op">=</span><span class="st">'blue'</span>, linewidth<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    ax.plot(xs_p, ys_p, color<span class="op">=</span><span class="st">'red'</span>, linewidth<span class="op">=</span><span class="fl">1.5</span>, marker<span class="op">=</span><span class="st">'o'</span>, markersize<span class="op">=</span><span class="dv">3</span>)</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    ax.set_xlim(<span class="dv">0</span>, <span class="fl">2.1</span>)<span class="op">;</span> ax.set_ylim(<span class="fl">0.5</span>, <span class="fl">8.5</span>)</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    ax.set_xlabel(<span class="st">'x'</span>)<span class="op">;</span> ax.set_ylabel(<span class="st">'y'</span>)</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    ax.set_title(<span class="ss">f'h = </span><span class="sc">{</span>hp<span class="sc">}</span><span class="ss">, err at x=2: </span><span class="sc">{</span>err<span class="sc">:.4f}</span><span class="ss">'</span>)</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>fig.savefig(<span class="st">"04_RK1_Eulers_Method/euler-h-grid.pdf"</span>)</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>fig.savefig(<span class="st">"04_RK1_Eulers_Method/euler-h-grid.svg"</span>)</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>plt.close(fig)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="04_RK1_Eulers_Method/euler-h-grid.svg" class="img-fluid figure-img"></p>
+<figcaption>Euler approximations at four step sizes. The error at <span class="math inline">\(x = 2\)</span> approximately halves each time <span class="math inline">\(h\)</span> is halved.</figcaption>
+</figure>
+</div>
+<p>To see the <span class="math inline">\(O(h)\)</span> convergence numerically, we compute the error at <span class="math inline">\(x = 2\)</span> for a sequence of step sizes, each half the previous. A first-order method produces error ratios near <span class="math inline">\(0.5\)</span> each time <span class="math inline">\(h\)</span> is halved:</p>
+<div id="ef220066" class="cell" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>h_values <span class="op">=</span> [<span class="fl">0.5</span>, <span class="fl">0.25</span>, <span class="fl">0.125</span>, <span class="fl">0.0625</span>, <span class="fl">0.03125</span>]</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>errors <span class="op">=</span> [<span class="bu">abs</span>(euler_method(f, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>, hv)[<span class="dv">1</span>][<span class="op">-</span><span class="dv">1</span>] <span class="op">-</span> np.exp(<span class="dv">2</span>))</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>          <span class="cf">for</span> hv <span class="kw">in</span> h_values]</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>ratios <span class="op">=</span> [<span class="st">"---"</span>] <span class="op">+</span> [<span class="ss">f"</span><span class="sc">{</span>errors[i]<span class="op">/</span>errors[i<span class="op">-</span><span class="dv">1</span>]<span class="sc">:.4f}</span><span class="ss">"</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="bu">len</span>(errors))]</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>pd.DataFrame({</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"h"</span>: h_values,</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Error at x=2"</span>: [<span class="ss">f"</span><span class="sc">{</span>e<span class="sc">:.4e}</span><span class="ss">"</span> <span class="cf">for</span> e <span class="kw">in</span> errors],</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Ratio"</span>: ratios,</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="11">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">h</th>
+<th data-quarto-table-cell-role="th">Error at x=2</th>
+<th data-quarto-table-cell-role="th">Ratio</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>0.50000</td>
+<td>2.3266e+00</td>
+<td>---</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>0.25000</td>
+<td>1.4286e+00</td>
+<td>0.6140</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>0.12500</td>
+<td>8.0581e-01</td>
+<td>0.5641</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>0.06250</td>
+<td>4.3039e-01</td>
+<td>0.5341</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>0.03125</td>
+<td>2.2278e-01</td>
+<td>0.5176</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>The Ratio column should be close to <span class="math inline">\(0.5\)</span> at every row, confirming that the global error is proportional to <span class="math inline">\(h\)</span>. The values will not be exactly <span class="math inline">\(0.5\)</span> because the constant hidden in the <span class="math inline">\(O(h)\)</span> notation depends on the specific problem, but the convergence is clear. Chapter 8 will plot the same data on a log-log scale, where first-order convergence appears as a straight line of slope 1.</p>
+</section>
+<section id="the-limitations-that-motivate-everything-that-follows" class="level2" data-number="4.8">
+<h2 data-number="4.8" class="anchored" data-anchor-id="the-limitations-that-motivate-everything-that-follows"><span class="header-section-number">4.8</span> The Limitations That Motivate Everything That Follows</h2>
+<p>Euler’s method is first-order: halving <span class="math inline">\(h\)</span> halves the global error and doubles the work. To reduce the error by a factor of 100 we need 100 times as many steps. On smooth problems over short intervals this is merely slow; on stiff problems or long-time integrations it can be completely impractical.</p>
+<p>The deeper issue is structural: Euler uses only the slope at the left endpoint of each interval. That slope is the best first-order estimate of the average slope over <span class="math inline">\([x_n, x_{n+1}]\)</span>, but it is only that. The exact average slope over the interval is what we would need to advance the solution without error. Euler approximates the average with a single sample; every higher-order method improves that approximation by sampling at more points inside the interval.</p>
+<p>This is the idea behind Runge–Kutta order 2. Instead of one slope estimate at the left endpoint, RK2 uses two estimates — one at the left endpoint and one near the midpoint or right endpoint — and takes a weighted average. The weights must satisfy conditions derived from the same Taylor expansion we just used. Chapter 5 derives those conditions, finds that they admit a whole family of solutions, and implements two of them: the Midpoint Method and Heun’s Method.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./03_Setting_Up_the_Tools.html" class="pagination-link" aria-label="Setting Up the Tools">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Setting Up the Tools</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./05_RK2.html" class="pagination-link" aria-label="Second-Order Runge-Kutta --- A Family of Methods">
+        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Second-Order Runge-Kutta — A Family of Methods</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

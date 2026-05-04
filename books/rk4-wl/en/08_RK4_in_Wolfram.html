@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>8&nbsp; RK4 in Wolfram Language – Runge-Kutta 4th Order: A Complete Derivation in Wolfram Language</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./09_RK5_And_Beyond.html" rel="next">
+<link href="./07_RK4_Derivation.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-f418161beb48e0141c760e455f12af2c.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-8d20c3fcccb0af3a9d8e3221c7f78825.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-ad5b63c385a99ad8da6bf58b133208b3.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-8d20c3fcccb0af3a9d8e3221c7f78825.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="custom.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Runge-Kutta 4th Order: A Complete Derivation in Wolfram Language</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="https://sabioresearch.com/en"> 
+<span class="menu-text">&lt;- SabioResearch.com</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./08_RK4_in_Wolfram.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">RK4 in Wolfram Language</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./00_Preface.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01_Historical_Background.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">The Problem That Launched a Century of Mathematics</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02_ODEs_and_IVPs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Ordinary Differential Equations and Initial Value Problems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03_Setting_Up_the_Tools.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Setting Up the Tools</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04_RK1_Eulers_Method.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Euler’s Method — Runge-Kutta Order 1</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05_RK2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Second-Order Runge-Kutta — A Family of Methods</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06_RK3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Third-Order Runge-Kutta — The Pattern Deepens</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07_RK4_Derivation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Deriving Runge-Kutta 4th Order</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./08_RK4_in_Wolfram.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">RK4 in Wolfram Language</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./09_RK5_And_Beyond.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Beyond RK4 — Where the Method Breaks Down</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">In This Chapter</h2>
+   
+  <ul>
+  <li><a href="#implementing-rk4-from-scratch" id="toc-implementing-rk4-from-scratch" class="nav-link active" data-scroll-target="#implementing-rk4-from-scratch"><span class="header-section-number">8.1</span> Implementing RK4 from Scratch</a></li>
+  <li><a href="#verifying-correctness-against-known-solutions" id="toc-verifying-correctness-against-known-solutions" class="nav-link" data-scroll-target="#verifying-correctness-against-known-solutions"><span class="header-section-number">8.2</span> Verifying Correctness Against Known Solutions</a></li>
+  <li><a href="#euler-rk2-rk3-and-rk4-side-by-side" id="toc-euler-rk2-rk3-and-rk4-side-by-side" class="nav-link" data-scroll-target="#euler-rk2-rk3-and-rk4-side-by-side"><span class="header-section-number">8.3</span> Euler, RK2, RK3, and RK4 Side by Side</a></li>
+  <li><a href="#cost-vs.-accuracy-function-evaluations-per-step" id="toc-cost-vs.-accuracy-function-evaluations-per-step" class="nav-link" data-scroll-target="#cost-vs.-accuracy-function-evaluations-per-step"><span class="header-section-number">8.4</span> Cost vs.&nbsp;Accuracy: Function Evaluations per Step</a></li>
+  <li><a href="#error-convergence-confirming-fourth-order-behavior-numerically" id="toc-error-convergence-confirming-fourth-order-behavior-numerically" class="nav-link" data-scroll-target="#error-convergence-confirming-fourth-order-behavior-numerically"><span class="header-section-number">8.5</span> Error Convergence: Confirming Fourth-Order Behavior Numerically</a></li>
+  <li><a href="#how-wolframs-ndsolve-relates-to-what-we-just-built" id="toc-how-wolframs-ndsolve-relates-to-what-we-just-built" class="nav-link" data-scroll-target="#how-wolframs-ndsolve-relates-to-what-we-just-built"><span class="header-section-number">8.6</span> How Wolfram’s <code>NDSolve</code> Relates to What We Just Built</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">RK4 in Wolfram Language</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>This chapter translates the classical RK4 method derived in Chapter 7 into executable Wolfram Language. We implement the method from scratch, verify it against the known solution <span class="math inline">\(e^x\)</span>, compare it side by side with Euler’s method, RK2, and RK3, examine why four function evaluations per step deliver such disproportionate accuracy per unit of work, and close by showing how Wolfram’s built-in <code>NDSolve</code> relates to the method we have built.</p>
+<section id="implementing-rk4-from-scratch" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="implementing-rk4-from-scratch"><span class="header-section-number">8.1</span> Implementing RK4 from Scratch</h2>
+<p>The classical RK4 method assigns the four slope estimates weights <span class="math inline">\(1/6\)</span>, <span class="math inline">\(1/3\)</span>, <span class="math inline">\(1/3\)</span>, <span class="math inline">\(1/6\)</span>, sampling at the start, two midpoints, and the end of each step. Chapter 7 derived these weights by forcing the Taylor expansion of the numerical increment to match the exact solution through order <span class="math inline">\(h^4\)</span>. Here we translate those coefficients directly into Wolfram Language.</p>
+<div id="413f6c10" class="cell" data-execution_count="2">
+<pre class="wolfram cell-code"><code>rk4Step[f_, x_, y_, h_] := Module[{k1, k2, k3, k4},
+  k1 = f[x, y];
+  k2 = f[x + h/2, y + (h/2)*k1];
+  k3 = f[x + h/2, y + (h/2)*k2];
+  k4 = f[x + h,   y + h*k3];
+  y + (h/6)*(k1 + 2*k2 + 2*k3 + k4)
+]</code></pre>
+</div>
+<p>The function takes the slope function <code>f</code>, the current state <span class="math inline">\((x, y)\)</span>, and the step size <code>h</code>, and returns the next <span class="math inline">\(y\)</span> value. To integrate over an interval we iterate <code>rk4Step</code>, carrying both <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> forward together as a pair. <code>NestList</code> returns every intermediate state, giving the complete solution trajectory.</p>
+<div id="5ba53134" class="cell" data-execution_count="3">
+<pre class="wolfram cell-code"><code>rk4Run[f_, x0_, y0_, xEnd_, h_] :=
+  NestList[
+    {#[[1]] + h, rk4Step[f, #[[1]], #[[2]], h]} &amp;,
+    {x0, y0},
+    Round[(xEnd - x0)/h]
+  ]</code></pre>
+</div>
+<p>We reload the test problem established in Chapter 2.5. Every numerical chapter reloads these definitions so each notebook is self-contained.</p>
+<div id="10ff5e01" class="cell" data-execution_count="4">
+<pre class="wolfram cell-code"><code>f[x_, y_] := y
+exactSolution[x_] := Exp[x]
+x0 = 0; y0 = 1; xEnd = 2;</code></pre>
+</div>
+<p>Run <code>rk4Run</code> with step size <span class="math inline">\(h = 0.5\)</span>, producing five points on <span class="math inline">\([0, 2]\)</span>, and display each alongside the exact value.</p>
+<div id="62d22067" class="cell" data-execution_count="5">
+<pre class="wolfram cell-code"><code>soln = rk4Run[f, x0, y0, xEnd, 0.5];
+TableForm[
+  Table[
+    {soln[[i, 1]], soln[[i, 2]], exactSolution[soln[[i, 1]]],
+     Abs[soln[[i, 2]] - exactSolution[soln[[i, 1]]]]},
+    {i, 1, Length[soln]}
+  ],
+  TableHeadings -&gt; {None, {"x", "RK4", "Exact", "Error"}}
+]</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="8">
+<div><img alt="Output" src="data:image/png;base64,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"></div>
+</div>
+</div>
+</section>
+<section id="verifying-correctness-against-known-solutions" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="verifying-correctness-against-known-solutions"><span class="header-section-number">8.2</span> Verifying Correctness Against Known Solutions</h2>
+<p>A single run at one step size confirms the method produces numbers close to the exact solution, but it does not confirm the order. To verify the order we show that halving <span class="math inline">\(h\)</span> reduces the error by a factor of <span class="math inline">\(2^4 = 16\)</span>.</p>
+<div id="f8743a9b" class="cell" data-execution_count="6">
+<pre class="wolfram cell-code"><code>hValues = {0.5, 0.25, 0.125, 0.0625, 0.03125};
+errors = Table[
+  Abs[Last[rk4Run[f, x0, y0, xEnd, h]][[2]] - exactSolution[xEnd]],
+  {h, hValues}
+];</code></pre>
+</div>
+<p>Display <span class="math inline">\(h\)</span>, the RK4 approximation at <span class="math inline">\(x = 2\)</span>, the exact value <span class="math inline">\(e^2\)</span>, and the absolute error.</p>
+<div id="17871d6b" class="cell" data-execution_count="7">
+<pre class="wolfram cell-code"><code>TableForm[
+  MapThread[
+    {#1,
+     Last[rk4Run[f, x0, y0, xEnd, #1]][[2]],
+     exactSolution[xEnd], #2} &amp;,
+    {hValues, errors}
+  ],
+  TableHeadings -&gt; {None, {"h", "RK4 at x=2", "Exact", "Error"}}
+]</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="11">
+<div><img alt="Output" src="data:image/png;base64,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"></div>
+</div>
+</div>
+<p>The ratio of consecutive errors is the most direct check on order.</p>
+<div id="07107a2d" class="cell" data-execution_count="8">
+<pre class="wolfram cell-code"><code>Table[errors[[i]]/errors[[i + 1]], {i, 1, Length[errors] - 1}]</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="12">
+<div><pre style="font-family: &quot;Courier New&quot;,Courier,monospace;">{13.0129, 14.4237, 15.1898, 15.5892}</pre></div>
+</div>
+</div>
+<p>Each ratio should be close to <span class="math inline">\(16\)</span>. Small deviations appear at very small <span class="math inline">\(h\)</span> where floating-point rounding competes with the truncation error. This confirms that the method derived symbolically in Chapter 7 behaves exactly as the derivation predicted.</p>
+</section>
+<section id="euler-rk2-rk3-and-rk4-side-by-side" class="level2" data-number="8.3">
+<h2 data-number="8.3" class="anchored" data-anchor-id="euler-rk2-rk3-and-rk4-side-by-side"><span class="header-section-number">8.3</span> Euler, RK2, RK3, and RK4 Side by Side</h2>
+<p>Chapters 4 through 7 derived each method separately. Here we collect all four into a single comparison. We define each lower-order step function with the same interface as <code>rk4Step</code> and then use a common runner so that only the step function changes between runs.</p>
+<div id="a39f4b23" class="cell" data-execution_count="9">
+<pre class="wolfram cell-code"><code>eulerStep[f_, x_, y_, h_] := y + h*f[x, y]</code></pre>
+</div>
+<p>The Midpoint Method (RK2 with <span class="math inline">\(b_2 = 1\)</span> and <span class="math inline">\(c_2 = 1/2\)</span>, derived in Chapter 5.6) samples <span class="math inline">\(f\)</span> once at the midpoint of the interval.</p>
+<div id="18fc6a19" class="cell" data-execution_count="10">
+<pre class="wolfram cell-code"><code>rk2Step[f_, x_, y_, h_] := Module[{k1, k2},
+  k1 = f[x, y];
+  k2 = f[x + h/2, y + (h/2)*k1];
+  y + h*k2
+]</code></pre>
+</div>
+<p>Kutta’s 1901 third-order method (derived in Chapter 6.5) uses <span class="math inline">\(c = \{0, 1/2, 1\}\)</span> and <span class="math inline">\(b = \{1/6, 2/3, 1/6\}\)</span>.</p>
+<div id="6c80e391" class="cell" data-execution_count="11">
+<pre class="wolfram cell-code"><code>rk3Step[f_, x_, y_, h_] := Module[{k1, k2, k3},
+  k1 = f[x, y];
+  k2 = f[x + h/2, y + (h/2)*k1];
+  k3 = f[x + h,   y - h*k1 + 2*h*k2];
+  y + (h/6)*(k1 + 4*k2 + k3)
+]</code></pre>
+</div>
+<p>A single runner accepts any step function and returns the complete trajectory as a list of <span class="math inline">\(\{x, y\}\)</span> pairs.</p>
+<div id="0f416912" class="cell" data-execution_count="12">
+<pre class="wolfram cell-code"><code>methodRun[stepFn_, f_, x0_, y0_, xEnd_, h_] :=
+  NestList[
+    {#[[1]] + h, stepFn[f, #[[1]], #[[2]], h]} &amp;,
+    {x0, y0},
+    Round[(xEnd - x0)/h]
+  ]</code></pre>
+</div>
+<p>Run all four methods at <span class="math inline">\(h = 0.2\)</span> on <span class="math inline">\([0, 2]\)</span>.</p>
+<div id="126261ee" class="cell" data-execution_count="13">
+<pre class="wolfram cell-code"><code>hCmp = 0.2;
+solEuler = methodRun[eulerStep, f, x0, y0, xEnd, hCmp];
+solRK2   = methodRun[rk2Step,   f, x0, y0, xEnd, hCmp];
+solRK3   = methodRun[rk3Step,   f, x0, y0, xEnd, hCmp];
+solRK4   = methodRun[rk4Step,   f, x0, y0, xEnd, hCmp];</code></pre>
+</div>
+<p>Plot all four trajectories against the exact solution.</p>
+<div id="39ba3def" class="cell" data-execution_count="14">
+<pre class="wolfram cell-code"><code>fourFig = Show[
+  ListLinePlot[
+    {solEuler, solRK2, solRK3, solRK4},
+    PlotStyle -&gt; {Red, Orange, Green, Blue},
+    PlotLegends -&gt; {"Euler", "RK2", "RK3", "RK4"},
+    PlotLabel -&gt; Style["Four Methods at h = 0.2", 13],
+    Frame -&gt; True, FrameLabel -&gt; {"x", "y"}],
+  Plot[exactSolution[x], {x, x0, xEnd},
+    PlotStyle -&gt; {Black, Dashed}]];
+Export["08_RK4_in_Wolfram/four-methods.pdf", fourFig];
+Export["08_RK4_in_Wolfram/four-methods.svg", fourFig];</code></pre>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="08_RK4_in_Wolfram/four-methods.svg" class="img-fluid figure-img"></p>
+<figcaption>Four methods compared at <span class="math inline">\(h = 0.2\)</span> against the exact <span class="math inline">\(e^x\)</span> (black dashed).</figcaption>
+</figure>
+</div>
+</section>
+<section id="cost-vs.-accuracy-function-evaluations-per-step" class="level2" data-number="8.4">
+<h2 data-number="8.4" class="anchored" data-anchor-id="cost-vs.-accuracy-function-evaluations-per-step"><span class="header-section-number">8.4</span> Cost vs.&nbsp;Accuracy: Function Evaluations per Step</h2>
+<p>Each step of each method calls <span class="math inline">\(f\)</span> a fixed number of times: Euler once, RK2 twice, RK3 three times, RK4 four times. The question is whether the extra evaluations are worth the cost.</p>
+<div id="bf577e52" class="cell" data-execution_count="15">
+<pre class="wolfram cell-code"><code>TableForm[
+  {{"Euler", 1, "O(h)"},
+   {"RK2",   2, "O(h^2)"},
+   {"RK3",   3, "O(h^3)"},
+   {"RK4",   4, "O(h^4)"}},
+  TableHeadings -&gt; {None,
+    {"Method", "f calls per step", "Order"}}
+]</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="25">
+<div><img alt="Output" src="data:image/png;base64,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"></div>
+</div>
+</div>
+<p>For a fair comparison we hold the total number of <span class="math inline">\(f\)</span> evaluations fixed at 24 over <span class="math inline">\([0, 2]\)</span>. Euler takes 24 steps of size <span class="math inline">\(h = 1/12\)</span>; RK4 takes 6 steps of size <span class="math inline">\(h = 1/3\)</span>. Both perform exactly 24 evaluations of <span class="math inline">\(f\)</span>, so the comparison measures accuracy per unit of computational work.</p>
+<div id="dd582aff" class="cell" data-execution_count="16">
+<pre class="wolfram cell-code"><code>totalEvals = 24;
+hFor[order_] := (xEnd - x0) * order / totalEvals;
+
+errAt2[stepFn_, h_] :=
+  Abs[Last[methodRun[stepFn, f, x0, y0, xEnd, h]][[2]] -
+       exactSolution[xEnd]];
+
+TableForm[
+  {{"Euler", N[hFor[1]], totalEvals/1, errAt2[eulerStep, hFor[1]]},
+   {"RK2",   N[hFor[2]], totalEvals/2, errAt2[rk2Step,   hFor[2]]},
+   {"RK3",   N[hFor[3]], totalEvals/3, errAt2[rk3Step,   hFor[3]]},
+   {"RK4",   N[hFor[4]], totalEvals/4, errAt2[rk4Step,   hFor[4]]}},
+  TableHeadings -&gt; {None,
+    {"Method", "h", "Steps", "Error (24 total evals)"}}
+]</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="29">
+<div><img alt="Output" src="data:image/png;base64,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"></div>
+</div>
+</div>
+<p>RK4’s error is many orders of magnitude smaller than Euler’s even though both performed exactly 24 evaluations of <span class="math inline">\(f\)</span>. The four slopes are combined in a carefully weighted average that extracts far more accuracy per evaluation than a single slope ever could.</p>
+</section>
+<section id="error-convergence-confirming-fourth-order-behavior-numerically" class="level2" data-number="8.5">
+<h2 data-number="8.5" class="anchored" data-anchor-id="error-convergence-confirming-fourth-order-behavior-numerically"><span class="header-section-number">8.5</span> Error Convergence: Confirming Fourth-Order Behavior Numerically</h2>
+<p>The ratio test in the previous section showed one snapshot. A more complete picture comes from plotting the error over a range of step sizes on a log-log scale. A method of order <span class="math inline">\(p\)</span> satisfies</p>
+<p><span class="math display">\[E(h) \approx C \cdot h^p\]</span></p>
+<p>so on a log-log plot the error appears as a straight line with slope <span class="math inline">\(p\)</span>. We compute the error at <span class="math inline">\(x = 2\)</span> for all four methods over a sequence of step sizes, then both plot the curves and fit the slopes.</p>
+<div id="fd47a9c7" class="cell" data-execution_count="17">
+<pre class="wolfram cell-code"><code>hList = Table[2.0^(-k), {k, 1, 8}];
+errFn[stepFn_] :=
+  Table[
+    Abs[Last[methodRun[stepFn, f, x0, y0, xEnd, h]][[2]] -
+        exactSolution[xEnd]],
+    {h, hList}
+  ];
+eEuler = errFn[eulerStep];
+eRK2   = errFn[rk2Step];
+eRK3   = errFn[rk3Step];
+eRK4   = errFn[rk4Step];</code></pre>
+</div>
+<p>Plot the four error curves on a log-log scale.</p>
+<div id="59f98d0d" class="cell" data-execution_count="18">
+<pre class="wolfram cell-code"><code>loglogFig = ListLogLogPlot[
+  {Transpose[{hList, eEuler}],
+   Transpose[{hList, eRK2}],
+   Transpose[{hList, eRK3}],
+   Transpose[{hList, eRK4}]},
+  Joined -&gt; True,
+  PlotStyle -&gt; {Red, Orange, Green, Blue},
+  PlotLegends -&gt; {"Euler", "RK2", "RK3", "RK4"},
+  PlotLabel -&gt; Style["Error at x = 2 vs. step size h", 13],
+  Frame -&gt; True, FrameLabel -&gt; {"h", "Error"}];
+Export["08_RK4_in_Wolfram/loglog.pdf", loglogFig];
+Export["08_RK4_in_Wolfram/loglog.svg", loglogFig];</code></pre>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="08_RK4_in_Wolfram/loglog.svg" class="img-fluid figure-img"></p>
+<figcaption>Log-log plot of error vs.&nbsp;step size. Slopes equal the orders 1, 2, 3, 4.</figcaption>
+</figure>
+</div>
+<p>To read the slopes numerically we fit <span class="math inline">\(\log(\text{Error}) = p \cdot \log(h) + c\)</span> for each method. The slope <span class="math inline">\(p\)</span> is the order.</p>
+<div id="f40185c8" class="cell" data-execution_count="19">
+<pre class="wolfram cell-code"><code>slopeOf[errList_] :=
+  LinearModelFit[
+    Transpose[{Log[hList], Log[errList]}],
+    lgh, lgh
+  ]["BestFitParameters"][[2]];
+
+{slopeOf[eEuler], slopeOf[eRK2], slopeOf[eRK3], slopeOf[eRK4]}</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="40">
+<div><pre style="font-family: &quot;Courier New&quot;,Courier,monospace;">{0.91696, 1.93237, 2.93085, 3.92812}</pre></div>
+</div>
+</div>
+<p>The fitted slopes should be approximately <span class="math inline">\(1, 2, 3, 4\)</span>, confirming that each method achieves exactly the order the derivation promised. The log-log plot makes this visible: the RK4 line is far steeper than the Euler line, meaning RK4’s error shrinks much faster as <span class="math inline">\(h\)</span> decreases.</p>
+</section>
+<section id="how-wolframs-ndsolve-relates-to-what-we-just-built" class="level2" data-number="8.6">
+<h2 data-number="8.6" class="anchored" data-anchor-id="how-wolframs-ndsolve-relates-to-what-we-just-built"><span class="header-section-number">8.6</span> How Wolfram’s <code>NDSolve</code> Relates to What We Just Built</h2>
+<p><code>NDSolve</code> is Wolfram Language’s built-in ODE solver. For non-stiff problems it uses an adaptive Runge-Kutta method, specifically the Dormand-Prince pair (RK45), which embeds both a 4th-order and a 5th-order estimate in a single pass of 6 stage evaluations. The two estimates are compared to control the step size automatically: the solver takes smaller steps where the solution changes rapidly.</p>
+<div id="dc378204" class="cell" data-execution_count="20">
+<pre class="wolfram cell-code"><code>sol = NDSolve[{y'[x] == y[x], y[0] == 1}, y, {x, 0, 2}];
+yND[x_] = y[x] /. sol[[1]];</code></pre>
+</div>
+<div id="8965ccc3" class="cell" data-execution_count="21">
+<pre class="wolfram cell-code"><code>ndFig = Plot[
+  {yND[x], exactSolution[x]},
+  {x, x0, xEnd},
+  PlotStyle -&gt; {Blue, {Black, Dashed}},
+  PlotLegends -&gt; {"NDSolve", "Exact"},
+  PlotLabel -&gt; Style["NDSolve vs. Exact Solution", 13],
+  Frame -&gt; True, FrameLabel -&gt; {"x", "y"}];
+Export["08_RK4_in_Wolfram/ndsolve.pdf", ndFig];
+Export["08_RK4_in_Wolfram/ndsolve.svg", ndFig];</code></pre>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="08_RK4_in_Wolfram/ndsolve.svg" class="img-fluid figure-img"></p>
+<figcaption><code>NDSolve</code> (blue) tracks the exact solution to within machine precision.</figcaption>
+</figure>
+</div>
+<p>Compare <code>NDSolve</code>’s error at <span class="math inline">\(x = 2\)</span> with our fixed-step RK4 at <span class="math inline">\(h = 0.2\)</span>.</p>
+<div id="427b7f1f" class="cell" data-execution_count="22">
+<pre class="wolfram cell-code"><code>Abs[yND[2] - exactSolution[2]]</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="46">
+<div><pre style="font-family: &quot;Courier New&quot;,Courier,monospace;">          -7
+3.20719 10</pre></div>
+</div>
+</div>
+<div id="ea94a0eb" class="cell" data-execution_count="23">
+<pre class="wolfram cell-code"><code>Abs[Last[rk4Run[f, x0, y0, xEnd, 0.2]][[2]] - exactSolution[2]]</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="47">
+<div><pre style="font-family: &quot;Courier New&quot;,Courier,monospace;">0.000166857</pre></div>
+</div>
+</div>
+<p><code>NDSolve</code>’s error is typically many orders of magnitude smaller. It achieves this not by using a fundamentally different method but by using a smarter strategy: the same weighted-average idea, applied at a step size that adjusts automatically to meet a precision target. Understanding the derivation of RK4 is the prerequisite for understanding why adaptive solvers work and where their guarantees come from.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./07_RK4_Derivation.html" class="pagination-link" aria-label="Deriving Runge-Kutta 4th Order">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Deriving Runge-Kutta 4th Order</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./09_RK5_And_Beyond.html" class="pagination-link" aria-label="Beyond RK4 --- Where the Method Breaks Down">
+        <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Beyond RK4 — Where the Method Breaks Down</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

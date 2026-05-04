@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>7&nbsp; Deriving Runge-Kutta 4th Order – Runge-Kutta 4th Order: A Complete Derivation in Wolfram Language</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./08_RK4_in_Wolfram.html" rel="next">
+<link href="./06_RK3.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-f418161beb48e0141c760e455f12af2c.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-8d20c3fcccb0af3a9d8e3221c7f78825.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-ad5b63c385a99ad8da6bf58b133208b3.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-8d20c3fcccb0af3a9d8e3221c7f78825.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="custom.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Runge-Kutta 4th Order: A Complete Derivation in Wolfram Language</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="https://sabioresearch.com/en"> 
+<span class="menu-text">&lt;- SabioResearch.com</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./07_RK4_Derivation.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Deriving Runge-Kutta 4th Order</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./00_Preface.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01_Historical_Background.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">The Problem That Launched a Century of Mathematics</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02_ODEs_and_IVPs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Ordinary Differential Equations and Initial Value Problems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03_Setting_Up_the_Tools.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Setting Up the Tools</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04_RK1_Eulers_Method.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Euler’s Method — Runge-Kutta Order 1</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05_RK2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Second-Order Runge-Kutta — A Family of Methods</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06_RK3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Third-Order Runge-Kutta — The Pattern Deepens</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07_RK4_Derivation.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Deriving Runge-Kutta 4th Order</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./08_RK4_in_Wolfram.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">RK4 in Wolfram Language</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./09_RK5_And_Beyond.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Beyond RK4 — Where the Method Breaks Down</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">In This Chapter</h2>
+   
+  <ul>
+  <li><a href="#setting-up-the-four-stage-scheme" id="toc-setting-up-the-four-stage-scheme" class="nav-link active" data-scroll-target="#setting-up-the-four-stage-scheme"><span class="header-section-number">7.1</span> Setting Up the Four-Stage Scheme</a></li>
+  <li><a href="#letting-wolfram-language-expand-each-stage-symbolically" id="toc-letting-wolfram-language-expand-each-stage-symbolically" class="nav-link" data-scroll-target="#letting-wolfram-language-expand-each-stage-symbolically"><span class="header-section-number">7.2</span> Letting Wolfram Language Expand Each Stage Symbolically</a></li>
+  <li><a href="#extracting-coefficients-by-power-of-h-a-symbolic-pipeline" id="toc-extracting-coefficients-by-power-of-h-a-symbolic-pipeline" class="nav-link" data-scroll-target="#extracting-coefficients-by-power-of-h-a-symbolic-pipeline"><span class="header-section-number">7.3</span> Extracting Coefficients by Power of <span class="math inline">\(h\)</span> — A Symbolic Pipeline</a></li>
+  <li><a href="#the-eight-order-conditions-grouped-by-power-of-h" id="toc-the-eight-order-conditions-grouped-by-power-of-h" class="nav-link" data-scroll-target="#the-eight-order-conditions-grouped-by-power-of-h"><span class="header-section-number">7.4</span> The Eight Order Conditions — Grouped by Power of <span class="math inline">\(h\)</span></a></li>
+  <li><a href="#solving-the-system-in-wolfram-language" id="toc-solving-the-system-in-wolfram-language" class="nav-link" data-scroll-target="#solving-the-system-in-wolfram-language"><span class="header-section-number">7.5</span> Solving the System in Wolfram Language</a></li>
+  <li><a href="#the-classical-rk4-coefficients" id="toc-the-classical-rk4-coefficients" class="nav-link" data-scroll-target="#the-classical-rk4-coefficients"><span class="header-section-number">7.6</span> The Classical RK4 Coefficients</a></li>
+  <li><a href="#symbolic-verification" id="toc-symbolic-verification" class="nav-link" data-scroll-target="#symbolic-verification"><span class="header-section-number">7.7</span> Symbolic Verification</a></li>
+  <li><a href="#geometric-interpretation" id="toc-geometric-interpretation" class="nav-link" data-scroll-target="#geometric-interpretation"><span class="header-section-number">7.8</span> Geometric Interpretation</a></li>
+  <li><a href="#understanding-the-weights-a-simpsons-rule-connection" id="toc-understanding-the-weights-a-simpsons-rule-connection" class="nav-link" data-scroll-target="#understanding-the-weights-a-simpsons-rule-connection"><span class="header-section-number">7.9</span> Understanding the Weights: A Simpson’s Rule Connection</a></li>
+  <li><a href="#why-rk4-is-the-last-method-you-can-derive-by-hand" id="toc-why-rk4-is-the-last-method-you-can-derive-by-hand" class="nav-link" data-scroll-target="#why-rk4-is-the-last-method-you-can-derive-by-hand"><span class="header-section-number">7.10</span> Why RK4 Is the Last Method You Can Derive by Hand</a></li>
+  <li><a href="#butcher-tableau-for-classical-rk4" id="toc-butcher-tableau-for-classical-rk4" class="nav-link" data-scroll-target="#butcher-tableau-for-classical-rk4"><span class="header-section-number">7.11</span> Butcher Tableau for Classical RK4</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Deriving Runge-Kutta 4th Order</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>This chapter completes the derivation of Runge–Kutta methods begun in Chapters 5 and 6. In those chapters we derived the order conditions for two-stage and three-stage schemes, observed that the number of constraints grows with each additional order, and established that four-stage methods inherit all prior conditions while adding four new ones at order <span class="math inline">\(h^4\)</span>. Here we carry out the complete derivation: we expand all four stages symbolically in Wolfram Language, extract the eight order conditions, solve the system, and confirm that the classical coefficients <span class="math inline">\(1/6, 1/3, 1/3, 1/6\)</span> satisfy all constraints exactly.</p>
+<p>Every step uses only the two-variable Taylor series from Chapter 3 and the algebraic pipeline introduced in Chapters 5 and 6. No facts are borrowed from outside that framework. At the end of this chapter we will have derived the classical RK4 method from first principles, and we will understand why four stages is the last order at which this derivation is tractable by hand.</p>
+<section id="setting-up-the-four-stage-scheme" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="setting-up-the-four-stage-scheme"><span class="header-section-number">7.1</span> Setting Up the Four-Stage Scheme</h2>
+<p>Following the unifying structure first introduced in Section 4.1, a four-stage explicit Runge–Kutta method advances the solution by one step using a weighted combination of four slope estimates:</p>
+<p><span class="math display">\[y_{n+1} = y_n + h \cdot (b_1 \cdot k_1 + b_2 \cdot k_2 + b_3 \cdot k_3 + b_4 \cdot k_4)\]</span></p>
+<p>where the four slope estimates are:</p>
+<p><span class="math display">\[k_1 = f(x_n,\ y_n)\]</span></p>
+<p><span class="math display">\[k_2 = f(x_n + c_2 \cdot h,\ y_n + a_{21} \cdot h \cdot k_1)\]</span></p>
+<p><span class="math display">\[k_3 = f(x_n + c_3 \cdot h,\ y_n + h \cdot (a_{31} \cdot k_1 + a_{32} \cdot k_2))\]</span></p>
+<p><span class="math display">\[k_4 = f(x_n + c_4 \cdot h,\ y_n + h \cdot (a_{41} \cdot k_1 + a_{42} \cdot k_2 + a_{43} \cdot k_3))\]</span></p>
+<p>The scheme has thirteen coefficients in total: four weights (<span class="math inline">\(b_1\)</span>, <span class="math inline">\(b_2\)</span>, <span class="math inline">\(b_3\)</span>, <span class="math inline">\(b_4\)</span>), three stage positions (<span class="math inline">\(c_2\)</span>, <span class="math inline">\(c_3\)</span>, <span class="math inline">\(c_4\)</span> with <span class="math inline">\(c_1 = 0\)</span> by convention), and six coupling coefficients (<span class="math inline">\(a_{21}\)</span>, <span class="math inline">\(a_{31}\)</span>, <span class="math inline">\(a_{32}\)</span>, <span class="math inline">\(a_{41}\)</span>, <span class="math inline">\(a_{42}\)</span>, <span class="math inline">\(a_{43}\)</span>). The stage positions are not free: the consistency conditions <span class="math inline">\(c_2 = a_{21}\)</span>, <span class="math inline">\(c_3 = a_{31} + a_{32}\)</span>, <span class="math inline">\(c_4 = a_{41} + a_{42} + a_{43}\)</span> reduce the effective count to ten. As shown in the table below, eight order conditions then leave exactly two degrees of freedom.</p>
+<div id="1908ce6e" class="cell" data-execution_count="2">
+<pre class="wolfram cell-code"><code>stageCount  = {2, 3, 4};
+totalParams = Table[s + (s - 1) + s*(s - 1)/2, {s, stageCount}];
+consistency = stageCount - 1;
+orderCondsCount = {3, 4, 8};
+dof         = totalParams - consistency - orderCondsCount;
+TableForm[
+  Transpose[{stageCount, totalParams, consistency,
+             orderCondsCount, dof}],
+  TableHeadings -&gt; {None,
+    {"Stages", "Total params", "Consistency",
+     "Order conds", "DOF"}}]</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="7">
+<div><img alt="Output" src="data:image/png;base64,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"></div>
+</div>
+</div>
+</section>
+<section id="letting-wolfram-language-expand-each-stage-symbolically" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="letting-wolfram-language-expand-each-stage-symbolically"><span class="header-section-number">7.2</span> Letting Wolfram Language Expand Each Stage Symbolically</h2>
+<p>The central computation in this chapter is expanding <span class="math inline">\(k_2\)</span>, <span class="math inline">\(k_3\)</span>, and <span class="math inline">\(k_4\)</span> as power series in <span class="math inline">\(h\)</span> around the base point <span class="math inline">\((x_n, y_n)\)</span>. Each stage evaluates <span class="math inline">\(f\)</span> at a displaced point, and the chain rule turns that evaluation into a sum of partial derivatives of <span class="math inline">\(f\)</span> weighted by the displacements. The complication is that <span class="math inline">\(k_3\)</span> depends on <span class="math inline">\(k_2\)</span>, and <span class="math inline">\(k_4\)</span> depends on <span class="math inline">\(k_2\)</span> and <span class="math inline">\(k_3\)</span>, so the expansions are nested. The code below defines a helper <code>fT</code> that encodes the two-variable Taylor expansion from Chapter 3 to third order, then applies it to each stage in sequence, truncating at <span class="math inline">\(h^3\)</span> after each substitution to control growth.</p>
+<div id="7dfaf302" class="cell" data-execution_count="3">
+<pre class="wolfram cell-code"><code>ClearAll[f, h, c2, c3, c4, a21, a31, a32, a41, a42, a43,
+  b1, b2, b3, b4, xn, yn]
+
+fT[a_, b_] :=
+  f[xn, yn] +
+  a*Derivative[1,0][f][xn,yn] + b*Derivative[0,1][f][xn,yn] +
+  (a^2/2)*Derivative[2,0][f][xn,yn] +
+    a*b*Derivative[1,1][f][xn,yn] +
+  (b^2/2)*Derivative[0,2][f][xn,yn] +
+  (a^3/6)*Derivative[3,0][f][xn,yn] +
+    (a^2*b/2)*Derivative[2,1][f][xn,yn] +
+  (a*b^2/2)*Derivative[1,2][f][xn,yn] +
+    (b^3/6)*Derivative[0,3][f][xn,yn]
+
+k1 = f[xn, yn];
+k2 = Expand[fT[c2*h, a21*h*k1]];
+k3 = Normal[Series[fT[c3*h, h*(a31*k1 + a32*k2)], {h, 0, 3}]];
+k4 = Normal[Series[fT[c4*h, h*(a41*k1 + a42*k2 + a43*k3)], {h, 0, 3}]];
+
+Collect[k2, h]</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="14">
+<div><img alt="Output" src="data:image/png;base64,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9QjgM1mtX3yuV4JyEgEREAEREIGlEtA9q6W2nOQWAREQAREQAREQAREQARGYDwGdWc2nLSSJCIiACIiACIiACIiACIjAUgnIslpqy0luERABERABERABERABERCB+RCQZTWftpAkIiACIiACIiACIiACIiACSyUgy2qpLSe5RUAEREAEREAEREAEREAE5kNAltV82kKSiIAIiIAIiIAIiIAIiIAILJWALKultpzkFgEREAEREAEREAEREAERmA8BWVbzaQtJIgIiIAIiIAIiIAIiIAIisFQCs7OsnnzyyR07dpw5c2apRCW3CIiACIjAlhHQyrVlDa7qioAIiEA7gc1YVp988klTnFdffRU21ZEjR9RWIiACIiACIrAIAlq5FtFMdYX8+OOP62ao3ERABFZDYAOW1e3bt0+fPh0RfPvtt0+dOvX555/v27dvNXBVEREQAREQgRUT0Mq14sZNVO3ixYvvvffedtZdtRYBEUgT2IBldfbs2R//+MeRWI888ojmKXVWERABERCBBRHQyrWgxqoo6o9+9KNf/OIXFTNUViIgAqshMLVl9dlnn3366ae7d+9eDUFVRAREQAREQAREYHsI7Ny58xvf+Ma77767PVVWTUVABJwEprasXnvttSeeeMIpnJKJgAiIgAiIgAiIwNwIHDp06KWXXpqbVJJHBERg4wSmtqz+9Kc/wX1i49WWACIgAiIgAiIgAiJQRuCuu+6CD86dO3fKXtdbIiACayUwqWWFaQiT0VpRql4iIAIiIAIiIAJbQuChhx568803t6SyqqYIiICTwFDL6vjx4wiV7vwCFWJUfOUrX3FKtqlkvWq0KSE3VS4CYbG5H3zwwSEy3LhxA59/sRyczPEWS8dj70Ikff1sSFvo3aUTwPDBKLBaYGxigIR/aa0gY4WHwxDJol+XTmZl8rdOgGV1DCdw5/SLgti1wt4FkfB6mQwreOub3/zmX/7ylxVURFUQARGoSGCQZYXFGxMrQqXjOXnyZHYth2W1d+/eitJXz6pvjaoLMPMM8bWx999/H839+OOPD1lQEbL20qVLrCw0POtF58+fT/QilPjWW2+hdETtNxVQzqUz7zMSb2wCmFRtFEDrffnllx944IF0odiMQLJXXnklSoZRqX2KsdurOP/WCbAgN0y5ly9f5ov+JQ+lHz16FNMvloD9+/fz9fvvv//A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rq48w+sQmA0LlNGK0iorERABERABEcgS0MqVRbTWBN/97nd///vfr7V2qpcIiEABgUnPrCBfYoMHi5NdH+ob0aug5npFBERABERABAYS0Mo1EKBeFwEREIE1EZjUsoI34O3bt7vw4fTMotjxEkstJ581NZjqIgIiIAIiMB8CWrnm0xaSRAREQAQ2TmBSywouyzdv3vTUedeuXZ5kSiMCIiACIiACMyGglWsmDTGNGPDBwUcCpylLpYiACCyFwKSW1de//nWnZXX9+nUQ3L1791I4Sk4REAEREIEtJ6CVa6s6APSZr33ta1tVZVVWBEQgS2BSywox6z744IOsTEiAaFE44CqI5+PJXGlEQAREQAREoDoBrVzVkc45Q37xec4SSjYREIHpCUxqWeGelSdEKacqBA2fHodKFAEREAEREIECAlq5CqAt+pU//vGPtaLJL5qDhBcBEQgJTGpZoWCcRKW/AIN5CvHW8YV1hVxXTxUBERABEVgEAa1ci2imukLeuXPn7rvvrpunchMBEVg6gaktqx/+8IcXL17soobFCV8AhFklP8CldyzJLwIiIAJbQkAr15Y0dFjN3/3ud0899dQWVlxVFgERSBOY2rJCIJ1PP/20NfY6vpgOswqftJJZpV4rAiIgAiKwCFTjW1sAABnrSURBVAJauRbRTNWFfP31159++unq2SpDERCBpRPYgW9xTFwHhNPBh6p++tOfhuXeuHEDjoJNSaYXb2IaKk4EREAERGChBLRyLbThBop96dKlnTt3fu973xuYj14XARFYH4ENWFaA+Oc///nb3/72+miqRiIgAiIgAiIgAusm8M4773znO99Zdx1VOxEQgTICm7GsymTVWyIgAiIgAiIgAiIgAiIgAiIwTwJT37OaJwVJJQIiIAIiIAIiIAIiIAIiIAJDCMiyGkJP74qACIiACIiACIiACIiACIjA/yMgy0r9QAREQAREQAREQAREQAREQASGEpBlNZSg3hcBERABERABERABERABERABWVbqAyIgAiIgAiIgAiIgAiIgAiIwlIAsq6EE9b4IiIAIiIAIiIAIiIAIiIAIyLJSHxABERABERABERABERABERCBoQRkWQ0lqPdFQAREQAREQAREQAREQAREYHaW1ZNPPrljx44zZ86obURABEYl8Pbbb2Os4Rm1FGUuAiJQiwBWRgxYrJK1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"></div>
+</div>
+</div>
+<p>The <span class="math inline">\(h^0\)</span> term of every <span class="math inline">\(k_i\)</span> is <span class="math inline">\(f[x_n, y_n]\)</span>, confirming that all four stages reduce to the same base evaluation as <span class="math inline">\(h\)</span> tends to zero. The <span class="math inline">\(h^1\)</span> term of <span class="math inline">\(k_2\)</span> is <span class="math inline">\(c_2 f_x + a_{21} f_0 f_y\)</span> — the directional derivative of <span class="math inline">\(f\)</span> in the <span class="math inline">\((c_2, a_{21} f_0)\)</span> direction. The <span class="math inline">\(h^2\)</span> and <span class="math inline">\(h^3\)</span> terms of <span class="math inline">\(k_3\)</span> and <span class="math inline">\(k_4\)</span> inherit coupling coefficients <span class="math inline">\(a_{32}\)</span>, <span class="math inline">\(a_{42}\)</span>, <span class="math inline">\(a_{43}\)</span> through the nested substitutions. This is the mechanism by which later stages “know” about earlier ones.</p>
+</section>
+<section id="extracting-coefficients-by-power-of-h-a-symbolic-pipeline" class="level2" data-number="7.3">
+<h2 data-number="7.3" class="anchored" data-anchor-id="extracting-coefficients-by-power-of-h-a-symbolic-pipeline"><span class="header-section-number">7.3</span> Extracting Coefficients by Power of <span class="math inline">\(h\)</span> — A Symbolic Pipeline</h2>
+<p>With <span class="math inline">\(k_1\)</span> through <span class="math inline">\(k_4\)</span> expanded in <span class="math inline">\(h\)</span>, the full numerical increment <span class="math inline">\(h\,(b_1 k_1 + b_2 k_2 + b_3 k_3 + b_4 k_4)\)</span> is a power series in <span class="math inline">\(h\)</span> whose coefficients involve the <span class="math inline">\(b\)</span>, <span class="math inline">\(c\)</span>, and <span class="math inline">\(a\)</span> parameters together with partial derivatives of <span class="math inline">\(f\)</span>. For a fourth-order method every coefficient of <span class="math inline">\(h^p\)</span> in that series must equal the corresponding coefficient from the exact Taylor expansion of <span class="math inline">\(y(x_n + h) - y_n\)</span>. The pipeline below forms the increment, expands it to fifth order in <span class="math inline">\(h\)</span>, and extracts the symbolic coefficient at each power. Matching those coefficients to the exact derivatives produces the eight order conditions.</p>
+<div id="32ee56c3" class="cell" data-execution_count="4">
+<pre class="wolfram cell-code"><code>incr = Normal[Series[
+  Expand[h*(b1*k1 + b2*k2 + b3*k3 + b4*k4)],
+  {h, 0, 5}]];
+
+c1num = Coefficient[incr, h, 1];
+c2num = Coefficient[incr, h, 2];
+c3num = Coefficient[incr, h, 3];
+c4num = Coefficient[incr, h, 4];
+
+Collect[c1num, f[xn, yn]]</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="20">
+<div><img alt="Output" src="data:image/png;base64,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"></div>
+</div>
+</div>
+<p>The <span class="math inline">\(h^1\)</span> coefficient equals <span class="math inline">\((b_1 + b_2 + b_3 + b_4)\, f[x_n, y_n]\)</span>. For this to match the exact first-order term <span class="math inline">\(f[x_n, y_n]\)</span> we need <span class="math inline">\(b_1 + b_2 + b_3 + b_4 = 1\)</span>, which is the first order condition. The <span class="math inline">\(h^2\)</span> coefficient decomposes into terms proportional to the partial derivatives <span class="math inline">\(f_x[x_n, y_n]\)</span> and <span class="math inline">\(f_y[x_n, y_n]\)</span>; matching their coefficients to the exact <span class="math inline">\((1/2) y''\)</span> produces the second condition. The <span class="math inline">\(h^3\)</span> and <span class="math inline">\(h^4\)</span> levels each yield two and four independent conditions respectively, giving eight in total. The next section records all eight.</p>
+</section>
+<section id="the-eight-order-conditions-grouped-by-power-of-h" class="level2" data-number="7.4">
+<h2 data-number="7.4" class="anchored" data-anchor-id="the-eight-order-conditions-grouped-by-power-of-h"><span class="header-section-number">7.4</span> The Eight Order Conditions — Grouped by Power of <span class="math inline">\(h\)</span></h2>
+<p>Matching the numerical increment to the exact Taylor expansion of <span class="math inline">\(y\)</span> term by term produces eight conditions on the ten effective free parameters. The conditions are grouped below by the power of <span class="math inline">\(h\)</span> they arise from. Conditions 1 and 2 are identical to those for RK2 and RK3 — they are inherited at every higher order. Conditions 3 and 4 first appear at RK3. Conditions 5 through 8 are new at RK4.</p>
+<p>Order <span class="math inline">\(h\)</span> — one condition (the weights must sum to one):</p>
+<p><span class="math display">\[b_1 + b_2 + b_3 + b_4 = 1\]</span></p>
+<p>Order <span class="math inline">\(h^2\)</span> — one condition (the weighted stage positions must equal <span class="math inline">\(1/2\)</span>):</p>
+<p><span class="math display">\[b_2 \cdot c_2 + b_3 \cdot c_3 + b_4 \cdot c_4 = \tfrac{1}{2}\]</span></p>
+<p>Order <span class="math inline">\(h^3\)</span> — two conditions (from the two independent derivative structures at this order):</p>
+<p><span class="math display">\[b_2 \cdot c_2^2 + b_3 \cdot c_3^2 + b_4 \cdot c_4^2 = \tfrac{1}{3}\]</span></p>
+<p><span class="math display">\[b_3 \cdot a_{32} \cdot c_2 + b_4\,(a_{42} \cdot c_2 + a_{43} \cdot c_3) = \tfrac{1}{6}\]</span></p>
+<p>Order <span class="math inline">\(h^4\)</span> — four conditions (matching four independent fourth-order derivative groups):</p>
+<p><span class="math display">\[b_2 \cdot c_2^3 + b_3 \cdot c_3^3 + b_4 \cdot c_4^3 = \tfrac{1}{4}\]</span></p>
+<p><span class="math display">\[b_3 \cdot c_3 \cdot a_{32} \cdot c_2 + b_4 \cdot c_4\,(a_{42} \cdot c_2 + a_{43} \cdot c_3) = \tfrac{1}{8}\]</span></p>
+<p><span class="math display">\[b_3 \cdot a_{32} \cdot c_2^2 + b_4\,(a_{42} \cdot c_2^2 + a_{43} \cdot c_3^2) = \tfrac{1}{12}\]</span></p>
+<p><span class="math display">\[b_4 \cdot a_{43} \cdot a_{32} \cdot c_2 = \tfrac{1}{24}\]</span></p>
+<div id="e53183c5" class="cell" data-execution_count="5">
+<pre class="wolfram cell-code"><code>{b1, b2, b3, b4} =.
+{c2, c3, c4} =.
+{a21, a31, a32, a41, a42, a43} =.
+
+orderConds = {
+  b1 + b2 + b3 + b4 == 1,
+  b2*c2 + b3*c3 + b4*c4 == 1/2,
+  b2*c2^2 + b3*c3^2 + b4*c4^2 == 1/3,
+  b3*a32*c2 + b4*(a42*c2 + a43*c3) == 1/6,
+  b2*c2^3 + b3*c3^3 + b4*c4^3 == 1/4,
+  b3*c3*a32*c2 + b4*c4*(a42*c2 + a43*c3) == 1/8,
+  b3*a32*c2^2 + b4*(a42*c2^2 + a43*c3^2) == 1/12,
+  b4*a43*a32*c2 == 1/24};
+
+consistencyConds = {a21 == c2,
+                    a31 + a32 == c3,
+                    a41 + a42 + a43 == c4};
+
+Length[orderConds]</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="21">
+<style>
+                                                    .grid-container {
+                                                        display: inline-grid;
+                                                        grid-template-columns: auto;
+                                                    }
+                                                </style>
+
+                                                <div><div class="grid-container"><div class="grid-item"><img alt="Output" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANwAAAAVCAIAAACi3xeqAAAA0HpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjabU/trcMgEPvPFB3huAMfjEMSKnWDjl8TUCuenqXYxvdBCP39eobHgEYJKXtBBYRINVVtNEUmpkapN9+4zlWLex5iXnljlH8F9JUfe+6YquXPItFpbNxAb2kNrEWmM49tno/Vr62UfVGVDZDvr/97TuaKjOiJnFTcUelLoKUgq2THEyfAxohLJZ3UDneOwUeHtTE4oN337h5gDK7xBBsfrFHzzbyPHOmzGTla1YNJvavjOR+d6VrvDxOdwAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAADx0RVh0U29mdHdhcmUAQ3JlYXRlZCB3aXRoIHRoZSBXb2xmcmFtIExhbmd1YWdlIDogd3d3LndvbGZyYW0uY29tXKKmhQAAACF0RVh0Q3JlYXRpb24gVGltZQAyMDI2OjA1OjA0IDAxOjUzOjE5Pq/yxwAAA+lJREFUaEPtWs1OajEQvtznIIYAT0EMS+ABXIArViT6ALphyQbCGhNWrIAFDwAs1cdQY4zv4f3M5I7DtBxPzw+nmnZhgLYzX7+ZaacdSx8fH39CCwz4xMBfn8AELIGBTwaCUwY/8I6B4JTemSQAytcpO51O6X97eXmRdD8+PnLX9fV1IZZYr9eMYTKZKAz1ep17C4EHpQwAYBQGAOZeLKQQhDAcY4BBJQaYm7vgBk7wtFOSGrlI+kXaDDpiqtlut7hIrVYrE9P5+Tm60Gq1mhNiNZicW9qMXE3FgFVFt9slDNbep6cndI3H4zTwMJecW9pM8Rkhn+BdXV2ZY25ubtD1/PycEh45t9wX8NmMAauW2WwGDA8PD2ZvtVol8O122zqX9FrD6cApQVyz2YQgWEsKgt/M5/OUi897uorUvNU5yQeBy+XSacqJB+/3+xNrpKC6v783t48Dp3x/fz+GrNVqFXVGxCFrMBiMRqM4IwsZA/Zg9TibdyHwoBQEmgnMCcBUKhVTS9yc8vLycrFYmPOxzyfb+bNdcKPRwGlrWp3OCNZFZ30heyqsvtls1Kop8ZLRrvjMlqUIaRcXF9bDUKVqis+c4MV1SqSAVqvnBCuBWKvVE8jJacoxq+ekzlUsUkDEQyHhmnynpB3ejHXXxec3Plg9Jbf9ft+TxPdgpxwOh+qKI9eJzPT29jblyvObjlj3PPEFvT4nvjD96RNfbCXT6VR5xZdTInv49iEAbxM+X3eOJb75RYKT5JACmXRhK0EkqIfqL6fEmyI28OiswrS68uNiL5hk9be3N1782dmZJCLiecHJvRIPVikQTKJEpX93TIwNE80USCF8fX1NI9+ci5sTnBLvnbJLX3SizUZWR2MRAH13d0df4e+73S5D0FQScMq+YXV5iyyXy8BDuzvk9Hq9DOFRWcGpHGVaHU+Y/Kzx7UnlBJ5rZvFn0XVHvlniyQY2pb0GDsS2ji8zyUh6dqeG0gua/IXKCSBOjoEaPNPzL1ySwUjUP3iwNegxJqJKgSlSOxUDeIoCRl+pnIC/3EsssChZkiFIPNhabJBiFaEQpeiiAVZgkh+5BCrPsCjJEsgHJB5srYSxgcxKmDQTaSd4pk0lYOKHfyE+pShmCR8IkqJassSOYa2ESTOREAxTRv+ErViOXkA0+5n3EgXKFTLXkkagsl8aUXnMpQAwXSEPXclkWp3y4Pimw86fhusqwODW7w8kiYRKIN5eqHHm4rTF1oWky08Cj6JSDk6HQuH7JYW4eR4lC8fMZ/G/IHi7CZEdozOfzGlxEkjnu8wDeXqJM48fFkwB7u9lIG6Z8fcyEFbmHQP/AKGzweFWWMVWAAAAAElFTkSuQmCC"></div><div class="grid-item"><img alt="Output" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKYAAAAVCAIAAABDtAL7AAAA0HpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjaXU/ZbUQhEPunipQwB3igHN4uK20HKT/mQRKxlvAYzwVpfL9f6WvCVFIuUdEAIXLLzTpFlYUVVdrNNzp2Tk8/adl+p1X+Exjbv04/9iCrH4PElvC5gdrzbtiD3Javfd2vXW+91nNQkwO/L/972cc9exgKNDI5m0SgUddEyYBiUgIvPAAWKp4m+cE4EME2xKzwPhsnbMRZPRKcxnN+weeBd8ZyM/eRlbq4k9WbXXTanZ3f+QFXNlq/TuYLiQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAADx0RVh0U29mdHdhcmUAQ3JlYXRlZCB3aXRoIHRoZSBXb2xmcmFtIExhbmd1YWdlIDogd3d3LndvbGZyYW0uY29tXKKmhQAAACF0RVh0Q3JlYXRpb24gVGltZQAyMDI2OjA1OjA0IDAxOjUzOjE5Pq/yxwAAAyBJREFUaEPtWTHSKUEQft45lFI/p1AIcQABIpEqDkAilHABVSIRAgdAyjEQKPfwf6+6Xv+jZ3bN2h32LzuBYqe755uve3t6Wup2u/1Jxicx8PeTNpvs9R8Dics/Lg4Slycuj5SBWq2W+j/O57Nq+3A48FSv14t0WVtjq9WKMUwmE6GWz+d51tZi1HIMAGCEbQDmWWzEfmX5loN9GFJN0BOVETgSw2aNzWaD8nC5XOrCxWIRUxi5XM7GlJcMhY7KCDlSRJhRvdFoEAbj7PF4xNR4PA4DD7oUOsDJdgSfPvYJXrfb1WX6/T6mTqeTlzqtq8/euRywyuUyDIELVRRemc1mIXfuWl3l1PVaQe2DwMViEVQrpDyFrP5y3rn8er16LVOpVAJlj5Bwg6p3Op3RaBRU62XyYG+329kknsghfX19CZu25Vur1ZrP5zogZA/1JMZ3/dSJfBu6wUKhgKDWOaUDj+XpFHhLPkBQrtdrgRyAxTEq+HRBna3LcfQaOXWB6TmbRk6fM+VCq16vx+RwtHU5WEg4DRMKSLB4g9+SYPwS+3A4FIWbKo0ScTAYhNm2U11wGvOCA/S+vuDIZrMizn7ecpR2D49h3BbiXMR5FRxOQ83e+FsOR1Q5pVJJ9fqPy3GHbrfb/plH51REyVuKUiadOL1cLvwkk8moLvG5kth7LoykOBz1ctrnnv3curgc4qoGZlhdnuX+pBCnGKwP0NPplH6iXN9ut88hM2pRdynQ+QdO1SopnU7DMmUm2Gk2mxHCoyZVoNahXsThys5XoYdZNhrw1N+hgTYZhvqEWj+Apcpg4Wq1yk+4fQZJ9KpY2BiwkPHpKEFFXR2rYC1WEcDo536/hww+eZZ4YVNq+4wgsTDZF0M1K6ZgStBFAkZgKj/qFqiVxqZUlkA+ILGwsWvJDtK7lqqbeHWdvTu4Rpf778fpLO1ZEO10xaDGAc9IdFA77uR1l98ldkqD8RkocQEGN4X4QFKR0P8Ory/Cw7Ih4ovShZ7e3YWh0TJlv9i+QHSaiAPlxRQ9XM7LlSloho2aRP9XMRCg+/ar9pWA9WTgG1rs3slmA/igAAAAAElFTkSuQmCC"></div><div class="grid-item"><img alt="Output" src="data:image/png;base64,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"></div><div class="grid-item"><img alt="Output" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAVCAIAAADw0OikAAAAznpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjabU/tbUMhEPvPFBnhPsAH4/ASInWDjh/zQK2oagnbmLsD0vj+eqfHhKmkXKKiAULklpt1mioLS1XazQt9q5550rLzzqj8HmDs/DrzwFKrfwaJLePzBnrPu2EPclu57pdcu956reegJgcgP0//d589DAUamZxNItDoa6KloJiUwBtPgIWKl0l+Ugci2IaYFd5n44SNOKtHgjN4zS/4XPBOLTfzPrLSF3eyerOLSbtP53c+Ti9auWvs8LYAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAA8dEVYdFNvZnR3YXJlAENyZWF0ZWQgd2l0aCB0aGUgV29sZnJhbSBMYW5ndWFnZSA6IHd3dy53b2xmcmFtLmNvbVyipoUAAAAhdEVYdENyZWF0aW9uIFRpbWUAMjAyNjowNTowNCAwMTo1MzoxOT6v8scAAAChSURBVChTzVG7FcMgDAyZgwrmoGYW2IRJYA/WACr2ICeLJ9M4ZV6uwJw+pxNWa63XM95fckj9Il1KUQduQ3CecwbvveMOeO9B+U4fcIA5UGuVanJujGmtieCck4MUQTlkOSeDUkq3+DkSRRCXQSQ+xoBrqCGKPudcjHHPQshae1rjRViDujF7G7latNY42eBe7Nw7hCB0r89PIRBr6n//9wc5m6YLWsQ+KwAAAABJRU5ErkJggg=="></div></div></div>
+</div>
+</div>
+<p>The eight order conditions involve ten effective free parameters (after the three consistency substitutions eliminate <span class="math inline">\(a_{21}\)</span>, <span class="math inline">\(a_{31}\)</span>, and <span class="math inline">\(a_{41}\)</span>). Eight conditions in ten unknowns leave exactly two degrees of freedom. The next section shows how two structural choices reduce the system to a unique solution.</p>
+</section>
+<section id="solving-the-system-in-wolfram-language" class="level2" data-number="7.5">
+<h2 data-number="7.5" class="anchored" data-anchor-id="solving-the-system-in-wolfram-language"><span class="header-section-number">7.5</span> Solving the System in Wolfram Language</h2>
+<p>The eight order conditions plus three consistency conditions form a system of eleven equations in thirteen unknowns, leaving two degrees of freedom. The classical RK4 method corresponds to a specific pair of structural choices: place the two intermediate stages at the interval midpoint (<span class="math inline">\(c_2 = c_3 = 1/2\)</span>) and the final stage at the endpoint (<span class="math inline">\(c_4 = 1\)</span>), and zero out the coupling from stage 1 into stage 3 and from stage 2 into stage 4 (<span class="math inline">\(a_{31} = 0\)</span>, <span class="math inline">\(a_{42} = 0\)</span>). These choices create the symmetric “ladder” structure that makes RK4 elegant and geometrically transparent.</p>
+<div id="8223a0e7" class="cell" data-execution_count="6">
+<pre class="wolfram cell-code"><code>fixedSubs = {c2 -&gt; 1/2, c3 -&gt; 1/2, c4 -&gt; 1, a31 -&gt; 0, a42 -&gt; 0};
+allConds  = Join[orderConds, consistencyConds];
+solveVars = {a21, a32, a41, a43, b1, b2, b3, b4};
+
+sols = Solve[allConds /. fixedSubs, solveVars]</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="30">
+<div><img alt="Output" src="data:image/png;base64,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"></div>
+</div>
+</div>
+<p>Wolfram Language returns a single solution: <span class="math inline">\(a_{21} = 1/2\)</span>, <span class="math inline">\(a_{32} = 1/2\)</span>, <span class="math inline">\(a_{41} = 0\)</span>, <span class="math inline">\(a_{43} = 1\)</span>, <span class="math inline">\(b_1 = b_4 = 1/6\)</span>, <span class="math inline">\(b_2 = b_3 = 1/3\)</span>. These are the classical RK4 coefficients. The two free structural choices (midpoint staging and the zero coupling entries) fix the last two degrees of freedom, leaving no ambiguity.</p>
+<div id="8fa03738" class="cell" data-execution_count="7">
+<pre class="wolfram cell-code"><code>classical = {b1-&gt;1/6, b2-&gt;1/3, b3-&gt;1/3, b4-&gt;1/6,
+             c2-&gt;1/2, c3-&gt;1/2, c4-&gt;1,
+             a21-&gt;1/2, a31-&gt;0, a32-&gt;1/2,
+             a41-&gt;0, a42-&gt;0, a43-&gt;1};
+orderConds /. classical</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="32">
+<div><img alt="Output" src="data:image/png;base64,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"></div>
+</div>
+</div>
+<p>All eight conditions evaluate to <code>True</code>. The classical RK4 method is not the only fourth-order method — any other choice of <span class="math inline">\(c_2\)</span>, <span class="math inline">\(c_3\)</span> (subject to certain constraints) generates a valid fourth-order scheme — but the classical coefficients have the simplest algebraic form and an elegant geometric interpretation that the following sections develop.</p>
+</section>
+<section id="the-classical-rk4-coefficients" class="level2" data-number="7.6">
+<h2 data-number="7.6" class="anchored" data-anchor-id="the-classical-rk4-coefficients"><span class="header-section-number">7.6</span> The Classical RK4 Coefficients</h2>
+<p>The Wolfram Language <code>Solve</code> call returns a unique solution: <span class="math inline">\(a_{21} = 1/2\)</span>, <span class="math inline">\(a_{32} = 1/2\)</span>, <span class="math inline">\(a_{41} = 0\)</span>, <span class="math inline">\(a_{43} = 1\)</span>, <span class="math inline">\(b_1 = b_4 = 1/6\)</span>, <span class="math inline">\(b_2 = b_3 = 1/3\)</span>. Together with the fixed parameters <span class="math inline">\(c_2 = c_3 = 1/2\)</span>, <span class="math inline">\(c_4 = 1\)</span>, <span class="math inline">\(a_{31} = 0\)</span>, <span class="math inline">\(a_{42} = 0\)</span>, these define the classical Runge–Kutta 4th-order method. Because <span class="math inline">\(a_{31} = 0\)</span> the third stage does not depend on the first stage — only on the second. Because <span class="math inline">\(a_{41} = 0\)</span> and <span class="math inline">\(a_{42} = 0\)</span> the fourth stage depends only on the third.</p>
+<p><span class="math display">\[k_1 = f(x_n,\ y_n)\]</span></p>
+<p><span class="math display">\[k_2 = f\!\left(x_n + \tfrac{h}{2},\ y_n + \tfrac{h}{2} \cdot k_1\right)\]</span></p>
+<p><span class="math display">\[k_3 = f\!\left(x_n + \tfrac{h}{2},\ y_n + \tfrac{h}{2} \cdot k_2\right)\]</span></p>
+<p><span class="math display">\[k_4 = f\!\left(x_n + h,\ y_n + h \cdot k_3\right)\]</span></p>
+<p><span class="math display">\[y_{n+1} = y_n + \frac{h}{6}\,(k_1 + 2 \cdot k_2 + 2 \cdot k_3 + k_4)\]</span></p>
+<div id="f706dd16" class="cell" data-execution_count="8">
+<pre class="wolfram cell-code"><code>ClearAll[f]
+f[x_, y_] := y
+exactSolution[x_] := Exp[x]
+x0 = 0; y0 = 1;
+
+rk4Step[x_, y_, h_] :=
+  Module[{k1, k2, k3, k4},
+    k1 = f[x, y];
+    k2 = f[x + h/2, y + (h/2)*k1];
+    k3 = f[x + h/2, y + (h/2)*k2];
+    k4 = f[x + h, y + h*k3];
+    y + (h/6)*(k1 + 2*k2 + 2*k3 + k4)];
+
+hTry = 0.1;
+{"rk4"   -&gt; rk4Step[x0, y0, hTry],
+ "exact" -&gt; exactSolution[x0 + hTry],
+ "error" -&gt; Abs[rk4Step[x0, y0, hTry] - exactSolution[x0 + hTry]]}</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="39">
+<div><img alt="Output" src="data:image/png;base64,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"></div>
+</div>
+</div>
+<p>The classical RK4 formula has a striking symmetry: <span class="math inline">\(k_2\)</span> and <span class="math inline">\(k_3\)</span> are structurally identical in that both evaluate <span class="math inline">\(f\)</span> at the midpoint <span class="math inline">\(x_n + h/2\)</span>, yet they use different <span class="math inline">\(y\)</span>-arguments. This “leapfrog” structure is a direct consequence of the zero coupling entries <span class="math inline">\(a_{31} = 0\)</span> and <span class="math inline">\(a_{42} = 0\)</span> that we chose to fix the degrees of freedom.</p>
+</section>
+<section id="symbolic-verification" class="level2" data-number="7.7">
+<h2 data-number="7.7" class="anchored" data-anchor-id="symbolic-verification"><span class="header-section-number">7.7</span> Symbolic Verification</h2>
+<p>Having derived the classical coefficients algebraically, we verify them computationally in two steps. First, all eight order conditions evaluate to <code>True</code> when the classical values are substituted. Second, a convergence table on the test problem <span class="math inline">\(dy/dx = y\)</span>, <span class="math inline">\(y(0) = 1\)</span> shows that the global error at <span class="math inline">\(x = 2\)</span> scales as <span class="math inline">\(h^4\)</span>: halving <span class="math inline">\(h\)</span> reduces the error by a factor of <span class="math inline">\(16\)</span>.</p>
+<div id="b7e3286e" class="cell" data-execution_count="9">
+<pre class="wolfram cell-code"><code>classical = {b1-&gt;1/6, b2-&gt;1/3, b3-&gt;1/3, b4-&gt;1/6,
+             c2-&gt;1/2, c3-&gt;1/2, c4-&gt;1,
+             a21-&gt;1/2, a31-&gt;0, a32-&gt;1/2,
+             a41-&gt;0, a42-&gt;0, a43-&gt;1};
+orderConds /. classical</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="41">
+<div><img alt="Output" src="data:image/png;base64,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"></div>
+</div>
+</div>
+<div id="f8b3e5bf" class="cell" data-execution_count="10">
+<pre class="wolfram cell-code"><code>rk4Run[h_] :=
+  Module[{data},
+    data = NestList[
+      {#[[1]] + h, rk4Step[#[[1]], #[[2]], h]} &amp;,
+      {x0, y0}, Round[2/h]];
+    Abs[data[[-1, 2]] - exactSolution[2]]];
+
+TableForm[
+  Table[{h, ScientificForm[rk4Run[h], 4]},
+    {h, {0.4, 0.2, 0.1, 0.05, 0.025}}],
+  TableHeadings -&gt; {None, {"h", "error at x=2"}}]</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="43">
+<div><img alt="Output" src="data:image/png;base64,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"></div>
+</div>
+</div>
+<p>Each time <span class="math inline">\(h\)</span> is halved the error decreases by approximately a factor of <span class="math inline">\(16 = 2^4\)</span>, confirming fourth-order convergence. This is the defining property of a fourth-order method: one extra digit of accuracy for roughly the same number of function evaluations per unit interval.</p>
+</section>
+<section id="geometric-interpretation" class="level2" data-number="7.8">
+<h2 data-number="7.8" class="anchored" data-anchor-id="geometric-interpretation"><span class="header-section-number">7.8</span> Geometric Interpretation</h2>
+<p>The four <span class="math inline">\(k\)</span>-values correspond to four evaluations of <span class="math inline">\(f\)</span> at locations spread across <span class="math inline">\([x_n, x_n + h]\)</span>. Stage positions <span class="math inline">\(c_1 = 0\)</span>, <span class="math inline">\(c_2 = c_3 = 1/2\)</span>, <span class="math inline">\(c_4 = 1\)</span> place <span class="math inline">\(k_1\)</span> at the left endpoint, <span class="math inline">\(k_2\)</span> and <span class="math inline">\(k_3\)</span> at the midpoint, and <span class="math inline">\(k_4\)</span> at the right endpoint. The <span class="math inline">\(y\)</span>-coordinate at each sampling point is a linear combination of previous <span class="math inline">\(k\)</span>-values, so the four points trace a path that adapts to the local curvature of the solution.</p>
+<div id="534a6912" class="cell" data-execution_count="11">
+<pre class="wolfram cell-code"><code>samplingFigs = Table[
+  With[{xn = pair[[1]], hp = pair[[2]]},
+    Module[{k1, k2, k3, k4, pts},
+      k1 = Exp[xn];
+      k2 = Exp[xn] + (hp/2)*k1;
+      k3 = Exp[xn] + (hp/2)*k2;
+      k4 = Exp[xn] + hp*k3;
+      pts = {{xn,        Exp[xn]},
+             {xn + hp/2, Exp[xn] + (hp/2)*k1},
+             {xn + hp/2, Exp[xn] + (hp/2)*k2},
+             {xn + hp,   Exp[xn] + hp*k3}};
+      Show[
+        Plot[Exp[x], {x, xn - 0.05, xn + hp + 0.1},
+          PlotStyle -&gt; Directive[Gray, Thick]],
+        Graphics[{PointSize[Large],
+          {Red,           Point[pts[[1]]]},
+          {Blue,          Point[pts[[2]]]},
+          {Darker[Green], Point[pts[[3]]]},
+          {Orange,        Point[pts[[4]]]}}],
+        Frame -&gt; True, FrameLabel -&gt; {"x", "y"},
+        PlotLabel -&gt; Style[
+          "xn = " &lt;&gt; ToString[xn] &lt;&gt; ", h = " &lt;&gt; ToString[hp], 11],
+        ImageSize -&gt; 280]
+    ]
+  ],
+  {pair, {{0, 0.4}, {0.5, 0.4}, {1.0, 0.4}, {1.5, 0.4}}}];
+samplingGrid = GraphicsGrid[Partition[samplingFigs, 2],
+  Spacings -&gt; Scaled[0.04]];
+Export["07_RK4_Derivation/rk4-sampling.pdf", samplingGrid];
+Export["07_RK4_Derivation/rk4-sampling.svg", samplingGrid];</code></pre>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="07_RK4_Derivation/rk4-sampling.svg" class="img-fluid figure-img"></p>
+<figcaption>Four sampling locations for RK4 along the solution curve <span class="math inline">\(y = e^x\)</span>. Red is <span class="math inline">\(k_1\)</span>, blue is <span class="math inline">\(k_2\)</span>, green is <span class="math inline">\(k_3\)</span>, orange is <span class="math inline">\(k_4\)</span>.</figcaption>
+</figure>
+</div>
+<p>The two midpoint points (blue and green) are distinct because <span class="math inline">\(k_3\)</span> uses a <span class="math inline">\(y\)</span>-value corrected by <span class="math inline">\(k_2\)</span>: <span class="math inline">\(k_3\)</span> lands above <span class="math inline">\(k_2\)</span> because <span class="math inline">\(k_2\)</span> overshot the curve, and <span class="math inline">\(k_3\)</span> corrects upward toward the true solution.</p>
+</section>
+<section id="understanding-the-weights-a-simpsons-rule-connection" class="level2" data-number="7.9">
+<h2 data-number="7.9" class="anchored" data-anchor-id="understanding-the-weights-a-simpsons-rule-connection"><span class="header-section-number">7.9</span> Understanding the Weights: A Simpson’s Rule Connection</h2>
+<p>The weights <span class="math inline">\(b_1 = b_4 = 1/6\)</span> and <span class="math inline">\(b_2 = b_3 = 1/3\)</span> are not arbitrary. Simpson’s composite rule for integrating over <span class="math inline">\([x_n, x_n + h]\)</span> assigns weight <span class="math inline">\(1/6\)</span> to each endpoint and <span class="math inline">\(2/3\)</span> to the midpoint. Because RK4 evaluates <span class="math inline">\(f\)</span> twice at the midpoint (<span class="math inline">\(k_2\)</span> and <span class="math inline">\(k_3\)</span>), each midpoint evaluation receives half the Simpson midpoint weight: <span class="math inline">\((2/3)/2 = 1/3\)</span>. Advancing a solution of <span class="math inline">\(dy/dx = f(x, y)\)</span> over one step is equivalent to numerically integrating <span class="math inline">\(f\)</span> along the solution curve, and the RK4 weights are the Simpson quadrature weights for that integral.</p>
+<p><span class="math display">\[(b_1, b_2, b_3, b_4) = \left(\tfrac{1}{6},\ \tfrac{1}{3},\ \tfrac{1}{3},\ \tfrac{1}{6}\right)\]</span></p>
+<p>The combined midpoint weight is <span class="math inline">\(1/3 + 1/3 = 2/3\)</span>, matching the Simpson coefficient for the midpoint. The two endpoint weights <span class="math inline">\(1/6\)</span> each match the Simpson endpoint coefficients. No other four-point quadrature rule with these stage positions achieves fourth-order accuracy, so the classical RK4 weights are uniquely determined by the Simpson correspondence.</p>
+</section>
+<section id="why-rk4-is-the-last-method-you-can-derive-by-hand" class="level2" data-number="7.10">
+<h2 data-number="7.10" class="anchored" data-anchor-id="why-rk4-is-the-last-method-you-can-derive-by-hand"><span class="header-section-number">7.10</span> Why RK4 Is the Last Method You Can Derive by Hand</h2>
+<p>The number of order conditions grows rapidly with the target order. At order <span class="math inline">\(p = 4\)</span> there are <span class="math inline">\(8\)</span> conditions, which is exactly what we solved in this chapter using Wolfram Language. At order <span class="math inline">\(p = 5\)</span> the count jumps to <span class="math inline">\(17\)</span>, and the minimum number of stages required increases to <span class="math inline">\(6\)</span> — a fifth-order method cannot be achieved with just five stages. This is Butcher’s fundamental result from 1963. Beyond order 4 no derivation by hand is feasible.</p>
+<div id="07dc7bbb" class="cell" data-execution_count="12">
+<pre class="wolfram cell-code"><code>Grid[{
+  {"Order p", "Min. stages", "# conditions"},
+  {"1", "1", "1"},
+  {"2", "2", "3"},
+  {"3", "3", "6"},
+  {"4", "4", "8"},
+  {"5", "6", "17"},
+  {"6", "7", "37"},
+  {"7", "9", "85"}
+}, Frame -&gt; All, Alignment -&gt; Left]</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="48">
+<div><img alt="Output" src="data:image/png;base64,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"></div>
+</div>
+</div>
+<p>Each order condition corresponds to one rooted tree of the appropriate order. The number of independent derivative structures at order <span class="math inline">\(p\)</span> equals the number of rooted trees with <span class="math inline">\(p\)</span> nodes — a combinatorial count that grows super-exponentially. Chapter 9 explores this connection and shows how Wolfram Language can still derive methods at orders 5 and 6 by solving the expanded systems symbolically.</p>
+</section>
+<section id="butcher-tableau-for-classical-rk4" class="level2" data-number="7.11">
+<h2 data-number="7.11" class="anchored" data-anchor-id="butcher-tableau-for-classical-rk4"><span class="header-section-number">7.11</span> Butcher Tableau for Classical RK4</h2>
+<p>The Butcher tableau encodes all coefficients of a Runge–Kutta method in a compact matrix form. For a four-stage method the tableau has four <span class="math inline">\(c\)</span>-values (stage positions), a <span class="math inline">\(4 \times 4\)</span> coefficient matrix <span class="math inline">\(A\)</span> whose lower-triangular entries drive the stage evaluations, and a row of four <span class="math inline">\(b\)</span>-weights. The general four-stage tableau in symbolic form is:</p>
+<p><span class="math display">\[\begin{array}{c|cccc} 0 &amp; &amp; &amp; &amp; \\ c_2 &amp; a_{21} &amp; &amp; &amp; \\ c_3 &amp; a_{31} &amp; a_{32} &amp; &amp; \\ c_4 &amp; a_{41} &amp; a_{42} &amp; a_{43} &amp; \\ \hline &amp; b_1 &amp; b_2 &amp; b_3 &amp; b_4 \end{array}\]</span></p>
+<p>Substituting the classical RK4 coefficients <span class="math inline">\(c_2 = c_3 = 1/2\)</span>, <span class="math inline">\(c_4 = 1\)</span>; <span class="math inline">\(a_{21} = a_{32} = 1/2\)</span>; <span class="math inline">\(a_{31} = a_{41} = a_{42} = 0\)</span>, <span class="math inline">\(a_{43} = 1\)</span>; <span class="math inline">\(b_1 = b_4 = 1/6\)</span>, <span class="math inline">\(b_2 = b_3 = 1/3\)</span> gives the specific tableau:</p>
+<p><span class="math display">\[\begin{array}{c|cccc} 0 &amp; &amp; &amp; &amp; \\ \tfrac{1}{2} &amp; \tfrac{1}{2} &amp; &amp; &amp; \\ \tfrac{1}{2} &amp; 0 &amp; \tfrac{1}{2} &amp; &amp; \\ 1 &amp; 0 &amp; 0 &amp; 1 &amp; \\ \hline &amp; \tfrac{1}{6} &amp; \tfrac{1}{3} &amp; \tfrac{1}{3} &amp; \tfrac{1}{6} \end{array}\]</span></p>
+<p>Reading the tableau row by row recovers the <span class="math inline">\(k\)</span>-stage formulas. Row 1 says <span class="math inline">\(k_1\)</span> evaluates at <span class="math inline">\((x_n, y_n)\)</span> with no prior stages. Row 2 says <span class="math inline">\(k_2\)</span> uses a half-step with coefficient <span class="math inline">\(1/2\)</span> from <span class="math inline">\(k_1\)</span>. Row 3 says <span class="math inline">\(k_3\)</span> uses a half-step from <span class="math inline">\(k_2\)</span> only (the zero in position <span class="math inline">\(a_{31}\)</span> means <span class="math inline">\(k_1\)</span> does not appear). Row 4 says <span class="math inline">\(k_4\)</span> uses a full step from <span class="math inline">\(k_3\)</span> only. The <span class="math inline">\(b\)</span>-row averages the four slopes with Simpson weights <span class="math inline">\(1/6, 1/3, 1/3, 1/6\)</span>.</p>
+<p>This completes the derivation of the classical Runge–Kutta 4th-order method. Starting from the general four-stage scheme in Section 7.1, we used the two-variable Taylor expansion from Chapter 3 to expand all four stages symbolically, extracted eight order conditions by matching Taylor coefficients, applied two structural constraints to fix the remaining degrees of freedom, and arrived at the unique classical RK4 coefficients. The following chapter places this result in the broader context of convergence analysis and applications.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./06_RK3.html" class="pagination-link" aria-label="Third-Order Runge-Kutta --- The Pattern Deepens">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Third-Order Runge-Kutta — The Pattern Deepens</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./08_RK4_in_Wolfram.html" class="pagination-link" aria-label="RK4 in Wolfram Language">
+        <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">RK4 in Wolfram Language</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

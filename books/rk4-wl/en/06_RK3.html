@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>6&nbsp; Third-Order Runge-Kutta — The Pattern Deepens – Runge-Kutta 4th Order: A Complete Derivation in Wolfram Language</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./07_RK4_Derivation.html" rel="next">
+<link href="./05_RK2.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-f418161beb48e0141c760e455f12af2c.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-8d20c3fcccb0af3a9d8e3221c7f78825.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-ad5b63c385a99ad8da6bf58b133208b3.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-8d20c3fcccb0af3a9d8e3221c7f78825.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="custom.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Runge-Kutta 4th Order: A Complete Derivation in Wolfram Language</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="https://sabioresearch.com/en"> 
+<span class="menu-text">&lt;- SabioResearch.com</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./06_RK3.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Third-Order Runge-Kutta — The Pattern Deepens</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./00_Preface.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01_Historical_Background.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">The Problem That Launched a Century of Mathematics</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02_ODEs_and_IVPs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Ordinary Differential Equations and Initial Value Problems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03_Setting_Up_the_Tools.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Setting Up the Tools</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04_RK1_Eulers_Method.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Euler’s Method — Runge-Kutta Order 1</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05_RK2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Second-Order Runge-Kutta — A Family of Methods</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06_RK3.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Third-Order Runge-Kutta — The Pattern Deepens</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07_RK4_Derivation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Deriving Runge-Kutta 4th Order</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./08_RK4_in_Wolfram.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">RK4 in Wolfram Language</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./09_RK5_And_Beyond.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Beyond RK4 — Where the Method Breaks Down</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">In This Chapter</h2>
+   
+  <ul>
+  <li><a href="#extending-to-three-stages" id="toc-extending-to-three-stages" class="nav-link active" data-scroll-target="#extending-to-three-stages"><span class="header-section-number">6.1</span> Extending to Three Stages</a></li>
+  <li><a href="#the-four-order-conditions-for-rk3" id="toc-the-four-order-conditions-for-rk3" class="nav-link" data-scroll-target="#the-four-order-conditions-for-rk3"><span class="header-section-number">6.2</span> The Four Order Conditions for RK3</a></li>
+  <li><a href="#unknowns-vs.-equations-why-the-solution-space-shrinks" id="toc-unknowns-vs.-equations-why-the-solution-space-shrinks" class="nav-link" data-scroll-target="#unknowns-vs.-equations-why-the-solution-space-shrinks"><span class="header-section-number">6.3</span> Unknowns vs.&nbsp;Equations: Why the Solution Space Shrinks</a></li>
+  <li><a href="#solving-the-system-still-tractable-already-messy" id="toc-solving-the-system-still-tractable-already-messy" class="nav-link" data-scroll-target="#solving-the-system-still-tractable-already-messy"><span class="header-section-number">6.4</span> Solving the System: Still Tractable, Already Messy</a></li>
+  <li><a href="#a-specific-rk3-solution-kuttas-third-order-method" id="toc-a-specific-rk3-solution-kuttas-third-order-method" class="nav-link" data-scroll-target="#a-specific-rk3-solution-kuttas-third-order-method"><span class="header-section-number">6.5</span> A Specific RK3 Solution: Kutta’s Third-Order Method</a></li>
+  <li><a href="#implementation-and-comparison" id="toc-implementation-and-comparison" class="nav-link" data-scroll-target="#implementation-and-comparison"><span class="header-section-number">6.6</span> Implementation and Comparison</a></li>
+  <li><a href="#the-butcher-tableau-for-rk3-watching-the-pattern-grow" id="toc-the-butcher-tableau-for-rk3-watching-the-pattern-grow" class="nav-link" data-scroll-target="#the-butcher-tableau-for-rk3-watching-the-pattern-grow"><span class="header-section-number">6.7</span> The Butcher Tableau for RK3 — Watching the Pattern Grow</a></li>
+  <li><a href="#what-changes-when-we-go-to-four-stages" id="toc-what-changes-when-we-go-to-four-stages" class="nav-link" data-scroll-target="#what-changes-when-we-go-to-four-stages"><span class="header-section-number">6.8</span> What Changes When We Go to Four Stages?</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Third-Order Runge-Kutta — The Pattern Deepens</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>In Chapter 5 we discovered that demanding second-order accuracy does not fix a unique method but instead produces a one-parameter family. This chapter asks the natural follow-up: what happens when we demand third-order accuracy? The same structure reappears — the conditions can still be satisfied in multiple ways — but the algebra is substantially harder. More importantly, examining how the number of constraints grows at each order reveals why fourth-order Runge–Kutta is the last method derivable by hand without combinatorial machinery.</p>
+<section id="extending-to-three-stages" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="extending-to-three-stages"><span class="header-section-number">6.1</span> Extending to Three Stages</h2>
+<p>A three-stage Runge–Kutta method evaluates <span class="math inline">\(f\)</span> at three points per step. Following the unifying structure from Section 4.1, the update formula is:</p>
+<p><span class="math display">\[y_{n+1} = y_n + h \cdot (b_1 \cdot k_1 + b_2 \cdot k_2 + b_3 \cdot k_3)\]</span></p>
+<p>where the three stage slopes are:</p>
+<p><span class="math display">\[k_1 = f(x_n,\ y_n)\]</span></p>
+<p><span class="math display">\[k_2 = f(x_n + c_2 \cdot h,\ y_n + a_{21} \cdot h \cdot k_1)\]</span></p>
+<p><span class="math display">\[k_3 = f(x_n + c_3 \cdot h,\ y_n + h \cdot (a_{31} \cdot k_1 + a_{32} \cdot k_2))\]</span></p>
+<p>The eight free coefficients fall into three groups: <span class="math inline">\(b_1\)</span>, <span class="math inline">\(b_2\)</span>, <span class="math inline">\(b_3\)</span> are the weights in the update formula; <span class="math inline">\(c_2\)</span>, <span class="math inline">\(c_3\)</span> are the stage positions along the <span class="math inline">\(x\)</span>-axis (with <span class="math inline">\(c_1 = 0\)</span> always); and <span class="math inline">\(a_{21}\)</span>, <span class="math inline">\(a_{31}\)</span>, <span class="math inline">\(a_{32}\)</span> are the coupling coefficients that determine how each stage depends on previous ones. For an explicit method the coupling matrix is strictly lower triangular: <span class="math inline">\(k_1\)</span> has no coupling, <span class="math inline">\(k_2\)</span> depends only on <span class="math inline">\(k_1\)</span>, and <span class="math inline">\(k_3\)</span> depends on both <span class="math inline">\(k_1\)</span> and <span class="math inline">\(k_2\)</span>.</p>
+<p>Two of the eight coefficients are not independently free. The consistency conditions <span class="math inline">\(c_2 = a_{21}\)</span> and <span class="math inline">\(c_3 = a_{31} + a_{32}\)</span> require that each stage position equal the row sum of its coupling coefficients. These conditions place each evaluation point at the <span class="math inline">\(x\)</span>-coordinate it nominally claims, and they reduce the effective free parameter count from eight to six.</p>
+<p>Compare this to the two-stage scheme from Chapter 5, which had four parameters and one degree of freedom after applying order conditions. Adding a third stage doubles the parameter count, but also adds new constraints. The order conditions will narrow the six effective free parameters to just two.</p>
+</section>
+<section id="the-four-order-conditions-for-rk3" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="the-four-order-conditions-for-rk3"><span class="header-section-number">6.2</span> The Four Order Conditions for RK3</h2>
+<p>For the three-stage scheme to be third-order accurate, the numerical increment <span class="math inline">\(h \cdot (b_1 k_1 + b_2 k_2 + b_3 k_3)\)</span> must match the exact Taylor expansion of <span class="math inline">\(y(x_n + h)\)</span> through and including the <span class="math inline">\(h^3\)</span> term. The derivation follows the same path as Chapter 5: expand <span class="math inline">\(k_2\)</span> and <span class="math inline">\(k_3\)</span> using the two-variable Taylor series from Chapter 3, form the full increment, and compare it term by term with the exact series. The key difference is that <span class="math inline">\(k_3\)</span> depends on <span class="math inline">\(k_2\)</span>, and this coupling generates a fourth independent condition that has no analog in the two-stage case.</p>
+<p>Matching the coefficient of <span class="math inline">\(h\)</span> gives the first order condition:</p>
+<p><span class="math display">\[b_1 + b_2 + b_3 = 1\]</span></p>
+<p>Matching the coefficient of <span class="math inline">\(h^2\)</span> yields one condition on the weighted stage positions:</p>
+<p><span class="math display">\[b_2 \cdot c_2 + b_3 \cdot c_3 = \tfrac{1}{2}\]</span></p>
+<p>At order <span class="math inline">\(h^3\)</span>, the exact Taylor derivative <span class="math inline">\(y''' = f_{xx} + 2 f \cdot f_{xy} + f_x \cdot f_y + f \cdot (f_y)^2 + f^2 \cdot f_{yy}\)</span> contains five terms, but when the numerical increment is expanded and compared, these five terms collapse into only two independent constraints. The first constraint comes from matching the <span class="math inline">\(f_{xx}\)</span>, <span class="math inline">\(f \cdot f_{xy}\)</span>, and <span class="math inline">\(f^2 \cdot f_{yy}\)</span> terms (all of which share the same coefficient in both the exact and numerical expansions). The second comes from matching the <span class="math inline">\(f_x \cdot f_y\)</span> and <span class="math inline">\(f \cdot (f_y)^2\)</span> terms, which involve the coupling coefficient <span class="math inline">\(a_{32}\)</span>.</p>
+<p>Condition 3 (from the <span class="math inline">\(f_{xx}\)</span>, <span class="math inline">\(f \cdot f_{xy}\)</span>, and <span class="math inline">\(f^2 \cdot f_{yy}\)</span> terms):</p>
+<p><span class="math display">\[b_2 \cdot c_2^2 + b_3 \cdot c_3^2 = \tfrac{1}{3}\]</span></p>
+<p>Condition 4 (from the <span class="math inline">\(f_x \cdot f_y\)</span> and <span class="math inline">\(f \cdot (f_y)^2\)</span> terms):</p>
+<p><span class="math display">\[b_3 \cdot a_{32} \cdot c_2 = \tfrac{1}{6}\]</span></p>
+<p>Condition 4 involves only <span class="math inline">\(a_{32}\)</span> and <span class="math inline">\(c_2\)</span> — not <span class="math inline">\(a_{31}\)</span>. The reason is that <span class="math inline">\(a_{31}\)</span> tracks how <span class="math inline">\(k_3\)</span> depends on <span class="math inline">\(k_1\)</span>, which is evaluated at the base point <span class="math inline">\((x_n, y_n)\)</span> and carries no displacement information. The cross-derivative structure arises exclusively from how <span class="math inline">\(k_3\)</span> inherits the <span class="math inline">\(x\)</span>-displacement of <span class="math inline">\(k_2\)</span> through the coupling <span class="math inline">\(a_{32}\)</span>: the term <span class="math inline">\(a_{32} \cdot c_2\)</span> measures how far <span class="math inline">\(k_2\)</span> was displaced in <span class="math inline">\(x\)</span>, and this displacement is what produces the mixed second-order partial derivative structure at order <span class="math inline">\(h^3\)</span>.</p>
+<p>All four conditions are independent — satisfying the first two does not force the last two. The Wolfram Language demonstration below constructs a method that satisfies conditions 1 and 2 exactly while conditions 3 and 4 both fail. Note that <span class="math inline">\(f(x, y) = y\)</span> (used in later sections) has <span class="math inline">\(f_{xx} = f_{xy} = f_{yy} = 0\)</span>, which would hide conditions 2 and 3; the test function below uses <span class="math inline">\(f = x + y\)</span> so all four conditions are visible.</p>
+<div id="ce1e3821" class="cell" data-execution_count="2">
+<pre class="wolfram cell-code"><code>{b1t, b2t, b3t}    = {1/4, 1/2, 1/4};
+{c2t, c3t}         = {1/2, 1};
+{a21t, a31t, a32t} = {1/2, 0, 1};
+{c2t == a21t, c3t == a31t + a32t}</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<div><img alt="Output" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHEAAAAVCAIAAAD+eZbLAAAAz3pUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjabU/bDQMhDPtnio4QEnBgHK5HpW7Q8WsO1Iqqlogd5wGE/no+wm1Ao4SUvaACQqSaqjaKIhOTo9QrXvDFzDc/xLz8Rit/C+jLP3bfMVnLzyLRKWzcQG1pDaxFptOPbebH6tdWyr6oygbI5+l/82SuyIieGJOKOyp1CZQkZJXseOAOsDHiVEl3coc7x+Cjw9oYHNDue3cPMBrn+IKNA2vkfEXexxipMyvNzEQPOvWqju+8ARFTWohPBoSTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAPHRFWHRTb2Z0d2FyZQBDcmVhdGVkIHdpdGggdGhlIFdvbGZyYW0gTGFuZ3VhZ2UgOiB3d3cud29sZnJhbS5jb21coqaFAAAAIXRFWHRDcmVhdGlvbiBUaW1lADIwMjY6MDU6MDQgMDE6NTI6MzDN+U+EAAACj0lEQVRYR+2XvZIpQRTH79zHUAKFZxAhtB5BKFLFA5AIJTwAqQiPcCUCRJ4BJfAe7m/3VPW2ntnprtmeUaWmAzXbez7+53++ZoLH4/EnP14Z+OvVWm7sk4GcU/91kHOac+qfAf8WzTodDAZBEGw2G+WKPyOPfyyJLArg8NFDSGTYonQ8HnGK9wg59r46h8NhvV7rN/rzx9f56b8vvwc54V0ulyyR4DTM2FOd3u/3NFL6xjaLxWI4ut/uqNlsVq1WscuvNCA34ka6g199jKj/KgHREiPez/V6FQz4DTvCqd68PBswVFBGIPE4f8uptBsul8slTUcjjEYjIrGyQ5yNRkO1KuhTohUkOLrdbjIT8KjnNQYneHq9nmgRF0b0+ohR9MAp1hnE9Xqdh1qtxu/pdLJyOplMptNpuVwWyfl8TrSOoK3GDYF+v499uWQl7HY7qwVZccPhUCQ7nQ6Kq9XKqojAE6fj8RhlFzVDRgjlwBFZdTGy3W6paLWvK5VKAr+OKs1mU0n++zpWxf1+L/2nDoDDWgROgxr335y22+30ui8yBurU2NEqN9aYMxAgzQY8Vey6d8rI4O2bU7LX7XY9dl+hUNB9G0MWxC49mCp3Bhc6wlKpRJ1aFwN00QTn81nHac5Tj69TMivVDDK6m3lKN8WvC+k7j2k2MgTCxWIhlyx9vbtlkrZarQRJ9bOjfnLM7gK0UMOzTiszV14S1MAKTx7Wgp6VBOHFq9DLQBIASDKLdHl5SdBHqmt29ZER+VWQ5WeJ4Us+jcJj94WQDNeRX55PdRr5VeC9OtwN8h6CsHqhcVd8saRBvLRnzFd/NjXCGyUwwps3G+8uXqhQyVxYOODqxVl9O/fp7qi3o8spoP/gN9PeolGGnQAAAABJRU5ErkJggg=="></div>
+</div>
+</div>
+<div id="dd0c4361" class="cell" data-execution_count="3">
+<pre class="wolfram cell-code"><code>{b1t + b2t + b3t == 1,
+ b2t*c2t + b3t*c3t == 1/2,
+ b2t*c2t^2 + b3t*c3t^2 == 1/3,
+ b3t*a32t*c2t == 1/6}</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="6">
+<div><img alt="Output" src="data:image/png;base64,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"></div>
+</div>
+</div>
+<p>The first list shows consistency holds; the second list shows the first two order conditions are met but the last two fail.</p>
+</section>
+<section id="unknowns-vs.-equations-why-the-solution-space-shrinks" class="level2" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="unknowns-vs.-equations-why-the-solution-space-shrinks"><span class="header-section-number">6.3</span> Unknowns vs.&nbsp;Equations: Why the Solution Space Shrinks</h2>
+<p>The phrase “solution space shrinks” requires care. Adding stages always adds more unknowns, so the degrees of freedom do not literally decrease. The meaningful measure is the ratio of order conditions to stages: this ratio grows steeply, and when it exceeds the effective free parameters per stage, achieving the next order requires more stages than the order number. That is the Butcher barrier — encountered in Chapter 9.</p>
+<p>The table below shows the condition count, minimum stages required, and the ratio:</p>
+<div id="aa65310d" class="cell" data-execution_count="4">
+<pre class="wolfram cell-code"><code>condCounts = {1, 2, 4, 8, 17, 37};
+minStages  = {1, 2, 3, 4, 6, 7};
+orders     = {1, 2, 3, 4, 5, 6};
+ratios     = N[condCounts / minStages, 3];
+
+TableForm[
+  Transpose[{orders, condCounts, minStages, ratios}],
+  TableHeadings -&gt; {None,
+    {"Order p", "Conditions", "Min stages s", "Conds/s"}}]</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="11">
+<div><img alt="Output" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAcYAAACYCAIAAADx895NAAAAz3pUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjabU9ZbgUhDPvnFD1CFnDgOMw8ntQb9Pg1A1VFVUvExtmUNL4+3+ljwlRSLlHRACFyy806RZWFxSrtiQ9ubKWnn9pu0k6r/CYwtn+dfmCx1T+DxJbwuYHa827Yg9yWr339r11vvdZzUJMD+BH6/z97GAo0MmM2iUCjromShGJSAm/cAAsVL5N8kwci2IaYFd5n44SNOKtHgtN4zRN8PngnlydyH6NSF2a6u4tddNqTned8A2pHWsX0IQLvAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAPHRFWHRTb2Z0d2FyZQBDcmVhdGVkIHdpdGggdGhlIFdvbGZyYW0gTGFuZ3VhZ2UgOiB3d3cud29sZnJhbS5jb21coqaFAAAAIXRFWHRDcmVhdGlvbiBUaW1lADIwMjY6MDU6MDQgMDE6NTI6MzDN+U+EAAAYUUlEQVR4Xu2dv45UxxLGjR8DodUK8wwbIONgA+wHIAAiIiQ7XkGyIYktYpA28UbYAQ+w3mADbG3AM3AttFrxGr7f3I9blPv8mT493X3OTH8nQLMz3dXVv+6u/neouvHPP/98len55Zdfnj9/nlFgJr22WMwPP/wA7c/Oznwdbty4gT8TOCdn3GKC/1f9zp07//nfc/v27R2ojqqQQOD3339/9OhR6T7wNTX766+/MN74cBjriSGAWcS4/fTTTzFZNkzz999/D0lAj6HR7H1GMm6o0rzZ2XU9fHRgfIPvvWIYSDX1hD4aRwnAbTThw6J6LEY6xldMjVYmFUnv3bv3559/YuGD58OHD5jSYzI3ngZjhqtyPt99910k9E24YZHF4qYKSc44taDK6a+vr1Hi69evWS7GITpwVwdC0xK1cuvEF8ep8eeff7YBVWeNEqnhx48fHz58GJN4ZVKxGEZNvv32W2Y4Pz/HlF7BOsTot9g0mLX++OMPv/YB8Ujoi63Ulir2zTfffP/99+yxb9++ffr0KT7Q1OrZFgJY1f3444/Pnj0zhYPzrhkrgq71+PHjWAWwOEVSmAabHPABHRQPv0F/hcFlMj4+cXc/5eWAkeXy848VagmsOJ+9+xnpkdIrY4vr8YzZf+UwHhGLX3vrvrYKv/32m288X4p9j9KD9uq2d0xGCkHTWHafi5r4FbFvRHwfqDpLW0AH6Ix/AZbdFX0S/+Ib68BWu6C92Ld99eP7yVDdewdet/MPqdTNblR9tw86ANT2Y42tFvkkZ4yUH5OMMEf6j6+7rx3tD3614dYdlQFSb75803fNoGnOrhU8Q9y+otBuamszfEAC+9NbW9bTQASiaDsomTW3jmWA+A1/tTEw0gZWDW8Lgvkgpgk3T+Or05XmDS5rZ60SVAF/+uERMPS0fQN3R5QZuHF6Q0PRciGBpTGrwSbmn0Y7+HNzpGkSQIzdjLrxszepvqsERbBv+9VD7+DpKra27r7z++wc/PZN0L6+n7AnGO1g6YOMvimDXhRPMjljfBExKXutkGUMDC5HEMnYkq7XkgSGJWi18UKtdJDvmqYRbp+vp3qnVr8msvOpw8NDbHj505MnTyDaTgy8EBxp4Xjr1atX/BJnWKjAycmJT4NvuM7Hr+gf7969G1fDfuX4wcPs79+/j8yYK9n4wTm2CWjLoO522EcdrAo4gUViCsS/OJwNlj+5dO6Vw2byJZ6enkIff7eDLsUmPjg48LSvrq7YdkU1jBeOrojTN/RJZqF6ax/YJttg3r9/H6dea7OY8IS6g6Tfz/rRxD5gG8wHDx7gz0+fPlGfFy9eYLxYiehdvpmQN+3+IzljDKX4NDipHEl8fHzs7QxHFk54LMuQJUF/QPsOHcehUM6p48+bN2+6Eka4RZlUdDUrFVbMzAEaFRahVyGaOWhsV3gwFkHKu3fv2jcw2WaDxmsYUMCfkYNnHbpsv2NugFZ+vLGmZoiHGpLjh5arzsNm8iXSevqDyJs3b/Yqw/mM7Rtcr9dRnqXYaERXxGQ/9Tg7wSyi0E3qjnHeOyioCQYw60WTYfBRNYwgyxh0IRgdJOCvk+AnZ5xUyiaJMWq6dgaG0lvhvb293iJgVTBpDZV+dHQEyYQ2tEjC9/v7+10JI9y+pjaBRPzpzWgykWBL3nsVmyx8xoxcVo9PrTOqV61obo6AAncL8xpWVBnG1Cb7CgTS6g57im2BjYvgLA8k8SsHOQxo8AZlcJANBWyDiA+2C55kWJMz5iXMlVnlt6b8OzBc/HUVwMTG7ULwjHD7mrO6X0VDLma8mBuuYIV4cXFhBd+6dQufS2/JOYMNzVF5Wz2Qhikn2MtbAkxrwa3d5eUlfl27IOKSxPZ6+GxnLIXqwmbyJXK9ye8jH8yUGM9YOGBzGpklb7IuWOyC60x4U+uOgwXsYXt7As+L/MmjT4ax5sdXL0BvI/BGSjzk5IzxRYyn5D7JWyFLTwjBThTjonfxGJQSdIOho0WbHV++fBlIQC8aGba93FYbf8x+mBLNQsNYYHj0npB2zYpt5/GSph//yA4heD2r6MxDVafu9bL0Ax5T+H0WhgTf4+Gu0N70hpECpWA9MjQkMHLMME3dxNEOThpLbCasMU0ffI5s/aAKMC5r54ws5AMhRTtYpMLdumPAYzh0z0MwyO24lv/b0Ipg8w0doaBXQGBM4xJIwjojOWMkpZFkvGsBDV9BG0H8ycjwe/+61ZBk7Pqx7mG9uD8Y0QHzWWCmoQwOB9bWLuTm70OZObj0xCAfuQa1dxfsRSs/zfoXiWi7+WvwqkDMnSDTBC8uRN7PxsufmtJXsMvNGsO/HRLcFXbvjn0uu86GYr3XVsFdpE9jN8trMw696xboFtyfLqQtUM1uN7Cb9ODlG7K1fhj07fjr75i6D1G19oWSVM96XSDWq9rtAP7GPzhajXl5xpZm3mTEZ5w6UmLSB43l1+y9HdvOOrza3TY1s8YObGKHrJNvjiG1R4DfqHn8tNber02AqQaT/M6cya6trxK0Q4DLKD8euYwNTlTbATJvTdEcOPyM2awHekbd+M9bN5UuAm0S4OHpLMcpbQL3tcbJXoI9hQSZVHUeEVgEAYxhbEW93xDefS1COSkRTWDLNv7R9VJCERABEZiBgFapM0BXkSIgArtKQCZ1V1tW9RIBEZiBgEzqDNBVpAiIwK4SuBHznxB2tfKqlwiIgAhkJIBXa2/8+uuvGSVKlAiIgAg0SwAOAXTj32zrq+IiIAL5CegsNT9TSRQBEWiWgExqs02viouACOQnIJOan6kkioAINEvgi0llFPi0cAvN4mOk3Kle+JrFVbTi9Ja/qEjFReu7k8LhuA+NGOPD0Fcf6e0/8nZDO9tPdYzbZ5OKUuGfNfB2tZNtlrFSaCF4sew6ZMtYhETFEODENhSzJ0aC0sxOgEs6Cx0Wrw8mUfjrohc+ePmDj2azqvBkCpnmyxEya1hV6AHff3ToGYRdjHFx2GwaBjo2F67Ncpi94nSCSTXwYXYXurMD2UYFYH/o/jUIpby2Lkzv/RH7oLNBnNpkN81r1fAJVqtUOLxJc2MVP5PsXkrEuZwlmsDukdywRgxWsaEQZZ+XAOxPmhNkhmIy88UgT3joaR++lX04P4ZKtICJhaqs66lCYCVWBESgOAFGI2YxOP/BZ/r/Rzi1IDAdw6tgDVs6so5MavFWVwEiIAKlCeD8FGHTsF/pjUSJI1QsVyPD2m+oqkzqhgCVXQREYGYCuKE6Pj7uPf9BaFXcUOEaOSb8X5ZqyKRmwSghIiACMxBggHfs5e0o9vr6mqerDDCDlwFwK2XXHkjmT1dLaCyTWoKqZIqACNQgcPfuXRSDJaoV5l8G5e2/v7yC/WWWco9Majm2kiwCIpCNQO//RYK5hNHEKSqLQRpEmTULiw+4/bf/OHD//n1vYbNpFgiyNyuD7+eN6D3pRbBZEuP94W6T2EvFs6jUbKFBUHW2i48C3yyZLap4r4Hz+tuI61bK/3eboN354iqfOu8sy7lfqblKckVABBokoI1/g42uKouACJQiIJNaiqzkioAINEhAJrXBRleVRUAEShGQSS1FVnJFQAQaJCCT2mCjq8oiIAKlCMikliIruSIgAg0SkEltsNFVZREQgVIEZFJLkZVcERCBBgnIpDbY6KqyCIhAKQIyqaXISq4IiECDBD6bVEaX5DM1PGGD1FhlH5dRgTnn7QbwMWwdGN7d51VGpScT2JEIqTAHcDhIZwTwlgIPg93ArcmMdjUj7OnJyQmhwSEj/N9oKpqrrWFPnz59yraAawz4JSodDGOumu5wuTsVITXw7AK/PnCBtUU+bJagqoLLLqEVEkJsLkTtxtXYtQipwdRXI9T1zs22dCGuZ3YCaojZmyBBgR2PkAqnreqXU7sFwttqKpoKrUR6HqTu7e2VEC6ZSyOwBRFSec3y+PHjpbFbsj44RYWn2ydPnixZyUZ0YytYrKFGaq1qLjRCKkwDrlngPduitaip1hJAW+JCD7ciGsZrWZVOgPtizG04mCtdkOQvisCiIqR+ZefiuOsHpjqxBHbmMJ6jV7d5S2hQRstQgJ8ltEWyDoxrEh9wiNFT/ACkHaMCtPsYpKYP7t7jhafV4nPZsqcJ+GRPE6AVyiJ7WghsZbFTTSrHoDea6AlmYRkh1apA4T5xidqtTKpMQwJZNg8mvYS8ypKXAJcqpVcfeXWWtF4CIyaVy77uiIPRtGUp05jRpGWzjlHn9dCVSaVOwaMN1Hin90EZDZ1G9SyWovdcTxFSZ2mL5EJ7G9FLU4TURZ1fSxkREAERqEFAblNqUFYZIiACjRCQSW2koVVNERCBGgRkUmtQVhkiIAKNEJBJbaShVU0REIEaBGRSa1BWGSIgAo0QkEltpKFVTREQgRoEZFJrUFYZIiACjRCQSW2koVVNERCBGgRkUmtQVhkiIAKNEJBJbaShVU0REIEaBGRSa1BWGSIgAo0QWJlUxia0R+FRJ7U9gnESnWIdT+KWMbEPmY6GUHjUjGwri0oIOs0s9niFMST9T5ViGAeeY+gOS26o4h3qmB+v0n4Y41VqOSX9FckN1db1Afrl47/JHt3oH26q28C8rMKNP0KkwKsggmRVnp22tDhMg4h+yH6gZwkEHjx4ADXev3+/BGWkQyQBjKPj42OYtoODg8gsvckYNK93v4gQpVj9XFxcbCI/Jm//Wer+/n5MZqVB8DhMjLdu3RKKRRFQiyyqOdYqkxx0ulfyzZs3h0qsEPs5NKkM9vns2bO1FJSArF69eiUUyyGAc1UsRhSPcjktUlMTLnF67SauiLChPDo6Kq3PZ5NqN1QI9qltbCR0sYoEVSGZ3VBh2GiSqwB8UUXYDVV3iWM3VI8ePcIRbb1VKgIm2xktyoaKi0K2QGUwhnHorEDTC2kamFF2YFwSol0q3e0upPLNq3F2dsbWx3IQV/z+nSXsV8yynZyc3LlzpzStnrNUqIWpXm+ijKDH1Pf69evT09PSzSP5UwlgCGHrh8EzNaPS7wABLHFw7DM0MPE9lrGlX3YcfNW/wgp5e5vw8vISyt+7d49vveGD/ampaAnNWmExsoRqSodeAuO2a+TyKg/P4J2sqXG0877StaXSusHEt7QiO6B2EHZ4B2rUVBUSgk53o6gOvZUMi4kdTGmeq9dig/jJek16KnSZ1KnE8qbH4amtL7px3vOWJWmFCPSuELvmEskCBXxG7Pp7szBNnf+McwMa5FnuSooIiIAINE9AblOa7wICIAIikI+ATGo+lpIkAiLQPAGZ1Oa7gACIgAjkIyCTmo+lJImACDRPQCa1+S4gACIgAvkIyKTmYylJIiACzROQSW2+CwiACIhAPgIyqflYSpIIiEDzBGRSm+8CAiACIpCPgExqPpaSJAIi0DyBf5lUc9cqd0oxHSOIvyhoMdCKpoGbVDgGkxuqopDLCffRTCeNJrY7n26AZ/upTsf4l0lFmIFyvHZMMuwpfPqZIwa4noHDjkn9YMeAzF4dwEechdnVkAJpBGD4LDAzvJ94VzjjAuEMHu1uLqjhQd+sKgPCW7xVyKlhVc1xiw/6KmdUa93t0IZaMjolq+PqZq1ubSZAi2AoBu3SJoptrzVdu5mFHalOd9yhD5g/KnYJy17HY9yXVSpjs6TNMA3mQhBZNiefT58+4d/i3m0bBB1XZcZZQODiuORKtWgC8eOI0cUteiOWpYhIYkFJzs/PDw8Prapv3rzBZ/5b7vlsUhlJSYFR40GTFbYVaEUeAgyFZoyXqZTJBBgaU4FRkwEuKiMNZUzk8Hfv3tkRAYYhPnO3jSUOBiYWPXt7e6wa4+lh0Vr6dG5lUlGGIikldCl670Yrwp6iIRWYM4Fhliw4O1P07ywkFyIEO2YMq0kTJPoAhiGGZK8hxhEqlqt1RujKpCr0eVpP4hIVrQh7qrCyaQyz5NKZVRaMCxHCGyTs2eP1gQXDmU+vN/2rqyuM0xcvXtTbgnOdbPdRwZ/bfs5dTn9eSgYn3zEH6uVUalNycB+l66mt7gYYVjBH8de8vP7xd1C0YIRAo+ylYczaCwCFQK3iWw3NBoWK3A2xaBvfkAqDOFezDr1tE4Qhmks9lRtPYKo9heTuJb6/5fe3/0hc57WcMDaWVqmRPYBTkU2AnC3jZ9fIUpRsKgGtUqcSW0h6DqiRfR5NUzdcIw0xaxHEx6XBtWVpsAwqVHGZ1HSwiiybzq5YTpnUYmgLCvbvI/pNsy/SXvHs6uFHYvBOvZdcIeI0dFOE1PhDcKUUAREQgTUE5DZFXUQEREAEshGQSc2GUoJEQAREQCZVfUAEREAEshGQSc2GUoJEQAREQCZVfUAEREAEshGQSc2GUoJEQAREQCZVfUAEREAEshGQSc2GUoJEQAREQCZVfUAEREAEshGQSc2GUoJEQAREYGVS4b3VxybEZ/gfFJoYAhYk1Sfu8iTeGIFKk0zAY++GyUwWq4zVCCRHSIXHfsvrbVcQwxiBVGvUxdy3FHSKsKOi6diGLhvGqxg4GdtRHnNWC23R9VE0p0IqeyIBDCIfIXXtmDLxfnDRSUqve5Rq7je18U+ctzAxwlX42dnZ2vyYKhFfTAG914JKTsDVx4cPH5IlKOPsBGAiHz58SDUYljFmq8H4fTa4bt++DXvaG10KP8H4XlxclK6pTGoiYRhT6wHjIhCREQuoyMSJ2rSd7eTkBNNb2wx2qvbxEVJhKFFzREOx+sOe8sveZ+SnXAS/mFQ7jKh04pCrBsuWw1CJGvDlWomBMCHfOjCDF+nZXgLxEVJRR/hRff78OY9QsXfEovXo6Khbd6x5h37KDCo48aAf7Dq+Wicetiw0+fhZasxJ60IrtiVqscf6g9Q6ztu3BM9Wqhk06No6mJ/p7nk6uwef0lGnqGe48UegVxSMhVVmy92kOC5RzRt5kwwqVfr09NRKwp4A65HS4dorVay9YqZGSMWuGpaUMYq4WcHthWGDQTOLjAOiCjuYwbNU9cjNO/PLly8hpF6028013kIJ3XO33kjuW1izFlXGzh1LTtjHyENPWE/s+vGqAEwneOGKEndQQ1fBmHch3BvcEoh7TOrHjx9h9SOrVEKnnZGJJepIANqdqea8FWFHvby8NDWur6/xWR143nZJKJ0nobCntI8xD9vaT6Jo96FIVhQYf/cVo0BPmuCcQpE+1x7cBAmGTktJMgguNlW40scQCFADe51TsxjdlCaSQFqEVFpPH2A8+NOXjp8q3BKt3lH3h316XzqyB/SekNpIHnnlOFK+kk0i4JtjJHDxJJlKXI3AJhFSg7zeaAaDtE5MeEVITVzdK5sIiIAIdAnoVX/1ChEQARHIRkAmNRtKCRIBERABmVT1AREQARHIRkAmNRtKCRIBERABmVT1AREQARHIRkAmNRtKCRIBERABmVT1AREQARHIRkAmNRtKCRIBERABmVT1AREQARHIRkAmNRtKCRIBERABmVT1AREQARHIRuCLSYWD1N7ArdmK2i1BI/FsFXS6ZlMHDWF9WA5/a7bC5mX5wNFsxHjHpiPRqn338PGoN1d4UAKdzdCzljzRpbneWRvPVkGn08Cm5UJnlkO1NHQz5mL89gQFYLiGolXje2/W8DmtiElarZz7MTyL7OkkcEHiEaNJvPI4twne+Lxrp7d4UUpZk0CySfVKBmMNM6v3nEsLW7pSq40/oiLDeMsL+oZ7gSGACjq9IdhJ2d++fYv0Ck4zCdrOJA489mN+3dvbs9odHBzgc/x5QhqWlUk9Pz/f399HoCudQ6VBHIlnq6DTaUiTcyESkeInJtObNyMCC21ogrrRqq+uroJKMbZKwQfLYEq3jb/iJEduDWLi2QpmJMwsyRScJgvG2YVw1CQ44Ucuf4wejD6cLVQ4gludLKAYf+LA0yid/U3qWGjI7pWIzvUmMdw8MfpthfuHzfWUhLUEMJqmNiWy+KUhi6AZ5cOz1ARLvVZbn2C18acq9uhQNWFT0BvPVkGnE0gmZ0E8d+Q9OjpKlqCMiyIw6TW4oWjVZ2dnZu8YSDU+/GoajZVJxSnqxcWF5WdNFAw9AWhwOq6g0wkMk7OcnJxgSaIFQTLARWXEDu/w8DBSpcho1byHj5SZnsxeovLvdvkgrpMWvc0mRgME+xSd69XsDHX2dDVr1HJZvcdobOLu8draaNUkyb14Baqfy/A3LVOPMCpoucAixuPZKuh05SbDaNE6oDLzvMX540d/tWOl2Ijz5Y5Hq6YV5tMrM28VKE1Bp9MX+MopAiIgAgEBuU1RlxABERCBbARkUrOhlCAREAERkElVHxABERCBbAT+Cz+X0xyhOhuJAAAAAElFTkSuQmCC"></div>
+</div>
+</div>
+<p>Reading the table: the ratio of conditions to minimum stages grows from <span class="math inline">\(1.0\)</span> at order 2, to <span class="math inline">\(1.33\)</span> at order 3, to <span class="math inline">\(2.0\)</span> at order 4, to <span class="math inline">\(2.83\)</span> at order 5. The jump between orders 4 and 5 is especially sharp: a five-stage method provides only about ten effective free parameters after applying consistency, but order 5 requires 17 conditions. This shortfall forces the use of six stages to achieve fifth-order accuracy, even though five stages would seem sufficient by naive counting. Chapter 9 explains why.</p>
+<p>For the methods in this book: RK3 (three stages) has 8 total parameters minus 2 consistency conditions minus 4 order conditions = 2 degrees of freedom. RK4 (four stages) will have 13 minus 3 minus 8 = 2 degrees of freedom. The absolute count stays at 2, but the fraction of parameters consumed by constraints grows: <span class="math inline">\(6/8 = 75\%\)</span> for RK3, <span class="math inline">\(11/13 = 85\%\)</span> for RK4. The sense in which the solution “space” shrinks is that it occupies a smaller and smaller fraction of the total parameter space as the order rises.</p>
+</section>
+<section id="solving-the-system-still-tractable-already-messy" class="level2" data-number="6.4">
+<h2 data-number="6.4" class="anchored" data-anchor-id="solving-the-system-still-tractable-already-messy"><span class="header-section-number">6.4</span> Solving the System: Still Tractable, Already Messy</h2>
+<p>We have four order conditions and six effective free parameters (after applying consistency). Treating <span class="math inline">\(c_2\)</span> and <span class="math inline">\(c_3\)</span> as the two free parameters, conditions 2 and 3 form a <span class="math inline">\(2 \times 2\)</span> linear system in <span class="math inline">\(b_2\)</span> and <span class="math inline">\(b_3\)</span> (for given <span class="math inline">\(c_2\)</span> and <span class="math inline">\(c_3\)</span>). Condition 1 then gives <span class="math inline">\(b_1 = 1 - b_2 - b_3\)</span>, and condition 4 gives <span class="math inline">\(a_{32} = 1/(6 \cdot b_3 \cdot c_2)\)</span>. The remaining coupling coefficients follow from consistency: <span class="math inline">\(a_{21} = c_2\)</span> and <span class="math inline">\(a_{31} = c_3 - a_{32}\)</span>.</p>
+<p>Wolfram Language solves all four conditions simultaneously:</p>
+<div id="2800fd40" class="cell" data-execution_count="5">
+<pre class="wolfram cell-code"><code>Solve[
+  {b1 + b2 + b3 == 1,
+   b2*c2 + b3*c3 == 1/2,
+   b2*c2^2 + b3*c3^2 == 1/3,
+   b3*a32*c2 == 1/6},
+  {b1, b2, b3, a32}]</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="12">
+<div><img alt="Output" src="data:image/png;base64,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"></div>
+</div>
+</div>
+<p>The output gives <span class="math inline">\(b_2\)</span>, <span class="math inline">\(b_3\)</span>, <span class="math inline">\(a_{32}\)</span> as rational functions of <span class="math inline">\(c_2\)</span> and <span class="math inline">\(c_3\)</span>, and <span class="math inline">\(b_1 = 1 - b_2 - b_3\)</span>. The expressions are valid whenever <span class="math inline">\(c_2\)</span> and <span class="math inline">\(c_3\)</span> are both nonzero and unequal to each other (<span class="math inline">\(c_2 = c_3\)</span> would make the <span class="math inline">\(2 \times 2\)</span> linear system singular, because both stages would lie at the same <span class="math inline">\(x\)</span>-position). Every valid choice of <span class="math inline">\(c_2\)</span>, <span class="math inline">\(c_3\)</span> with these restrictions yields a distinct but equally valid third-order method.</p>
+<div id="f9d61d38" class="cell" data-execution_count="6">
+<pre class="wolfram cell-code"><code>c2val = 1/2;
+c3val = 1;
+Solve[
+  {b1 + b2 + b3 == 1,
+   b2*c2val + b3*c3val == 1/2,
+   b2*c2val^2 + b3*c3val^2 == 1/3,
+   b3*a32*c2val == 1/6},
+  {b1, b2, b3, a32}]</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="15">
+<div><img alt="Output" src="data:image/png;base64,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"></div>
+</div>
+</div>
+<p>The output confirms <span class="math inline">\(b_1 = 1/6\)</span>, <span class="math inline">\(b_2 = 2/3\)</span>, <span class="math inline">\(b_3 = 1/6\)</span>, and <span class="math inline">\(a_{32} = 2\)</span>. Applying consistency: <span class="math inline">\(a_{21} = c_2 = 1/2\)</span> and <span class="math inline">\(a_{31} = c_3 - a_{32} = 1 - 2 = -1\)</span>. These are exactly the coefficients of Kutta’s third-order method from 1901.</p>
+</section>
+<section id="a-specific-rk3-solution-kuttas-third-order-method" class="level2" data-number="6.5">
+<h2 data-number="6.5" class="anchored" data-anchor-id="a-specific-rk3-solution-kuttas-third-order-method"><span class="header-section-number">6.5</span> A Specific RK3 Solution: Kutta’s Third-Order Method</h2>
+<p>Wilhelm Kutta derived this method in his 1901 paper as the natural three-stage analog of Simpson’s rule. Setting <span class="math inline">\(c_2 = 1/2\)</span> and <span class="math inline">\(c_3 = 1\)</span> places the three evaluation points at the left endpoint, the midpoint, and the right endpoint of each step interval — the same three nodes used by Simpson’s rule for numerical integration. The update weights <span class="math inline">\(1/6\)</span>, <span class="math inline">\(2/3\)</span>, <span class="math inline">\(1/6\)</span> are exactly Simpson’s weights.</p>
+<p>The full specification is:</p>
+<p><span class="math display">\[k_1 = f(x_n,\ y_n)\]</span></p>
+<p><span class="math display">\[k_2 = f\!\left(x_n + \tfrac{h}{2},\ y_n + \tfrac{h}{2} \cdot k_1\right)\]</span></p>
+<p><span class="math display">\[k_3 = f\!\left(x_n + h,\ y_n + h \cdot (-k_1 + 2 \cdot k_2)\right)\]</span></p>
+<p><span class="math display">\[y_{n+1} = y_n + \frac{h}{6}\,(k_1 + 4 \cdot k_2 + k_3)\]</span></p>
+<p>Several features deserve comment. First, the <span class="math inline">\(a_{31} = -1\)</span> coupling means that the <span class="math inline">\(y\)</span>-argument of <span class="math inline">\(k_3\)</span> is <span class="math inline">\(y_n - h \cdot k_1 + 2 h \cdot k_2\)</span>. This unusual negative coefficient is not a flaw: it is a direct consequence of forcing the third stage to <span class="math inline">\(x_n + h\)</span> while simultaneously satisfying all four order conditions. Second, the update formula <span class="math inline">\(\tfrac{h}{6}(k_1 + 4 k_2 + k_3)\)</span> matches Simpson’s <span class="math inline">\(1/3\)</span> rule: the midpoint slope <span class="math inline">\(k_2\)</span> receives four times the weight of the two endpoint slopes, which is exactly the weighting that makes numerical integration exact for polynomials up to degree three.</p>
+<div id="e015b977" class="cell" data-execution_count="7">
+<pre class="wolfram cell-code"><code>{b1, b2, b3}    = {1/6, 2/3, 1/6};
+{c2, c3}        = {1/2, 1};
+{a21, a31, a32} = {1/2, -1, 2};
+{c2 == a21, c3 == a31 + a32}</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="19">
+<div><img alt="Output" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHEAAAAVCAIAAAD+eZbLAAAAz3pUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjabU/bDQMhDPtnio4QEnBgHK5HpW7Q8WsO1Iqqlogd5wGE/no+wm1Ao4SUvaACQqSaqjaKIhOTo9QrXvDFzDc/xLz8Rit/C+jLP3bfMVnLzyLRKWzcQG1pDaxFptOPbebH6tdWyr6oygbI5+l/82SuyIieGJOKOyp1CZQkZJXseOAOsDHiVEl3coc7x+Cjw9oYHNDue3cPMBrn+IKNA2vkfEXexxipMyvNzEQPOvWqju+8ARFTWohPBoSTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAPHRFWHRTb2Z0d2FyZQBDcmVhdGVkIHdpdGggdGhlIFdvbGZyYW0gTGFuZ3VhZ2UgOiB3d3cud29sZnJhbS5jb21coqaFAAAAIXRFWHRDcmVhdGlvbiBUaW1lADIwMjY6MDU6MDQgMDE6NTI6MzDN+U+EAAACj0lEQVRYR+2XvZIpQRTH79zHUAKFZxAhtB5BKFLFA5AIJTwAqQiPcCUCRJ4BJfAe7m/3VPW2ntnprtmeUaWmAzXbez7+53++ZoLH4/EnP14Z+OvVWm7sk4GcU/91kHOac+qfAf8WzTodDAZBEGw2G+WKPyOPfyyJLArg8NFDSGTYonQ8HnGK9wg59r46h8NhvV7rN/rzx9f56b8vvwc54V0ulyyR4DTM2FOd3u/3NFL6xjaLxWI4ut/uqNlsVq1WscuvNCA34ka6g199jKj/KgHREiPez/V6FQz4DTvCqd68PBswVFBGIPE4f8uptBsul8slTUcjjEYjIrGyQ5yNRkO1KuhTohUkOLrdbjIT8KjnNQYneHq9nmgRF0b0+ohR9MAp1hnE9Xqdh1qtxu/pdLJyOplMptNpuVwWyfl8TrSOoK3GDYF+v499uWQl7HY7qwVZccPhUCQ7nQ6Kq9XKqojAE6fj8RhlFzVDRgjlwBFZdTGy3W6paLWvK5VKAr+OKs1mU0n++zpWxf1+L/2nDoDDWgROgxr335y22+30ui8yBurU2NEqN9aYMxAgzQY8Vey6d8rI4O2bU7LX7XY9dl+hUNB9G0MWxC49mCp3Bhc6wlKpRJ1aFwN00QTn81nHac5Tj69TMivVDDK6m3lKN8WvC+k7j2k2MgTCxWIhlyx9vbtlkrZarQRJ9bOjfnLM7gK0UMOzTiszV14S1MAKTx7Wgp6VBOHFq9DLQBIASDKLdHl5SdBHqmt29ZER+VWQ5WeJ4Us+jcJj94WQDNeRX55PdRr5VeC9OtwN8h6CsHqhcVd8saRBvLRnzFd/NjXCGyUwwps3G+8uXqhQyVxYOODqxVl9O/fp7qi3o8spoP/gN9PeolGGnQAAAABJRU5ErkJggg=="></div>
+</div>
+</div>
+<div id="cc516083" class="cell" data-execution_count="8">
+<pre class="wolfram cell-code"><code>{b1 + b2 + b3 == 1,
+ b2*c2 + b3*c3 == 1/2,
+ b2*c2^2 + b3*c3^2 == 1/3,
+ b3*a32*c2 == 1/6}</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="20">
+<div><img alt="Output" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANwAAAAVCAIAAACi3xeqAAAA0HpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjabU/trQMhDPvPFB0hJODAONwdlbpBx685UCueniVi43xB6O/XMzwGNEpI2QsqIESqqWqjKDIxOUq9443rXLm4+yHm5Tda+ZdAX/6x+47JWv4MEp3CxgZqS6thDTKdfmzzfqx6baXsg6psgHyf/u89mSsyoifGpOKOSl0CJQlZJTueOAEWRlwq6SR3uLMNPiqsjcYB7b5X9wCjcY0v2DiwRs535D7GSJ2ZaWYmetCpd3Z85wOdZ1rnsPua2QAAAAlwSFlzAAAOxAAADsQBlSsOGwAAADx0RVh0U29mdHdhcmUAQ3JlYXRlZCB3aXRoIHRoZSBXb2xmcmFtIExhbmd1YWdlIDogd3d3LndvbGZyYW0uY29tXKKmhQAAACF0RVh0Q3JlYXRpb24gVGltZQAyMDI2OjA1OjA0IDAxOjUyOjMwzflPhAAABCtJREFUaEPtmj1OI0EQhdd7DIQQAs5ABISsD0AAGRESHAASQhIQsZGIiMBHWAgIABFwBxAB92A/eFJR9Njutpn2jFbdgWXs6q5Xr+t3TOf9/f1XWYWBNjHwu01gCpbCwAcDxSmLH7SOgeKUrbuSAqg4ZfGB1jEQOuXe3l6n0+n3+4aUPweulpgiwNXlTWgQ6sPDw0B43W63QVRe9dLS0kCELy8vWRGenJwEnvaljunb1v39/dXVlf/Ev//zuYZ92/jnIMeq5+fnxpEMAwC84+Pj1sLb3d1dXFycMjyUVq/sW6Z8e3vLGhzl8MJAwMD8/HyVk5/2lCRh8j/nWhXgE6lR5eLVdwL2rQmoduiQ2hc1SBhULAJFKKX6m1LeBzB8afOG1IiTOo5e4dQyRcJsuqp8mlGIeUNqhEcXJAzgFDxTJMy+TQr49EZ5Q6LwfuqUqpiovLi4IPNTQw8ODlLaESheXV211I09mfwShCh6fX1VYUKjD4wRBIFnZ2dHu7CLQzL55dnZmdVNytn29nb02hDAivPzc6u2HJLJL9HF/YIKXTR4KErhAR/AKOSFELvS/bIGpwQ0uldWVnizvLzM69PTU5TWo6MjGqyFhQVJ9no93CXF2ujJVQEY4Xx9Tlt8e3sbPUQJYH9/X5Kbm5tsvLy8jG6cTMB+V1tbW4OHlKgm+EkEpo6wwV0m0x7dxeEwgJhu+fHxMbrl9PQU2iWv++U1cfr85pSHh4fSPe4y3TgZ/KYccn19Da1Ws4iqcZWmy3PTJvz3c0X33t3dqQLYAnB012QCuLtthDoItFgddqCil+Rt8La2tibTnrJLuUYLeBarI/be3NwQJJ7AgcIbGxu4b/DVl1PSNOQroAMBVUdRc+4UpnLLVEdRS7e5VSeeb8XRinjixumIkSmDWb6arQg/3DdoPL6ckvxB31BjAZ2ZmfHGByWJK08po1npC4LQI2QqTCyj+RDOzc35w/2zEXGbUkbzwaumcxgzdXCLt0W10xkjFkR72FPW+FRIoK0PCwo0PSUFcfTMEUyjUQvHFQCh9WEEqy/QqlDr6+sjztRz+3zjxezsLNrVh5EsfIEGOXmI/mdEErHn9uPSki7PnVpfG0Q4rSA+Ohk59Qw6w8zQsCbf4r33SzK5RnVrO6rNg5qtfOMFAQokAUAR7YQ3RKO674oCD1Crmm+8oJkBEr4IBj2p8PAAj1/6tjLwAOuFEseLdF80SZIckSyKyDK+OUa7v30jOUmLr/p4yYhfdKb8rF8PYuQr01edqBF40/8VJBGbHsSAsNp6pp+QW5LLjfyio3rRnkUJAEzKrNcIZvUeZIhGtEeV0iKTxclerRofo7A/BIJQUIVtPF8qxFubhMg9Ire1SUj3WJ1/c2e+9PPVLA38b4qOPbZNcuEiVBjIz0DeQSc//qLhP2TgHxOAYt7JiC2NAAAAAElFTkSuQmCC"></div>
+</div>
+</div>
+<p>All six should return <code>True</code>. The method is third-order accurate and is still widely used today as a lightweight alternative to RK4 in applications where one fewer function evaluation per step matters.</p>
+</section>
+<section id="implementation-and-comparison" class="level2" data-number="6.6">
+<h2 data-number="6.6" class="anchored" data-anchor-id="implementation-and-comparison"><span class="header-section-number">6.6</span> Implementation and Comparison</h2>
+<p>We implement Kutta’s third-order method and compare it against Euler’s method and the Midpoint Method on the test problem <span class="math inline">\(dy/dx = y\)</span>, <span class="math inline">\(y(0) = 1\)</span>, whose exact solution is <span class="math inline">\(e^x\)</span>.</p>
+<div id="5a47bbeb" class="cell" data-execution_count="9">
+<pre class="wolfram cell-code"><code>ClearAll[b1, b2, b3, c2, c3, a21, a31, a32]
+rk3Step[fx_, x_, y_, h_] :=
+  Module[{k1, k2, k3},
+    k1 = fx[x, y];
+    k2 = fx[x + h/2, y + (h/2)*k1];
+    k3 = fx[x + h, y + h*(-k1 + 2*k2)];
+    y + (h/6)*(k1 + 4*k2 + k3)]
+
+rk3Method[fx_, x0_, y0_, xEnd_, h_] :=
+  Module[{xc = x0, yc = y0, pts = {{x0, y0}}},
+    While[xc &lt; xEnd - h/2,
+      yc = rk3Step[fx, xc, yc, h];
+      xc = xc + h;
+      AppendTo[pts, {xc, yc}]];
+    pts]</code></pre>
+</div>
+<div id="d607cfd2" class="cell" data-execution_count="10">
+<pre class="wolfram cell-code"><code>f[x_, y_] := y
+
+eulerStep[fx_, x_, y_, h_] := y + h*fx[x, y]
+eulerMethod[fx_, x0_, y0_, xEnd_, h_] :=
+  Module[{xc = x0, yc = y0, pts = {{x0, y0}}},
+    While[xc &lt; xEnd - h/2,
+      yc = eulerStep[fx, xc, yc, h];
+      xc = xc + h;
+      AppendTo[pts, {xc, yc}]];
+    pts]
+
+midpointStep[fx_, x_, y_, h_] :=
+  Module[{k1, k2},
+    k1 = fx[x, y];
+    k2 = fx[x + h/2, y + (h/2)*k1];
+    y + h*k2]
+midpointMethod[fx_, x0_, y0_, xEnd_, h_] :=
+  Module[{xc = x0, yc = y0, pts = {{x0, y0}}},
+    While[xc &lt; xEnd - h/2,
+      yc = midpointStep[fx, xc, yc, h];
+      xc = xc + h;
+      AppendTo[pts, {xc, yc}]];
+    pts]</code></pre>
+</div>
+<div id="be4ae5ca" class="cell" data-execution_count="11">
+<pre class="wolfram cell-code"><code>hCmp = 0.25;
+eurSol = eulerMethod[f, 0, 1, 2, hCmp];
+midSol = midpointMethod[f, 0, 1, 2, hCmp];
+rk3Sol = rk3Method[f, 0, 1, 2, hCmp];
+
+cmpFig = Show[
+  Plot[Exp[x], {x, 0, 2}, PlotStyle -&gt; {Gray, Dashed}],
+  ListLinePlot[eurSol, PlotStyle -&gt; {Red,    Thick}, Mesh -&gt; All],
+  ListLinePlot[midSol, PlotStyle -&gt; {Blue,   Thick}, Mesh -&gt; All],
+  ListLinePlot[rk3Sol, PlotStyle -&gt; {Purple, Thick}, Mesh -&gt; All],
+  Frame -&gt; True, FrameLabel -&gt; {"x", "y"},
+  PlotLabel -&gt; Style[
+    "Euler (red), Midpoint (blue), RK3 (purple), h = 0.25", 12]];
+Export["06_RK3/rk3-comparison.pdf", cmpFig];
+Export["06_RK3/rk3-comparison.svg", cmpFig];</code></pre>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="06_RK3/rk3-comparison.svg" class="img-fluid figure-img"></p>
+<figcaption>Three methods compared against the exact <span class="math inline">\(e^x\)</span> (gray dashed).</figcaption>
+</figure>
+</div>
+<div id="3f882357" class="cell" data-execution_count="12">
+<pre class="wolfram cell-code"><code>hValues = {0.5, 0.25, 0.125, 0.0625, 0.03125};
+
+eurErrors = Table[
+  Abs[Last[eulerMethod[f, 0, 1, 2, hv]][[2]] - Exp[2]],
+  {hv, hValues}];
+midErrors = Table[
+  Abs[Last[midpointMethod[f, 0, 1, 2, hv]][[2]] - Exp[2]],
+  {hv, hValues}];
+rk3Errors = Table[
+  Abs[Last[rk3Method[f, 0, 1, 2, hv]][[2]] - Exp[2]],
+  {hv, hValues}];
+
+eurRatios = Prepend[Rest[eurErrors] / Most[eurErrors], "---"];
+midRatios = Prepend[Rest[midErrors] / Most[midErrors], "---"];
+rk3Ratios = Prepend[Rest[rk3Errors] / Most[rk3Errors], "---"];
+
+TableForm[
+  Transpose[{hValues, N[eurErrors, 4], eurRatios,
+             N[midErrors, 4], midRatios,
+             N[rk3Errors, 4], rk3Ratios}],
+  TableHeadings -&gt; {None,
+    {"h", "Euler", "ratio", "Midpoint", "ratio", "RK3", "ratio"}}]</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="43">
+<div><img alt="Output" src="data:image/png;base64,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"></div>
+</div>
+</div>
+<p>The ratio columns confirm the order of each method. Euler’s ratios approach <span class="math inline">\(2\)</span> (first-order), Midpoint’s ratios approach <span class="math inline">\(4\)</span> (second-order), and RK3’s ratios approach <span class="math inline">\(8\)</span> (third-order). Halving the step size reduces the RK3 error by a factor of <span class="math inline">\(2^3 = 8\)</span>.</p>
+</section>
+<section id="the-butcher-tableau-for-rk3-watching-the-pattern-grow" class="level2" data-number="6.7">
+<h2 data-number="6.7" class="anchored" data-anchor-id="the-butcher-tableau-for-rk3-watching-the-pattern-grow"><span class="header-section-number">6.7</span> The Butcher Tableau for RK3 — Watching the Pattern Grow</h2>
+<p>The Butcher tableau introduced in Section 5.10 organizes all coefficients of an RK method in a single array. For a general three-stage method the tableau has the form:</p>
+<p><span class="math display">\[\begin{array}{c|ccc} 0 &amp; &amp; &amp; \\ c_2 &amp; a_{21} &amp; &amp; \\ c_3 &amp; a_{31} &amp; a_{32} &amp; \\ \hline &amp; b_1 &amp; b_2 &amp; b_3 \end{array}\]</span></p>
+<p>For Kutta’s third-order method, substituting <span class="math inline">\(c_2 = 1/2\)</span>, <span class="math inline">\(c_3 = 1\)</span>, <span class="math inline">\(a_{21} = 1/2\)</span>, <span class="math inline">\(a_{31} = -1\)</span>, <span class="math inline">\(a_{32} = 2\)</span>, <span class="math inline">\(b_1 = b_3 = 1/6\)</span>, <span class="math inline">\(b_2 = 2/3\)</span>:</p>
+<p><span class="math display">\[\begin{array}{c|ccc} 0 &amp; &amp; &amp; \\ \tfrac{1}{2} &amp; \tfrac{1}{2} &amp; &amp; \\ 1 &amp; -1 &amp; 2 &amp; \\ \hline &amp; \tfrac{1}{6} &amp; \tfrac{2}{3} &amp; \tfrac{1}{6} \end{array}\]</span></p>
+<p>Three patterns visible in the tableau will continue into RK4. First, the <span class="math inline">\(c\)</span> column gains one entry per stage. Second, the lower-triangular coupling body grows: RK2 had one entry (<span class="math inline">\(a_{21}\)</span>), RK3 has three (<span class="math inline">\(a_{21}\)</span>, <span class="math inline">\(a_{31}\)</span>, <span class="math inline">\(a_{32}\)</span>), and RK4 will have six. Third, the weight row gains one entry per stage. The negative <span class="math inline">\(a_{31} = -1\)</span> is unusual but not exceptional: it is the necessary consequence of placing the third stage at <span class="math inline">\(x_n + h\)</span> while satisfying all four order conditions.</p>
+<p>The growth of the coupling body is the combinatorial source of the condition-count explosion at higher orders. In an explicit <span class="math inline">\(s\)</span>-stage method the coupling body has <span class="math inline">\(s(s-1)/2\)</span> entries: <span class="math inline">\(1\)</span> for RK2, <span class="math inline">\(3\)</span> for RK3, <span class="math inline">\(6\)</span> for RK4. Each entry is a free parameter, but each also participates in the order conditions in new combinations. Chapter 9 connects this to the theory of rooted trees, which gives a precise count of how many independent conditions arise at each order.</p>
+</section>
+<section id="what-changes-when-we-go-to-four-stages" class="level2" data-number="6.8">
+<h2 data-number="6.8" class="anchored" data-anchor-id="what-changes-when-we-go-to-four-stages"><span class="header-section-number">6.8</span> What Changes When We Go to Four Stages?</h2>
+<p>A four-stage scheme adds five new coefficients compared to three stages: <span class="math inline">\(b_4\)</span>, <span class="math inline">\(c_4\)</span>, <span class="math inline">\(a_{41}\)</span>, <span class="math inline">\(a_{42}\)</span>, <span class="math inline">\(a_{43}\)</span>. The total parameter count rises from 8 to 13. Three consistency conditions (<span class="math inline">\(c_2 = a_{21}\)</span>, <span class="math inline">\(c_3 = a_{31} + a_{32}\)</span>, <span class="math inline">\(c_4 = a_{41} + a_{42} + a_{43}\)</span>) reduce this to ten effective free parameters.</p>
+<p>At order 4 there are eight order conditions in total. The four conditions inherited from order 3 (conditions 1 through 4 above) still apply. The new conditions at <span class="math inline">\(h^4\)</span> come from matching four structurally independent derivative groups in the exact <span class="math inline">\(y''''\)</span> expansion, and they involve the full coupling body <span class="math inline">\(a_{31}\)</span>, <span class="math inline">\(a_{32}\)</span>, <span class="math inline">\(a_{41}\)</span>, <span class="math inline">\(a_{42}\)</span>, <span class="math inline">\(a_{43}\)</span>. The system has ten free parameters and eleven constraints (three consistency plus eight order), leaving exactly two degrees of freedom.</p>
+<div id="53997d7d" class="cell" data-execution_count="13">
+<pre class="wolfram cell-code"><code>stageCount   = {2, 3, 4};
+totalParams  = Table[s + (s - 1) + s*(s - 1)/2, {s, stageCount}];
+consistency  = stageCount - 1;
+orderConds   = {3, 4, 8};
+dof          = totalParams - consistency - orderConds;
+
+TableForm[
+  Transpose[{stageCount, totalParams, consistency, orderConds, dof}],
+  TableHeadings -&gt; {None,
+    {"Stages", "Total params", "Consistency", "Order conds", "DOF"}}]</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="49">
+<div><img alt="Output" src="data:image/png;base64,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"></div>
+</div>
+</div>
+<p>The table confirms: 1 degree of freedom for RK2, 2 for RK3, and 2 for RK4. The two degrees of freedom in RK4 correspond to two genuine choices in the classical derivation: one is related to the time-symmetry of the method (choosing between the classical RK4 and the “3/8-rule” variant), and the other is an internal gauge. Chapter 7 derives all eight order conditions, identifies both free choices, and shows how the classical coefficients <span class="math inline">\(1/6, 1/3, 1/3, 1/6\)</span> emerge as the canonical solution.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./05_RK2.html" class="pagination-link" aria-label="Second-Order Runge-Kutta --- A Family of Methods">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Second-Order Runge-Kutta — A Family of Methods</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./07_RK4_Derivation.html" class="pagination-link" aria-label="Deriving Runge-Kutta 4th Order">
+        <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Deriving Runge-Kutta 4th Order</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
