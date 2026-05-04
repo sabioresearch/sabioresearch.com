@@ -1,14 +1,14 @@
-/* Navbar home link styling */
-a[href^="https://sabioresearch.com"] {
+/* Navbar home link -- black, larger font */
+.navbar a[href^="https://sabioresearch.com"] {
   color: #000000 !important;
   font-weight: 700;
   font-size: 1.15em;
 }
-a[href^="https://sabioresearch.com"]:hover {
+.navbar a[href^="https://sabioresearch.com"]:hover {
   color: #333333 !important;
 }
 
-/* Fix sidebar chapter navigation: override Quarto's bold default */
+/* Fix sidebar chapter navigation: flatly theme makes links bold */
 #quarto-sidebar .sidebar-link,
 #quarto-sidebar .sidebar-item > a {
   font-weight: 400 !important;
