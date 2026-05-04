@@ -1,20 +1,16 @@
-/* Navbar logo -- horizontally centered in the navbar bar */
-.navbar {
-  position: relative;
-}
-
+/* Navbar logo -- vertically centered, safe for mobile hamburger menu */
 a[href^="https://sabioresearch.com"] {
-  position: absolute !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
   display: flex !important;
   align-items: center !important;
   padding-top: 0 !important;
   padding-bottom: 0 !important;
-  height: 100%;
-  top: 0;
 }
 
 a[href^="https://sabioresearch.com"] img {
   display: block;
+}
+
+/* Center the logo horizontally within the left nav group */
+.navbar-nav.me-auto {
+  justify-content: center;
 }
