@@ -1,9 +1,9 @@
 /* Navbar home link -- black, larger font */
-a[href^="https://sabioresearch.com"] {
+.navbar a[href^="https://sabioresearch.com"] {
   color: #000000 !important;
   font-weight: 700;
   font-size: 1.15em;
 }
-a[href^="https://sabioresearch.com"]:hover {
+.navbar a[href^="https://sabioresearch.com"]:hover {
   color: #333333 !important;
 }
