@@ -7,3 +7,9 @@ a[href^="https://sabioresearch.com"] {
 a[href^="https://sabioresearch.com"]:hover {
   color: #333333 !important;
 }
+
+/* Fix sidebar chapter navigation: override Quarto's bold default */
+#quarto-sidebar .sidebar-link,
+#quarto-sidebar .sidebar-item > a {
+  font-weight: 400 !important;
+}
