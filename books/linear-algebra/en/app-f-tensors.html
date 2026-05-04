@@ -1,0 +1,1714 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>31&nbsp; Appendix F: Tensor Notation for Deep Learning – Linear Algebra for ML, CV, and Robotics</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./references.html" rel="next">
+<link href="./app-e-notation.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-12eeb4b20e9f5a2b0bfc604bfaf942bb.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-YYQB7MG50X"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-YYQB7MG50X', { 'anonymize_ip': true});
+</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="custom.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Linear Algebra for ML, CV, and Robotics</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="https://sabioresearch.com/en"> 
+<span class="menu-text"><img src="../../../common-resource/SabioResearchHeader.png" alt="SabioResearch.com"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./app-a-python-reference.html">Appendices</a></li><li class="breadcrumb-item"><a href="./app-f-tensors.html"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Appendix F: Tensor Notation for Deep Learning</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+        <div class="sidebar-tools-main">
+    <a href="./../../index.html" title="Home" class="quarto-navigation-tool px-1" aria-label="Home"><i class="bi bi-house"></i></a>
+</div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part I — Linear Systems and Subspaces</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch01-why.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Why Linear Algebra?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch02-linear-systems.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Systems of Linear Equations</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch03-row-reduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Row Reduction and Echelon Forms</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch04-vectors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Vectors in ℝⁿ</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part II — Linear Maps and Coordinate Changes</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch05-matrix-equations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Matrix Equations, Column Space, and Linear Independence</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch06-linear-transforms.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Linear Transformations and Their Matrices</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch07-affine-transforms.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Affine Transformations and Homogeneous Coordinates</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part III — 3D Geometry for Robotics and Vision</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch08-rotations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">3D Rotations and SO(3)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch09-rigid-body.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Rigid Body Transformations and SE(3)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch10-camera-models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Camera Models and Projection Matrices</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch11-projective-geometry.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Projective Geometry and Homography</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part IV — Matrix Factorizations and Eigenstructure</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch12-factorizations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">LU, Cholesky, Determinants, and Numerical Conditioning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch13-eigenvalues.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Eigenvalues and the Characteristic Equation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch14-diagonalization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Diagonalization and the Spectral Theorem</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part V — Orthogonality, Projections, and Least Squares</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch15-norms.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Inner Products and Norms</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch16-orthogonality.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Orthogonal Sets, Gram–Schmidt, and QR</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch17-least-squares.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Projections, Pseudoinverse, and Least Squares</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part VI — Decompositions and Statistical Geometry</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch18-svd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Singular Value Decomposition</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch19-covariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Covariance, Statistical Geometry, and the Matrix Square Root</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch20-pca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Principal Component Analysis</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part VII — Optimization, Estimation, and Applied 3D Geometry</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch21-matrix-calculus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Matrix Calculus</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch22-jacobians.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Jacobians, Inverse Kinematics, and Nonlinear Optimization</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch23-state-estimation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">State Estimation and Covariance Propagation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch24-lie-groups.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Lie Groups and Lie Algebras</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch25-epipolar.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Epipolar Geometry</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./app-a-python-reference.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Appendix A: Python / NumPy / SciPy / OpenCV Quick Reference</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./app-b-factorizations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Appendix B: Matrix Factorization Summary</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./app-c-rotations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Appendix C: Rotation Representation Conversions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./app-d-matrix-calculus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Appendix D: Matrix Calculus Identity Reference</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./app-e-notation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Appendix E: Notation Glossary</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./app-f-tensors.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Appendix F: Tensor Notation for Deep Learning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">In This Chapter</h2>
+   
+  <ul>
+  <li><a href="#sec-app-tensors-overview" id="toc-sec-app-tensors-overview" class="nav-link active" data-scroll-target="#sec-app-tensors-overview"><span class="header-section-number">31.1</span> Overview</a>
+  <ul class="collapse">
+  <li><a href="#what-is-a-tensor" id="toc-what-is-a-tensor" class="nav-link" data-scroll-target="#what-is-a-tensor"><span class="header-section-number">31.1.1</span> What Is a Tensor?</a></li>
+  <li><a href="#axis-labeling-convention" id="toc-axis-labeling-convention" class="nav-link" data-scroll-target="#axis-labeling-convention"><span class="header-section-number">31.1.2</span> Axis Labeling Convention</a></li>
+  </ul></li>
+  <li><a href="#sec-app-tensors-einsum" id="toc-sec-app-tensors-einsum" class="nav-link" data-scroll-target="#sec-app-tensors-einsum"><span class="header-section-number">31.2</span> Einstein Summation</a>
+  <ul class="collapse">
+  <li><a href="#einsum-catalog" id="toc-einsum-catalog" class="nav-link" data-scroll-target="#einsum-catalog"><span class="header-section-number">31.2.1</span> Einsum Catalog</a></li>
+  <li><a href="#einsum-cheat-sheet" id="toc-einsum-cheat-sheet" class="nav-link" data-scroll-target="#einsum-cheat-sheet"><span class="header-section-number">31.2.2</span> Einsum Cheat Sheet</a></li>
+  <li><a href="#performance-note" id="toc-performance-note" class="nav-link" data-scroll-target="#performance-note"><span class="header-section-number">31.2.3</span> Performance Note</a></li>
+  </ul></li>
+  <li><a href="#sec-app-tensors-attention" id="toc-sec-app-tensors-attention" class="nav-link" data-scroll-target="#sec-app-tensors-attention"><span class="header-section-number">31.3</span> Transformer Attention as Einsum</a>
+  <ul class="collapse">
+  <li><a href="#scaled-dot-product-attention" id="toc-scaled-dot-product-attention" class="nav-link" data-scroll-target="#scaled-dot-product-attention"><span class="header-section-number">31.3.1</span> Scaled Dot-Product Attention</a></li>
+  <li><a href="#multi-head-attention" id="toc-multi-head-attention" class="nav-link" data-scroll-target="#multi-head-attention"><span class="header-section-number">31.3.2</span> Multi-Head Attention</a></li>
+  <li><a href="#complexity-why-attention-is-quadratic" id="toc-complexity-why-attention-is-quadratic" class="nav-link" data-scroll-target="#complexity-why-attention-is-quadratic"><span class="header-section-number">31.3.3</span> Complexity: Why Attention Is Quadratic</a></li>
+  </ul></li>
+  <li><a href="#sec-app-tensors-convolutions" id="toc-sec-app-tensors-convolutions" class="nav-link" data-scroll-target="#sec-app-tensors-convolutions"><span class="header-section-number">31.4</span> Convolutions as Tensor Contractions</a>
+  <ul class="collapse">
+  <li><a href="#d-convolution-index-form" id="toc-d-convolution-index-form" class="nav-link" data-scroll-target="#d-convolution-index-form"><span class="header-section-number">31.4.1</span> 2-D Convolution: Index Form</a></li>
+  <li><a href="#einsum-convolution-single-image" id="toc-einsum-convolution-single-image" class="nav-link" data-scroll-target="#einsum-convolution-single-image"><span class="header-section-number">31.4.2</span> Einsum Convolution (Single Image)</a></li>
+  <li><a href="#batched-convolution" id="toc-batched-convolution" class="nav-link" data-scroll-target="#batched-convolution"><span class="header-section-number">31.4.3</span> Batched Convolution</a></li>
+  <li><a href="#convolution-vs-matrix-multiply-the-unified-view" id="toc-convolution-vs-matrix-multiply-the-unified-view" class="nav-link" data-scroll-target="#convolution-vs-matrix-multiply-the-unified-view"><span class="header-section-number">31.4.4</span> Convolution vs Matrix Multiply: The Unified View</a></li>
+  <li><a href="#im2col-as-a-matrix-multiply" id="toc-im2col-as-a-matrix-multiply" class="nav-link" data-scroll-target="#im2col-as-a-matrix-multiply"><span class="header-section-number">31.4.5</span> im2col as a Matrix Multiply</a></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary"><span class="header-section-number">31.4.6</span> Summary</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./app-a-python-reference.html">Appendices</a></li><li class="breadcrumb-item"><a href="./app-f-tensors.html"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Appendix F: Tensor Notation for Deep Learning</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Appendix F: Tensor Notation for Deep Learning</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="sec-app-tensors-overview" class="level2" data-number="31.1">
+<h2 data-number="31.1" class="anchored" data-anchor-id="sec-app-tensors-overview"><span class="header-section-number">31.1</span> Overview</h2>
+<p>This appendix is a bridge between the linear algebra in this book and the array-manipulation idioms you will encounter in deep learning frameworks. The core math does not change – matrix multiply is still matrix multiply – but the notation and the API do.</p>
+<p>Three things are new relative to the rest of this book:</p>
+<ol type="1">
+<li><p><strong>Tensors</strong> – arrays with more than two axes – appear everywhere in deep learning: a minibatch of images is a rank-4 tensor (batch, height, width, channel); a sequence of token embeddings is rank-3 (batch, time, feature).</p></li>
+<li><p><strong>Einstein summation</strong> – writing contractions by repeating index letters and summing over them – is the compact notation that replaces explicit <code>for</code> loops and <code>np.dot</code> / <code>np.matmul</code> calls when axes multiply beyond two.</p></li>
+<li><p><strong>Framework APIs</strong> (<code>numpy.einsum</code>, <code>torch.einsum</code>) implement Einstein summation directly, giving you a single notation that covers dot products, matrix multiplies, batched multiplies, outer products, traces, and more.</p></li>
+</ol>
+<hr>
+<section id="what-is-a-tensor" class="level3" data-number="31.1.1">
+<h3 data-number="31.1.1" class="anchored" data-anchor-id="what-is-a-tensor"><span class="header-section-number">31.1.1</span> What Is a Tensor?</h3>
+<p>In the physics and differential geometry sense, a <em>tensor</em> is a coordinate-independent multilinear map. In deep learning the word means something simpler: an <strong><span class="math inline">\(N\)</span>-dimensional array</strong> of numbers, where <span class="math inline">\(N\)</span> is called the <strong>rank</strong> (or <strong>order</strong>, to avoid confusion with matrix rank).</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Rank</th>
+<th>Name</th>
+<th>Example shape</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>Scalar</td>
+<td><code>()</code></td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>Vector</td>
+<td><code>(n,)</code></td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>Matrix</td>
+<td><code>(m, n)</code></td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>3-tensor</td>
+<td><code>(b, m, n)</code> – a batch of <span class="math inline">\(b\)</span> matrices</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>4-tensor</td>
+<td><code>(b, h, w, c)</code> – a batch of images</td>
+</tr>
+</tbody>
+</table>
+<div id="app-f-tensor-shapes" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">0</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>scalar  <span class="op">=</span> rng.standard_normal(())            <span class="co"># shape ()</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>vector  <span class="op">=</span> rng.standard_normal((<span class="dv">5</span>,))          <span class="co"># shape (5,)</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>matrix  <span class="op">=</span> rng.standard_normal((<span class="dv">3</span>, <span class="dv">4</span>))        <span class="co"># shape (3, 4)</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>batch   <span class="op">=</span> rng.standard_normal((<span class="dv">8</span>, <span class="dv">3</span>, <span class="dv">4</span>))     <span class="co"># shape (8, 3, 4)  -- 8 matrices</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>images  <span class="op">=</span> rng.standard_normal((<span class="dv">16</span>, <span class="dv">28</span>, <span class="dv">28</span>, <span class="dv">1</span>))  <span class="co"># shape (16, 28, 28, 1)</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> name, arr <span class="kw">in</span> [(<span class="st">"scalar"</span>, scalar), (<span class="st">"vector"</span>, vector),</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>                  (<span class="st">"matrix"</span>, matrix), (<span class="st">"batch"</span>, batch), (<span class="st">"images"</span>, images)]:</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>name<span class="sc">:8s}</span><span class="ss">  ndim=</span><span class="sc">{</span>arr<span class="sc">.</span>ndim<span class="sc">}</span><span class="ss">  shape=</span><span class="sc">{</span>arr<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>scalar    ndim=0  shape=()
+vector    ndim=1  shape=(5,)
+matrix    ndim=2  shape=(3, 4)
+batch     ndim=3  shape=(8, 3, 4)
+images    ndim=4  shape=(16, 28, 28, 1)</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="axis-labeling-convention" class="level3" data-number="31.1.2">
+<h3 data-number="31.1.2" class="anchored" data-anchor-id="axis-labeling-convention"><span class="header-section-number">31.1.2</span> Axis Labeling Convention</h3>
+<p>In deep learning it is standard to give axes names rather than just indices. This appendix uses these labels consistently:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Letter</th>
+<th>Axis meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>b</code></td>
+<td>batch size</td>
+</tr>
+<tr class="even">
+<td><code>s</code>, <code>t</code></td>
+<td>sequence (time) length</td>
+</tr>
+<tr class="odd">
+<td><code>d</code>, <code>e</code></td>
+<td>embedding / feature dimension</td>
+</tr>
+<tr class="even">
+<td><code>h</code></td>
+<td>number of attention heads</td>
+</tr>
+<tr class="odd">
+<td><code>m</code>, <code>n</code></td>
+<td>general matrix dimensions</td>
+</tr>
+<tr class="even">
+<td><code>i</code>, <code>j</code>, <code>k</code></td>
+<td>summation (contracted) indices</td>
+</tr>
+<tr class="odd">
+<td><code>H</code>, <code>W</code></td>
+<td>image height, width</td>
+</tr>
+<tr class="even">
+<td><code>C</code></td>
+<td>channel count</td>
+</tr>
+<tr class="odd">
+<td><code>r</code></td>
+<td>filter radius (kernel)</td>
+</tr>
+</tbody>
+</table>
+<p>These are the same letters used in <code>einsum</code> strings throughout this appendix.</p>
+<hr>
+</section>
+</section>
+<section id="sec-app-tensors-einsum" class="level2" data-number="31.2">
+<h2 data-number="31.2" class="anchored" data-anchor-id="sec-app-tensors-einsum"><span class="header-section-number">31.2</span> Einstein Summation</h2>
+<p>Einstein’s rule: <strong>any index letter that appears exactly twice is summed over</strong>. In standard matrix notation <span class="math inline">\(C_{ij} = \sum_k A_{ik} B_{kj}\)</span> the summation sign and the <span class="math inline">\(\sum_k\)</span> are written out explicitly. The Einstein version drops the <span class="math inline">\(\sum\)</span>:</p>
+<p><span class="math display">\[C_{ij} = A_{ik} B_{kj}\]</span></p>
+<p>because <span class="math inline">\(k\)</span> appears twice (once in <span class="math inline">\(A\)</span>, once in <span class="math inline">\(B\)</span>), so the sum is implied.</p>
+<p><code>numpy.einsum</code> and <code>torch.einsum</code> accept a string that encodes the index pattern, then perform the implied contraction:</p>
+<pre><code>np.einsum("ik,kj-&gt;ij", A, B)   # matrix multiply</code></pre>
+<p>The string has the form <code>&lt;input1&gt;,&lt;input2&gt;,...-&gt;&lt;output&gt;</code>. Output indices are kept; input-only indices are summed over.</p>
+<hr>
+<section id="einsum-catalog" class="level3" data-number="31.2.1">
+<h3 data-number="31.2.1" class="anchored" data-anchor-id="einsum-catalog"><span class="header-section-number">31.2.1</span> Einsum Catalog</h3>
+<p>The table below lists the 12 most common operations. Every one is verified numerically.</p>
+<div id="app-f-einsum-catalog" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">42</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>m, n, k, b <span class="op">=</span> <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">3</span>, <span class="dv">8</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>A  <span class="op">=</span> rng.standard_normal((m, k))   <span class="co"># shape (m, k)</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>B  <span class="op">=</span> rng.standard_normal((k, n))   <span class="co"># shape (k, n)</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>x  <span class="op">=</span> rng.standard_normal((k,))     <span class="co"># shape (k,)</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>y  <span class="op">=</span> rng.standard_normal((m,))     <span class="co"># shape (m,)</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>u  <span class="op">=</span> rng.standard_normal((n,))     <span class="co"># shape (n,)</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>S  <span class="op">=</span> rng.standard_normal((m, m))   <span class="co"># shape (m, m)  -- square</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>BA <span class="op">=</span> rng.standard_normal((b, m, k))  <span class="co"># shape (b, m, k)  -- batch of matrices</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>BB <span class="op">=</span> rng.standard_normal((b, k, n))  <span class="co"># shape (b, k, n)</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co"># --- 1. Dot product: scalar = u . v ---</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>dot_es  <span class="op">=</span> np.einsum(<span class="st">"i,i-&gt;"</span>, x, x)</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>dot_np  <span class="op">=</span> np.dot(x, x)</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> np.isclose(dot_es, dot_np)</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="co"># --- 2. Outer product: M[i,j] = u[i]*v[j] ---</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>outer_es <span class="op">=</span> np.einsum(<span class="st">"i,j-&gt;ij"</span>, y, u)   <span class="co"># shape (m, n)</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>outer_np <span class="op">=</span> np.outer(y, u)</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> np.allclose(outer_es, outer_np)</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="co"># --- 3. Matrix-vector: y[i] = A[i,k] * x[k] ---</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>mv_es <span class="op">=</span> np.einsum(<span class="st">"ik,k-&gt;i"</span>, A, x)      <span class="co"># shape (m,)</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>mv_np <span class="op">=</span> A <span class="op">@</span> x</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> np.allclose(mv_es, mv_np)</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="co"># --- 4. Matrix-matrix: C[i,j] = A[i,k] * B[k,j] ---</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>mm_es <span class="op">=</span> np.einsum(<span class="st">"ik,kj-&gt;ij"</span>, A, B)    <span class="co"># shape (m, n)</span></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>mm_np <span class="op">=</span> A <span class="op">@</span> B</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> np.allclose(mm_es, mm_np)</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="co"># --- 5. Transposed multiply: C[i,j] = A[k,i] * B[k,j] (A^T @ B) ---</span></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>atb_es <span class="op">=</span> np.einsum(<span class="st">"ki,kj-&gt;ij"</span>, A, A)   <span class="co"># shape (k, k)... wait shape (m,m)</span></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a><span class="co"># A is (m,k): A^T is (k,m), A^T @ A is (k,k)</span></span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>AtA_es <span class="op">=</span> np.einsum(<span class="st">"ik,il-&gt;kl"</span>, A, A)   <span class="co"># shape (k, k)</span></span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>AtA_np <span class="op">=</span> A.T <span class="op">@</span> A</span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> np.allclose(AtA_es, AtA_np)</span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a><span class="co"># --- 6. Trace: scalar = A[i,i] ---</span></span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>trace_es <span class="op">=</span> np.einsum(<span class="st">"ii-&gt;"</span>, S)</span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>trace_np <span class="op">=</span> np.trace(S)</span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> np.isclose(trace_es, trace_np)</span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a><span class="co"># --- 7. Element-wise (Hadamard): C[i,j] = A[i,j] * A[i,j] ---</span></span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a>S2 <span class="op">=</span> rng.standard_normal((m, k))</span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>had_es <span class="op">=</span> np.einsum(<span class="st">"ij,ij-&gt;ij"</span>, A, S2)</span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>had_np <span class="op">=</span> A <span class="op">*</span> S2</span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> np.allclose(had_es, had_np)</span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a><span class="co"># --- 8. Row sum: v[i] = sum_j A[i,j] ---</span></span>
+<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a>rowsum_es <span class="op">=</span> np.einsum(<span class="st">"ij-&gt;i"</span>, A)        <span class="co"># shape (m,)</span></span>
+<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a>rowsum_np <span class="op">=</span> A.<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> np.allclose(rowsum_es, rowsum_np)</span>
+<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a><span class="co"># --- 9. Column sum: v[j] = sum_i A[i,j] ---</span></span>
+<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a>colsum_es <span class="op">=</span> np.einsum(<span class="st">"ij-&gt;j"</span>, A)        <span class="co"># shape (k,)</span></span>
+<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a>colsum_np <span class="op">=</span> A.<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> np.allclose(colsum_es, colsum_np)</span>
+<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a><span class="co"># --- 10. Transpose: B[j,i] = A[i,j] ---</span></span>
+<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a>T_es <span class="op">=</span> np.einsum(<span class="st">"ij-&gt;ji"</span>, A)            <span class="co"># shape (k, m)</span></span>
+<span id="cb4-66"><a href="#cb4-66" aria-hidden="true" tabindex="-1"></a>T_np <span class="op">=</span> A.T</span>
+<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> np.allclose(T_es, T_np)</span>
+<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-69"><a href="#cb4-69" aria-hidden="true" tabindex="-1"></a><span class="co"># --- 11. Batched matrix multiply: C[b,i,j] = sum_k A[b,i,k] * B[b,k,j] ---</span></span>
+<span id="cb4-70"><a href="#cb4-70" aria-hidden="true" tabindex="-1"></a>bmm_es <span class="op">=</span> np.einsum(<span class="st">"bik,bkj-&gt;bij"</span>, BA, BB)   <span class="co"># shape (b, m, n)</span></span>
+<span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a>bmm_np <span class="op">=</span> BA <span class="op">@</span> BB</span>
+<span id="cb4-72"><a href="#cb4-72" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> np.allclose(bmm_es, bmm_np)</span>
+<span id="cb4-73"><a href="#cb4-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-74"><a href="#cb4-74" aria-hidden="true" tabindex="-1"></a><span class="co"># --- 12. Quadratic form: scalar = x^T S x ---</span></span>
+<span id="cb4-75"><a href="#cb4-75" aria-hidden="true" tabindex="-1"></a>S_sq <span class="op">=</span> S <span class="op">@</span> S.T                                <span class="co"># make PSD, shape (m,m)</span></span>
+<span id="cb4-76"><a href="#cb4-76" aria-hidden="true" tabindex="-1"></a>xS   <span class="op">=</span> rng.standard_normal((m,))</span>
+<span id="cb4-77"><a href="#cb4-77" aria-hidden="true" tabindex="-1"></a>qf_es <span class="op">=</span> np.einsum(<span class="st">"i,ij,j-&gt;"</span>, xS, S_sq, xS)</span>
+<span id="cb4-78"><a href="#cb4-78" aria-hidden="true" tabindex="-1"></a>qf_np <span class="op">=</span> xS <span class="op">@</span> S_sq <span class="op">@</span> xS</span>
+<span id="cb4-79"><a href="#cb4-79" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> np.isclose(qf_es, qf_np)</span>
+<span id="cb4-80"><a href="#cb4-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-81"><a href="#cb4-81" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"All 12 einsum patterns verified."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>All 12 einsum patterns verified.</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="einsum-cheat-sheet" class="level3" data-number="31.2.2">
+<h3 data-number="31.2.2" class="anchored" data-anchor-id="einsum-cheat-sheet"><span class="header-section-number">31.2.2</span> Einsum Cheat Sheet</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Operation</th>
+<th>Einsum string</th>
+<th>NumPy equivalent</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Dot product</td>
+<td><code>"i,i-&gt;"</code></td>
+<td><code>np.dot(x, y)</code></td>
+</tr>
+<tr class="even">
+<td>Outer product</td>
+<td><code>"i,j-&gt;ij"</code></td>
+<td><code>np.outer(x, y)</code></td>
+</tr>
+<tr class="odd">
+<td>Matrix-vector</td>
+<td><code>"ij,j-&gt;i"</code></td>
+<td><code>A @ x</code></td>
+</tr>
+<tr class="even">
+<td>Matrix-matrix</td>
+<td><code>"ij,jk-&gt;ik"</code></td>
+<td><code>A @ B</code></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(A^T A\)</span></td>
+<td><code>"ji,jk-&gt;ik"</code></td>
+<td><code>A.T @ A</code></td>
+</tr>
+<tr class="even">
+<td>Trace</td>
+<td><code>"ii-&gt;"</code></td>
+<td><code>np.trace(A)</code></td>
+</tr>
+<tr class="odd">
+<td>Hadamard</td>
+<td><code>"ij,ij-&gt;ij"</code></td>
+<td><code>A * B</code></td>
+</tr>
+<tr class="even">
+<td>Row sum</td>
+<td><code>"ij-&gt;i"</code></td>
+<td><code>A.sum(1)</code></td>
+</tr>
+<tr class="odd">
+<td>Transpose</td>
+<td><code>"ij-&gt;ji"</code></td>
+<td><code>A.T</code></td>
+</tr>
+<tr class="even">
+<td>Batched matmul</td>
+<td><code>"bij,bjk-&gt;bik"</code></td>
+<td><code>A @ B</code> (broadcast)</td>
+</tr>
+<tr class="odd">
+<td>Quadratic form</td>
+<td><code>"i,ij,j-&gt;"</code></td>
+<td><code>x @ A @ x</code></td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+<section id="performance-note" class="level3" data-number="31.2.3">
+<h3 data-number="31.2.3" class="anchored" data-anchor-id="performance-note"><span class="header-section-number">31.2.3</span> Performance Note</h3>
+<p><code>numpy.einsum</code> accepts an <code>optimize</code> argument that chooses the lowest-cost contraction order when chaining more than two arrays. For deep learning workloads, <code>torch.einsum</code> dispatches to optimized BLAS/cuBLAS kernels and supports automatic differentiation.</p>
+<div id="app-f-einsum-optimize" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">0</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> rng.standard_normal((<span class="dv">50</span>, <span class="dv">60</span>))   <span class="co"># shape (50, 60)</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>B <span class="op">=</span> rng.standard_normal((<span class="dv">60</span>, <span class="dv">70</span>))   <span class="co"># shape (60, 70)</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>C <span class="op">=</span> rng.standard_normal((<span class="dv">70</span>, <span class="dv">80</span>))   <span class="co"># shape (70, 80)</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Two equivalent contractions; optimize picks the cheaper order</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> np.einsum(<span class="st">"ij,jk,kl-&gt;il"</span>, A, B, C, optimize<span class="op">=</span><span class="va">True</span>)  <span class="co"># shape (50, 80)</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>check  <span class="op">=</span> (A <span class="op">@</span> B) <span class="op">@</span> C</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"shape:"</span>, result.shape)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"max error:"</span>, np.<span class="bu">max</span>(np.<span class="bu">abs</span>(result <span class="op">-</span> check)))</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> np.allclose(result, check, atol<span class="op">=</span><span class="fl">1e-10</span>)</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Optimized three-way einsum verified."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>shape: (50, 80)
+max error: 1.7053025658242404e-13
+Optimized three-way einsum verified.</code></pre>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="sec-app-tensors-attention" class="level2" data-number="31.3">
+<h2 data-number="31.3" class="anchored" data-anchor-id="sec-app-tensors-attention"><span class="header-section-number">31.3</span> Transformer Attention as Einsum</h2>
+<p>Scaled dot-product attention is the single operation that powers every Transformer model. Its formula looks opaque in conventional notation but becomes transparent when written with explicit indices.</p>
+<hr>
+<section id="scaled-dot-product-attention" class="level3" data-number="31.3.1">
+<h3 data-number="31.3.1" class="anchored" data-anchor-id="scaled-dot-product-attention"><span class="header-section-number">31.3.1</span> Scaled Dot-Product Attention</h3>
+<p>Given queries <span class="math inline">\(Q \in \mathbb{R}^{s \times d}\)</span>, keys <span class="math inline">\(K \in \mathbb{R}^{t \times d}\)</span>, and values <span class="math inline">\(V \in \mathbb{R}^{t \times d_v}\)</span>, the attention output is:</p>
+<p><span class="math display">\[\operatorname{Attn}(Q, K, V) = \operatorname{softmax}\!\left(\frac{QK^T}{\sqrt{d}}\right)V\]</span></p>
+<p>In shape terms: <span class="math inline">\((s,d) \times (d,t) \to (s,t)\)</span>, then <span class="math inline">\((s,t) \times (t,d_v) \to (s,d_v)\)</span>.</p>
+<p>Using einsum notation, the score matrix is:</p>
+<pre><code>scores[s, t] = Q[s, d] * K[t, d]  (sum over d)
+np.einsum("sd,td-&gt;st", Q, K)</code></pre>
+<p>The full single-head attention in NumPy:</p>
+<div id="app-f-attention-single" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> softmax(x, axis<span class="op">=-</span><span class="dv">1</span>):</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> x <span class="op">-</span> x.<span class="bu">max</span>(axis<span class="op">=</span>axis, keepdims<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    e <span class="op">=</span> np.exp(x)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> e <span class="op">/</span> e.<span class="bu">sum</span>(axis<span class="op">=</span>axis, keepdims<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">0</span>)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>S  <span class="op">=</span> <span class="dv">6</span>    <span class="co"># query sequence length</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>T  <span class="op">=</span> <span class="dv">8</span>    <span class="co"># key/value sequence length</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>d  <span class="op">=</span> <span class="dv">16</span>   <span class="co"># key/query dimension</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>dv <span class="op">=</span> <span class="dv">16</span>   <span class="co"># value dimension</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>Q <span class="op">=</span> rng.standard_normal((S, d))    <span class="co"># shape (S, d)</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>K <span class="op">=</span> rng.standard_normal((T, d))    <span class="co"># shape (T, d)</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>V <span class="op">=</span> rng.standard_normal((T, dv))   <span class="co"># shape (T, dv)</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Compute attention using einsum ---</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 1: scores[s, t] = Q[s, d] * K[t, d]</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>scores <span class="op">=</span> np.einsum(<span class="st">"sd,td-&gt;st"</span>, Q, K) <span class="op">/</span> np.sqrt(d)   <span class="co"># shape (S, T)</span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 2: attention weights (row-wise softmax)</span></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>weights <span class="op">=</span> softmax(scores, axis<span class="op">=</span><span class="dv">1</span>)                     <span class="co"># shape (S, T)</span></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 3: weighted sum of values</span></span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>output <span class="op">=</span> np.einsum(<span class="st">"st,td-&gt;sd"</span>, weights, V)           <span class="co"># shape (S, dv)</span></span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Verify against explicit matrix multiply</span></span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>scores_mm <span class="op">=</span> (Q <span class="op">@</span> K.T) <span class="op">/</span> np.sqrt(d)</span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>output_mm <span class="op">=</span> softmax(scores_mm, axis<span class="op">=</span><span class="dv">1</span>) <span class="op">@</span> V</span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"output shape:"</span>, output.shape)</span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"max error vs matmul:"</span>, np.<span class="bu">max</span>(np.<span class="bu">abs</span>(output <span class="op">-</span> output_mm)))</span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> np.allclose(output, output_mm)</span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Single-head attention verified."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>output shape: (6, 16)
+max error vs matmul: 4.3021142204224816e-16
+Single-head attention verified.</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="multi-head-attention" class="level3" data-number="31.3.2">
+<h3 data-number="31.3.2" class="anchored" data-anchor-id="multi-head-attention"><span class="header-section-number">31.3.2</span> Multi-Head Attention</h3>
+<p>In multi-head attention, <span class="math inline">\(H\)</span> parallel heads each project Q, K, V into a lower-dimensional subspace, run attention independently, then concatenate:</p>
+<p><span class="math display">\[\text{MultiHead}(Q,K,V) = \operatorname{Concat}(\text{head}_1,\ldots,\text{head}_H)W^O\]</span></p>
+<p>where <span class="math inline">\(\text{head}_h = \operatorname{Attn}(QW_h^Q, KW_h^K, VW_h^V)\)</span>.</p>
+<p>With einsum, all <span class="math inline">\(H\)</span> heads process the full batch simultaneously. Typical shapes for a batch of <span class="math inline">\(b\)</span> sequences:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Tensor</th>
+<th>Shape</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(Q\)</span></td>
+<td><span class="math inline">\((b, s, d_{\text{model}})\)</span></td>
+<td>Queries (batch, seq, embed)</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(W^Q_h\)</span></td>
+<td><span class="math inline">\((H, d_{\text{model}}, d_h)\)</span></td>
+<td>Per-head query projection</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(Q_h\)</span></td>
+<td><span class="math inline">\((b, H, s, d_h)\)</span></td>
+<td>Projected queries</td>
+</tr>
+<tr class="even">
+<td>Scores</td>
+<td><span class="math inline">\((b, H, s, t)\)</span></td>
+<td>Attention logits</td>
+</tr>
+<tr class="odd">
+<td>Output</td>
+<td><span class="math inline">\((b, H, s, d_h)\)</span></td>
+<td>Per-head output</td>
+</tr>
+</tbody>
+</table>
+<div id="app-f-attention-multihead" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> softmax(x, axis<span class="op">=-</span><span class="dv">1</span>):</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> x <span class="op">-</span> x.<span class="bu">max</span>(axis<span class="op">=</span>axis, keepdims<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    e <span class="op">=</span> np.exp(x)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> e <span class="op">/</span> e.<span class="bu">sum</span>(axis<span class="op">=</span>axis, keepdims<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">1</span>)</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>B   <span class="op">=</span> <span class="dv">2</span>     <span class="co"># batch size</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>S   <span class="op">=</span> <span class="dv">6</span>     <span class="co"># sequence length (query)</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>T   <span class="op">=</span> <span class="dv">8</span>     <span class="co"># sequence length (key/value)</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>D   <span class="op">=</span> <span class="dv">32</span>    <span class="co"># model dimension</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>H   <span class="op">=</span> <span class="dv">4</span>     <span class="co"># number of heads</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>dh  <span class="op">=</span> D <span class="op">//</span> H  <span class="co"># head dimension = 8</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Input sequences</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>Q_in <span class="op">=</span> rng.standard_normal((B, S, D))    <span class="co"># shape (B, S, D)</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>K_in <span class="op">=</span> rng.standard_normal((B, T, D))    <span class="co"># shape (B, T, D)</span></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>V_in <span class="op">=</span> rng.standard_normal((B, T, D))    <span class="co"># shape (B, T, D)</span></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Learnable projection weights</span></span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>WQ <span class="op">=</span> rng.standard_normal((H, D, dh))    <span class="co"># shape (H, D, dh)</span></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>WK <span class="op">=</span> rng.standard_normal((H, D, dh))    <span class="co"># shape (H, D, dh)</span></span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>WV <span class="op">=</span> rng.standard_normal((H, D, dh))    <span class="co"># shape (H, D, dh)</span></span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>WO <span class="op">=</span> rng.standard_normal((H <span class="op">*</span> dh, D))   <span class="co"># shape (H*dh, D)</span></span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Project: Q_h[b,h,s,d] = Q_in[b,s,D] * WQ[h,D,d]</span></span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>Q_h <span class="op">=</span> np.einsum(<span class="st">"bsd,hde-&gt;bhse"</span>, Q_in, WQ)  <span class="co"># shape (B, H, S, dh)</span></span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>K_h <span class="op">=</span> np.einsum(<span class="st">"btd,hde-&gt;bhte"</span>, K_in, WK)  <span class="co"># shape (B, H, T, dh)</span></span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>V_h <span class="op">=</span> np.einsum(<span class="st">"btd,hde-&gt;bhte"</span>, V_in, WV)  <span class="co"># shape (B, H, T, dh)</span></span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a><span class="co"># Attention scores: scores[b,h,s,t] = Q_h[b,h,s,d] * K_h[b,h,t,d]</span></span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>scores <span class="op">=</span> np.einsum(<span class="st">"bhsd,bhtd-&gt;bhst"</span>, Q_h, K_h) <span class="op">/</span> np.sqrt(dh)  <span class="co"># (B,H,S,T)</span></span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a>weights <span class="op">=</span> softmax(scores, axis<span class="op">=-</span><span class="dv">1</span>)                               <span class="co"># (B,H,S,T)</span></span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a><span class="co"># Weighted values: out[b,h,s,d] = weights[b,h,s,t] * V_h[b,h,t,d]</span></span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a>out_h <span class="op">=</span> np.einsum(<span class="st">"bhst,bhtd-&gt;bhsd"</span>, weights, V_h)  <span class="co"># shape (B, H, S, dh)</span></span>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a><span class="co"># Concatenate heads and project out</span></span>
+<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a><span class="co"># Reshape (B, H, S, dh) -&gt; (B, S, H*dh)</span></span>
+<span id="cb11-42"><a href="#cb11-42" aria-hidden="true" tabindex="-1"></a>out_cat <span class="op">=</span> out_h.transpose(<span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">3</span>).reshape(B, S, H <span class="op">*</span> dh)   <span class="co"># (B, S, H*dh)</span></span>
+<span id="cb11-43"><a href="#cb11-43" aria-hidden="true" tabindex="-1"></a>out_final <span class="op">=</span> np.einsum(<span class="st">"bsd,de-&gt;bse"</span>, out_cat, WO)              <span class="co"># (B, S, D)</span></span>
+<span id="cb11-44"><a href="#cb11-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-45"><a href="#cb11-45" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Multi-head attention output shape:"</span>, out_final.shape)</span>
+<span id="cb11-46"><a href="#cb11-46" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> out_final.shape <span class="op">==</span> (B, S, D)</span>
+<span id="cb11-47"><a href="#cb11-47" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Multi-head attention verified."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Multi-head attention output shape: (2, 6, 32)
+Multi-head attention verified.</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="complexity-why-attention-is-quadratic" class="level3" data-number="31.3.3">
+<h3 data-number="31.3.3" class="anchored" data-anchor-id="complexity-why-attention-is-quadratic"><span class="header-section-number">31.3.3</span> Complexity: Why Attention Is Quadratic</h3>
+<p>The score matrix has shape <span class="math inline">\((b, H, s, t)\)</span>. For self-attention <span class="math inline">\(s = t = n\)</span>. The cost of computing all scores is <span class="math inline">\(O(n^2 d)\)</span> per head – quadratic in sequence length. This is the bottleneck that Sparse Attention, Linformer, Performer, and FlashAttention all target.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Stage</th>
+<th>Dominant cost</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Score computation</td>
+<td><span class="math inline">\(O(b H n^2 d_h)\)</span></td>
+</tr>
+<tr class="even">
+<td>Softmax</td>
+<td><span class="math inline">\(O(b H n^2)\)</span></td>
+</tr>
+<tr class="odd">
+<td>Weighted sum</td>
+<td><span class="math inline">\(O(b H n^2 d_h)\)</span></td>
+</tr>
+<tr class="even">
+<td>Total</td>
+<td><span class="math inline">\(O(b H n^2 d_h)\)</span> = <span class="math inline">\(O(b n^2 d)\)</span></td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+</section>
+<section id="sec-app-tensors-convolutions" class="level2" data-number="31.4">
+<h2 data-number="31.4" class="anchored" data-anchor-id="sec-app-tensors-convolutions"><span class="header-section-number">31.4</span> Convolutions as Tensor Contractions</h2>
+<p>A 2-D convolution layer applies a bank of learned filters to an input image. Written out, it looks like a quadruple loop – but it is a tensor contraction and can be expressed with a single <code>einsum</code> once you understand the index structure.</p>
+<hr>
+<section id="d-convolution-index-form" class="level3" data-number="31.4.1">
+<h3 data-number="31.4.1" class="anchored" data-anchor-id="d-convolution-index-form"><span class="header-section-number">31.4.1</span> 2-D Convolution: Index Form</h3>
+<p>Let the input be <span class="math inline">\(X \in \mathbb{R}^{H \times W \times C_\text{in}}\)</span> (one image, no batch dimension for clarity). A filter bank <span class="math inline">\(F \in \mathbb{R}^{r \times r \times C_\text{in} \times C_\text{out}}\)</span> produces output <span class="math inline">\(Y \in \mathbb{R}^{H' \times W' \times C_\text{out}}\)</span> by:</p>
+<p><span class="math display">\[Y[i, j, c_\text{out}] = \sum_{p=0}^{r-1} \sum_{q=0}^{r-1} \sum_{c=0}^{C_\text{in}-1} X[i+p,\, j+q,\, c]\; F[p,\, q,\, c,\, c_\text{out}]\]</span></p>
+<p>This is a tensor contraction over three axes: <span class="math inline">\(p, q, c\)</span>. The output spatial coordinates <span class="math inline">\(i, j\)</span> remain free; they are never contracted.</p>
+<hr>
+</section>
+<section id="einsum-convolution-single-image" class="level3" data-number="31.4.2">
+<h3 data-number="31.4.2" class="anchored" data-anchor-id="einsum-convolution-single-image"><span class="header-section-number">31.4.2</span> Einsum Convolution (Single Image)</h3>
+<p>A direct <code>einsum</code> over a sliding window is clearest to read. The code below extracts patches first (the <code>im2col</code> trick), then contracts.</p>
+<div id="app-f-conv-single" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">0</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>H, W, Cin  <span class="op">=</span> <span class="dv">8</span>, <span class="dv">8</span>, <span class="dv">3</span>     <span class="co"># input height, width, channels</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>r          <span class="op">=</span> <span class="dv">3</span>            <span class="co"># filter (kernel) size</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>Cout       <span class="op">=</span> <span class="dv">4</span>            <span class="co"># output channels</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>stride     <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Input image and filter bank</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> rng.standard_normal((H, W, Cin))             <span class="co"># shape (H, W, Cin)</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>F <span class="op">=</span> rng.standard_normal((r, r, Cin, Cout))        <span class="co"># shape (r, r, Cin, Cout)</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Output spatial dimensions</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>Ho <span class="op">=</span> (H <span class="op">-</span> r) <span class="op">//</span> stride <span class="op">+</span> <span class="dv">1</span>   <span class="co"># = 6</span></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>Wo <span class="op">=</span> (W <span class="op">-</span> r) <span class="op">//</span> stride <span class="op">+</span> <span class="dv">1</span>   <span class="co"># = 6</span></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Method 1: explicit loop (ground truth) ---</span></span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>Y_loop <span class="op">=</span> np.zeros((Ho, Wo, Cout))</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(Ho):</span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(Wo):</span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>        patch <span class="op">=</span> X[i:i<span class="op">+</span>r, j:j<span class="op">+</span>r, :]          <span class="co"># shape (r, r, Cin)</span></span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>        Y_loop[i, j, :] <span class="op">=</span> np.einsum(<span class="st">"pqc,pqco-&gt;o"</span>, patch, F)</span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Method 2: im2col + einsum ---</span></span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract all (Ho*Wo) patches into a single array</span></span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>patches <span class="op">=</span> np.lib.stride_tricks.sliding_window_view(</span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>    X, window_shape<span class="op">=</span>(r, r, Cin)</span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>)[::stride, ::stride, <span class="dv">0</span>]               <span class="co"># shape (Ho, Wo, r, r, Cin)</span></span>
+<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>Y_einsum <span class="op">=</span> np.einsum(<span class="st">"ijpqc,pqco-&gt;ijo"</span>, patches, F)  <span class="co"># shape (Ho, Wo, Cout)</span></span>
+<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Output shape:"</span>, Y_einsum.shape)</span>
+<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Max error vs loop:"</span>, np.<span class="bu">max</span>(np.<span class="bu">abs</span>(Y_einsum <span class="op">-</span> Y_loop)))</span>
+<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> np.allclose(Y_einsum, Y_loop, atol<span class="op">=</span><span class="fl">1e-10</span>)</span>
+<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"im2col einsum convolution verified."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Output shape: (6, 6, 4)
+Max error vs loop: 0.0
+im2col einsum convolution verified.</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="batched-convolution" class="level3" data-number="31.4.3">
+<h3 data-number="31.4.3" class="anchored" data-anchor-id="batched-convolution"><span class="header-section-number">31.4.3</span> Batched Convolution</h3>
+<p>In practice a minibatch of <span class="math inline">\(b\)</span> images is processed together. The batch axis <span class="math inline">\(b\)</span> is free (not contracted), so it simply prepends to both the patch and output tensors.</p>
+<div id="app-f-conv-batched" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">1</span>)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>B, H, W, Cin <span class="op">=</span> <span class="dv">4</span>, <span class="dv">8</span>, <span class="dv">8</span>, <span class="dv">3</span>    <span class="co"># batch, height, width, in-channels</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>r    <span class="op">=</span> <span class="dv">3</span>                       <span class="co"># kernel size</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>Cout <span class="op">=</span> <span class="dv">4</span>                       <span class="co"># out-channels</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>stride <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> rng.standard_normal((B, H, W, Cin))          <span class="co"># shape (B, H, W, Cin)</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>F <span class="op">=</span> rng.standard_normal((r, r, Cin, Cout))        <span class="co"># shape (r, r, Cin, Cout)</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>Ho <span class="op">=</span> (H <span class="op">-</span> r) <span class="op">//</span> stride <span class="op">+</span> <span class="dv">1</span>   <span class="co"># = 6</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>Wo <span class="op">=</span> (W <span class="op">-</span> r) <span class="op">//</span> stride <span class="op">+</span> <span class="dv">1</span>   <span class="co"># = 6</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract patches for the whole batch</span></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a><span class="co"># sliding_window_view on (B, H, W, Cin) with window (1, r, r, Cin)</span></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>patches <span class="op">=</span> np.lib.stride_tricks.sliding_window_view(</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>    X, window_shape<span class="op">=</span>(<span class="dv">1</span>, r, r, Cin)</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>)[:, ::stride, ::stride, <span class="dv">0</span>, <span class="dv">0</span>]    <span class="co"># shape (B, Ho, Wo, r, r, Cin)</span></span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>Y_batch <span class="op">=</span> np.einsum(<span class="st">"bijpqc,pqco-&gt;bijo"</span>, patches, F)  <span class="co"># shape (B, Ho, Wo, Cout)</span></span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Batched output shape:"</span>, Y_batch.shape)</span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> Y_batch.shape <span class="op">==</span> (B, Ho, Wo, Cout)</span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Batched convolution verified."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Batched output shape: (4, 6, 6, 4)
+Batched convolution verified.</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="convolution-vs-matrix-multiply-the-unified-view" class="level3" data-number="31.4.4">
+<h3 data-number="31.4.4" class="anchored" data-anchor-id="convolution-vs-matrix-multiply-the-unified-view"><span class="header-section-number">31.4.4</span> Convolution vs Matrix Multiply: The Unified View</h3>
+<p>Both operations are tensor contractions. The difference is which indices are <em>free</em> and which are <em>contracted</em>:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 30%">
+<col style="width: 44%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Operation</th>
+<th>Free indices</th>
+<th>Contracted indices</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Matrix multiply <span class="math inline">\(C=AB\)</span></td>
+<td><span class="math inline">\(i\)</span> (row), <span class="math inline">\(j\)</span> (col)</td>
+<td><span class="math inline">\(k\)</span> (inner)</td>
+</tr>
+<tr class="even">
+<td>Conv output <span class="math inline">\(Y[i,j,c_\text{out}]\)</span></td>
+<td><span class="math inline">\(i,j,c_\text{out}\)</span></td>
+<td><span class="math inline">\(p,q,c_\text{in}\)</span></td>
+</tr>
+<tr class="odd">
+<td>Attention output <span class="math inline">\(O[s,d]\)</span></td>
+<td><span class="math inline">\(s,d\)</span></td>
+<td><span class="math inline">\(t\)</span> (weighted sum)</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>im2col</code> transformation turns a convolution into a matrix multiply by explicitly stacking the contracted patch axes into a single dimension. This is how cuDNN and PyTorch implement convolutions on GPU: reshape the input patches into a large matrix, then call a single batched GEMM.</p>
+<hr>
+</section>
+<section id="im2col-as-a-matrix-multiply" class="level3" data-number="31.4.5">
+<h3 data-number="31.4.5" class="anchored" data-anchor-id="im2col-as-a-matrix-multiply"><span class="header-section-number">31.4.5</span> im2col as a Matrix Multiply</h3>
+<p>After <code>im2col</code> the patch tensor <span class="math inline">\(P \in \mathbb{R}^{(H'W') \times (r^2 C_\text{in})}\)</span> and the reshaped filter <span class="math inline">\(\hat{F} \in \mathbb{R}^{(r^2 C_\text{in}) \times C_\text{out}}\)</span> give the output in one matrix multiply:</p>
+<p><span class="math display">\[Y_{\text{flat}} = P\,\hat{F} \in \mathbb{R}^{(H'W') \times C_\text{out}}\]</span></p>
+<div id="app-f-im2col-gemm" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">2</span>)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>H, W, Cin <span class="op">=</span> <span class="dv">8</span>, <span class="dv">8</span>, <span class="dv">3</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>r    <span class="op">=</span> <span class="dv">3</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>Cout <span class="op">=</span> <span class="dv">4</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>stride <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>Ho   <span class="op">=</span> (H <span class="op">-</span> r) <span class="op">//</span> stride <span class="op">+</span> <span class="dv">1</span>   <span class="co"># = 6</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>Wo   <span class="op">=</span> (W <span class="op">-</span> r) <span class="op">//</span> stride <span class="op">+</span> <span class="dv">1</span>   <span class="co"># = 6</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> rng.standard_normal((H, W, Cin))          <span class="co"># shape (H, W, Cin)</span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>F <span class="op">=</span> rng.standard_normal((r, r, Cin, Cout))    <span class="co"># shape (r, r, Cin, Cout)</span></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a><span class="co"># im2col: extract and flatten patches</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>patches <span class="op">=</span> np.lib.stride_tricks.sliding_window_view(</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>    X, window_shape<span class="op">=</span>(r, r, Cin)</span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>)[::stride, ::stride, <span class="dv">0</span>]              <span class="co"># shape (Ho, Wo, r, r, Cin)</span></span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>P <span class="op">=</span> patches.reshape(Ho <span class="op">*</span> Wo, r <span class="op">*</span> r <span class="op">*</span> Cin)    <span class="co"># shape (Ho*Wo, r*r*Cin)</span></span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>F_flat <span class="op">=</span> F.reshape(r <span class="op">*</span> r <span class="op">*</span> Cin, Cout)        <span class="co"># shape (r*r*Cin, Cout)</span></span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>Y_gemm <span class="op">=</span> (P <span class="op">@</span> F_flat).reshape(Ho, Wo, Cout)  <span class="co"># shape (Ho, Wo, Cout)</span></span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Ground truth (loop)</span></span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>Y_ref <span class="op">=</span> np.zeros((Ho, Wo, Cout))</span>
+<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(Ho):</span>
+<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(Wo):</span>
+<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a>        patch <span class="op">=</span> X[i:i<span class="op">+</span>r, j:j<span class="op">+</span>r, :]</span>
+<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a>        Y_ref[i, j, :] <span class="op">=</span> np.einsum(<span class="st">"pqc,pqco-&gt;o"</span>, patch, F)</span>
+<span id="cb17-31"><a href="#cb17-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-32"><a href="#cb17-32" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"im2col GEMM output shape:"</span>, Y_gemm.shape)</span>
+<span id="cb17-33"><a href="#cb17-33" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Max error vs loop:"</span>, np.<span class="bu">max</span>(np.<span class="bu">abs</span>(Y_gemm <span class="op">-</span> Y_ref)))</span>
+<span id="cb17-34"><a href="#cb17-34" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> np.allclose(Y_gemm, Y_ref, atol<span class="op">=</span><span class="fl">1e-10</span>)</span>
+<span id="cb17-35"><a href="#cb17-35" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"im2col GEMM convolution verified."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>im2col GEMM output shape: (6, 6, 4)
+Max error vs loop: 2.6645352591003757e-15
+im2col GEMM convolution verified.</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="summary" class="level3" data-number="31.4.6">
+<h3 data-number="31.4.6" class="anchored" data-anchor-id="summary"><span class="header-section-number">31.4.6</span> Summary</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 48%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Concept</th>
+<th>Key einsum string</th>
+<th>Section</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Dot product</td>
+<td><code>"i,i-&gt;"</code></td>
+<td><a href="#sec-app-tensors-einsum" class="quarto-xref"><span>Section 31.2</span></a></td>
+</tr>
+<tr class="even">
+<td>Batched matmul</td>
+<td><code>"bij,bjk-&gt;bik"</code></td>
+<td><a href="#sec-app-tensors-einsum" class="quarto-xref"><span>Section 31.2</span></a></td>
+</tr>
+<tr class="odd">
+<td>Single-head attention</td>
+<td><code>"sd,td-&gt;st"</code>, <code>"st,td-&gt;sd"</code></td>
+<td><a href="#sec-app-tensors-attention" class="quarto-xref"><span>Section 31.3</span></a></td>
+</tr>
+<tr class="even">
+<td>Multi-head projection</td>
+<td><code>"bsd,hde-&gt;bhse"</code></td>
+<td><a href="#sec-app-tensors-attention" class="quarto-xref"><span>Section 31.3</span></a></td>
+</tr>
+<tr class="odd">
+<td>Multi-head scores</td>
+<td><code>"bhsd,bhtd-&gt;bhst"</code></td>
+<td><a href="#sec-app-tensors-attention" class="quarto-xref"><span>Section 31.3</span></a></td>
+</tr>
+<tr class="even">
+<td>Single-image conv</td>
+<td><code>"ijpqc,pqco-&gt;ijo"</code></td>
+<td><a href="#sec-app-tensors-convolutions" class="quarto-xref"><span>Section 31.4</span></a></td>
+</tr>
+<tr class="odd">
+<td>Batched conv</td>
+<td><code>"bijpqc,pqco-&gt;bijo"</code></td>
+<td><a href="#sec-app-tensors-convolutions" class="quarto-xref"><span>Section 31.4</span></a></td>
+</tr>
+</tbody>
+</table>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./app-e-notation.html" class="pagination-link" aria-label="Appendix E: Notation Glossary">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Appendix E: Notation Glossary</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./references.html" class="pagination-link" aria-label="References">
+        <span class="nav-page-text">References</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

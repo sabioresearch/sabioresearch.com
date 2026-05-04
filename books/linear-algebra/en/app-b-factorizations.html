@@ -1,0 +1,2331 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>27&nbsp; Appendix B: Matrix Factorization Summary – Linear Algebra for ML, CV, and Robotics</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./app-c-rotations.html" rel="next">
+<link href="./app-a-python-reference.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-12eeb4b20e9f5a2b0bfc604bfaf942bb.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-YYQB7MG50X"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-YYQB7MG50X', { 'anonymize_ip': true});
+</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="custom.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Linear Algebra for ML, CV, and Robotics</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="https://sabioresearch.com/en"> 
+<span class="menu-text"><img src="../../../common-resource/SabioResearchHeader.png" alt="SabioResearch.com"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./app-a-python-reference.html">Appendices</a></li><li class="breadcrumb-item"><a href="./app-b-factorizations.html"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Appendix B: Matrix Factorization Summary</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+        <div class="sidebar-tools-main">
+    <a href="./../../index.html" title="Home" class="quarto-navigation-tool px-1" aria-label="Home"><i class="bi bi-house"></i></a>
+</div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part I — Linear Systems and Subspaces</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch01-why.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Why Linear Algebra?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch02-linear-systems.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Systems of Linear Equations</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch03-row-reduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Row Reduction and Echelon Forms</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch04-vectors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Vectors in ℝⁿ</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part II — Linear Maps and Coordinate Changes</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch05-matrix-equations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Matrix Equations, Column Space, and Linear Independence</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch06-linear-transforms.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Linear Transformations and Their Matrices</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch07-affine-transforms.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Affine Transformations and Homogeneous Coordinates</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part III — 3D Geometry for Robotics and Vision</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch08-rotations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">3D Rotations and SO(3)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch09-rigid-body.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Rigid Body Transformations and SE(3)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch10-camera-models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Camera Models and Projection Matrices</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch11-projective-geometry.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Projective Geometry and Homography</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part IV — Matrix Factorizations and Eigenstructure</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch12-factorizations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">LU, Cholesky, Determinants, and Numerical Conditioning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch13-eigenvalues.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Eigenvalues and the Characteristic Equation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch14-diagonalization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Diagonalization and the Spectral Theorem</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part V — Orthogonality, Projections, and Least Squares</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch15-norms.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Inner Products and Norms</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch16-orthogonality.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Orthogonal Sets, Gram–Schmidt, and QR</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch17-least-squares.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Projections, Pseudoinverse, and Least Squares</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part VI — Decompositions and Statistical Geometry</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch18-svd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Singular Value Decomposition</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch19-covariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Covariance, Statistical Geometry, and the Matrix Square Root</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch20-pca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Principal Component Analysis</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part VII — Optimization, Estimation, and Applied 3D Geometry</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch21-matrix-calculus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Matrix Calculus</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch22-jacobians.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Jacobians, Inverse Kinematics, and Nonlinear Optimization</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch23-state-estimation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">State Estimation and Covariance Propagation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch24-lie-groups.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Lie Groups and Lie Algebras</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch25-epipolar.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Epipolar Geometry</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./app-a-python-reference.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Appendix A: Python / NumPy / SciPy / OpenCV Quick Reference</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./app-b-factorizations.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Appendix B: Matrix Factorization Summary</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./app-c-rotations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Appendix C: Rotation Representation Conversions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./app-d-matrix-calculus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Appendix D: Matrix Calculus Identity Reference</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./app-e-notation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Appendix E: Notation Glossary</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./app-f-tensors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Appendix F: Tensor Notation for Deep Learning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">In This Chapter</h2>
+   
+  <ul>
+  <li><a href="#sec-app-factorizations" id="toc-sec-app-factorizations" class="nav-link active" data-scroll-target="#sec-app-factorizations"><span class="header-section-number">27.1</span> Matrix Factorization Summary</a>
+  <ul class="collapse">
+  <li><a href="#at-a-glance" id="toc-at-a-glance" class="nav-link" data-scroll-target="#at-a-glance"><span class="header-section-number">27.1.1</span> At a Glance</a></li>
+  </ul></li>
+  <li><a href="#sec-app-lu" id="toc-sec-app-lu" class="nav-link" data-scroll-target="#sec-app-lu"><span class="header-section-number">27.2</span> LU Decomposition</a>
+  <ul class="collapse">
+  <li><a href="#structure" id="toc-structure" class="nav-link" data-scroll-target="#structure"><span class="header-section-number">27.2.1</span> Structure</a></li>
+  <li><a href="#api" id="toc-api" class="nav-link" data-scroll-target="#api"><span class="header-section-number">27.2.2</span> API</a></li>
+  <li><a href="#determinant-and-singular-systems" id="toc-determinant-and-singular-systems" class="nav-link" data-scroll-target="#determinant-and-singular-systems"><span class="header-section-number">27.2.3</span> Determinant and Singular Systems</a></li>
+  <li><a href="#numerical-properties" id="toc-numerical-properties" class="nav-link" data-scroll-target="#numerical-properties"><span class="header-section-number">27.2.4</span> Numerical Properties</a></li>
+  </ul></li>
+  <li><a href="#sec-app-cholesky" id="toc-sec-app-cholesky" class="nav-link" data-scroll-target="#sec-app-cholesky"><span class="header-section-number">27.3</span> Cholesky Decomposition</a>
+  <ul class="collapse">
+  <li><a href="#structure-1" id="toc-structure-1" class="nav-link" data-scroll-target="#structure-1"><span class="header-section-number">27.3.1</span> Structure</a></li>
+  <li><a href="#api-1" id="toc-api-1" class="nav-link" data-scroll-target="#api-1"><span class="header-section-number">27.3.2</span> API</a></li>
+  <li><a href="#applications-in-the-book" id="toc-applications-in-the-book" class="nav-link" data-scroll-target="#applications-in-the-book"><span class="header-section-number">27.3.3</span> Applications in the Book</a></li>
+  <li><a href="#numerical-properties-1" id="toc-numerical-properties-1" class="nav-link" data-scroll-target="#numerical-properties-1"><span class="header-section-number">27.3.4</span> Numerical Properties</a></li>
+  </ul></li>
+  <li><a href="#sec-app-qr" id="toc-sec-app-qr" class="nav-link" data-scroll-target="#sec-app-qr"><span class="header-section-number">27.4</span> QR Decomposition</a>
+  <ul class="collapse">
+  <li><a href="#thin-vs-full-qr" id="toc-thin-vs-full-qr" class="nav-link" data-scroll-target="#thin-vs-full-qr"><span class="header-section-number">27.4.1</span> Thin vs Full QR</a></li>
+  <li><a href="#api-2" id="toc-api-2" class="nav-link" data-scroll-target="#api-2"><span class="header-section-number">27.4.2</span> API</a></li>
+  <li><a href="#qr-for-least-squares" id="toc-qr-for-least-squares" class="nav-link" data-scroll-target="#qr-for-least-squares"><span class="header-section-number">27.4.3</span> QR for Least Squares</a></li>
+  <li><a href="#column-pivoted-qr-and-rank-revelation" id="toc-column-pivoted-qr-and-rank-revelation" class="nav-link" data-scroll-target="#column-pivoted-qr-and-rank-revelation"><span class="header-section-number">27.4.4</span> Column-Pivoted QR and Rank Revelation</a></li>
+  <li><a href="#numerical-properties-2" id="toc-numerical-properties-2" class="nav-link" data-scroll-target="#numerical-properties-2"><span class="header-section-number">27.4.5</span> Numerical Properties</a></li>
+  </ul></li>
+  <li><a href="#sec-app-eigen" id="toc-sec-app-eigen" class="nav-link" data-scroll-target="#sec-app-eigen"><span class="header-section-number">27.5</span> Eigendecomposition and Spectral Decomposition</a>
+  <ul class="collapse">
+  <li><a href="#eigendecomposition-general-a-plambda-p-1" id="toc-eigendecomposition-general-a-plambda-p-1" class="nav-link" data-scroll-target="#eigendecomposition-general-a-plambda-p-1"><span class="header-section-number">27.5.1</span> Eigendecomposition (General): <span class="math inline">\(A = P\Lambda P^{-1}\)</span></a></li>
+  <li><a href="#spectral-decomposition-symmetric-a-qlambda-qt" id="toc-spectral-decomposition-symmetric-a-qlambda-qt" class="nav-link" data-scroll-target="#spectral-decomposition-symmetric-a-qlambda-qt"><span class="header-section-number">27.5.2</span> Spectral Decomposition (Symmetric): <span class="math inline">\(A = Q\Lambda Q^T\)</span></a></li>
+  <li><a href="#api-3" id="toc-api-3" class="nav-link" data-scroll-target="#api-3"><span class="header-section-number">27.5.3</span> API</a></li>
+  <li><a href="#general-non-symmetric-eigendecomposition" id="toc-general-non-symmetric-eigendecomposition" class="nav-link" data-scroll-target="#general-non-symmetric-eigendecomposition"><span class="header-section-number">27.5.4</span> General (Non-Symmetric) Eigendecomposition</a></li>
+  <li><a href="#power-of-a-matrix-via-eigendecomposition" id="toc-power-of-a-matrix-via-eigendecomposition" class="nav-link" data-scroll-target="#power-of-a-matrix-via-eigendecomposition"><span class="header-section-number">27.5.5</span> Power of a Matrix via Eigendecomposition</a></li>
+  <li><a href="#pitfalls" id="toc-pitfalls" class="nav-link" data-scroll-target="#pitfalls"><span class="header-section-number">27.5.6</span> Pitfalls</a></li>
+  </ul></li>
+  <li><a href="#sec-app-svd" id="toc-sec-app-svd" class="nav-link" data-scroll-target="#sec-app-svd"><span class="header-section-number">27.6</span> Singular Value Decomposition</a>
+  <ul class="collapse">
+  <li><a href="#thin-vs-full-svd" id="toc-thin-vs-full-svd" class="nav-link" data-scroll-target="#thin-vs-full-svd"><span class="header-section-number">27.6.1</span> Thin vs Full SVD</a></li>
+  <li><a href="#api-4" id="toc-api-4" class="nav-link" data-scroll-target="#api-4"><span class="header-section-number">27.6.2</span> API</a></li>
+  <li><a href="#low-rank-approximation" id="toc-low-rank-approximation" class="nav-link" data-scroll-target="#low-rank-approximation"><span class="header-section-number">27.6.3</span> Low-Rank Approximation</a></li>
+  <li><a href="#pseudoinverse" id="toc-pseudoinverse" class="nav-link" data-scroll-target="#pseudoinverse"><span class="header-section-number">27.6.4</span> Pseudoinverse</a></li>
+  <li><a href="#svd-and-pca" id="toc-svd-and-pca" class="nav-link" data-scroll-target="#svd-and-pca"><span class="header-section-number">27.6.5</span> SVD and PCA</a></li>
+  <li><a href="#numerical-properties-3" id="toc-numerical-properties-3" class="nav-link" data-scroll-target="#numerical-properties-3"><span class="header-section-number">27.6.6</span> Numerical Properties</a></li>
+  </ul></li>
+  <li><a href="#sec-app-factorization-guide" id="toc-sec-app-factorization-guide" class="nav-link" data-scroll-target="#sec-app-factorization-guide"><span class="header-section-number">27.7</span> Decision Guide</a>
+  <ul class="collapse">
+  <li><a href="#which-factorization-to-use" id="toc-which-factorization-to-use" class="nav-link" data-scroll-target="#which-factorization-to-use"><span class="header-section-number">27.7.1</span> Which Factorization to Use</a></li>
+  <li><a href="#relationship-between-factorizations" id="toc-relationship-between-factorizations" class="nav-link" data-scroll-target="#relationship-between-factorizations"><span class="header-section-number">27.7.2</span> Relationship Between Factorizations</a></li>
+  <li><a href="#conditioning-and-numerical-stability-at-a-glance" id="toc-conditioning-and-numerical-stability-at-a-glance" class="nav-link" data-scroll-target="#conditioning-and-numerical-stability-at-a-glance"><span class="header-section-number">27.7.3</span> Conditioning and Numerical Stability at a Glance</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./app-a-python-reference.html">Appendices</a></li><li class="breadcrumb-item"><a href="./app-b-factorizations.html"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Appendix B: Matrix Factorization Summary</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Appendix B: Matrix Factorization Summary</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="sec-app-factorizations" class="level2" data-number="27.1">
+<h2 data-number="27.1" class="anchored" data-anchor-id="sec-app-factorizations"><span class="header-section-number">27.1</span> Matrix Factorization Summary</h2>
+<p>Every major matrix factorization decomposes a matrix into structured factors that expose a different geometric or algebraic property. Knowing which factorization to reach for – and why – is as important as knowing the API.</p>
+<hr>
+<section id="at-a-glance" class="level3" data-number="27.1.1">
+<h3 data-number="27.1.1" class="anchored" data-anchor-id="at-a-glance"><span class="header-section-number">27.1.1</span> At a Glance</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Factorization</th>
+<th>Form</th>
+<th>Requirement</th>
+<th>Cost</th>
+<th>Primary uses</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>LU</td>
+<td><span class="math inline">\(PA = LU\)</span></td>
+<td>Square</td>
+<td><span class="math inline">\(O(n^3)\)</span></td>
+<td>Solve <span class="math inline">\(Ax = b\)</span>, compute det</td>
+</tr>
+<tr class="even">
+<td>Cholesky</td>
+<td><span class="math inline">\(A = LL^T\)</span></td>
+<td>Symmetric PD</td>
+<td><span class="math inline">\(\tfrac{1}{2}O(n^3)\)</span></td>
+<td>Kalman filter, multivariate sampling</td>
+</tr>
+<tr class="odd">
+<td>QR</td>
+<td><span class="math inline">\(A = QR\)</span></td>
+<td>Any</td>
+<td><span class="math inline">\(O(mn^2)\)</span></td>
+<td>Least squares, eigenvalue algorithms</td>
+</tr>
+<tr class="even">
+<td>Eigendecomposition</td>
+<td><span class="math inline">\(A = P\Lambda P^{-1}\)</span></td>
+<td>Square, diagonalizable</td>
+<td><span class="math inline">\(O(n^3)\)</span></td>
+<td>Dynamics, stability, PageRank</td>
+</tr>
+<tr class="odd">
+<td>Spectral</td>
+<td><span class="math inline">\(A = Q\Lambda Q^T\)</span></td>
+<td>Symmetric</td>
+<td><span class="math inline">\(O(n^3)\)</span></td>
+<td>PCA, quadratic forms, Hessians</td>
+</tr>
+<tr class="even">
+<td>SVD</td>
+<td><span class="math inline">\(A = U\Sigma V^T\)</span></td>
+<td>Any</td>
+<td><span class="math inline">\(O(mn^2)\)</span></td>
+<td>Low-rank approx, pseudoinverse, PCA</td>
+</tr>
+</tbody>
+</table>
+<div id="cell-fig-app-factorization-overview" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.patches <span class="im">as</span> mpatches</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.linalg</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">42</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">6</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>A_sq <span class="op">=</span> rng.standard_normal((n, n))</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>A_sq <span class="op">=</span> A_sq <span class="op">@</span> A_sq.T <span class="op">+</span> n <span class="op">*</span> np.eye(n)   <span class="co"># shape (n, n)  SPD</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>P_mat, L, U <span class="op">=</span> scipy.linalg.lu(A_sq)             <span class="co"># PA = LU</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>L_cho <span class="op">=</span> np.linalg.cholesky(A_sq)                <span class="co"># A = L L^T</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>Q_qr, R_qr <span class="op">=</span> np.linalg.qr(A_sq)                <span class="co"># A = Q R</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>vals, P_eig <span class="op">=</span> np.linalg.eigh(A_sq)              <span class="co"># symmetric -- spectral</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>Lam <span class="op">=</span> np.diag(vals)                              <span class="co"># shape (n, n)</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>U_svd, s, Vt <span class="op">=</span> np.linalg.svd(A_sq, full_matrices<span class="op">=</span><span class="va">False</span>)  <span class="co"># shape (n,)</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>threshold <span class="op">=</span> <span class="fl">1e-10</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>patterns <span class="op">=</span> [</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    (np.<span class="bu">abs</span>(L) <span class="op">&gt;</span> threshold,        <span class="st">'L</span><span class="ch">\n</span><span class="st">(lower)'</span>),</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    (np.<span class="bu">abs</span>(U) <span class="op">&gt;</span> threshold,        <span class="st">'U</span><span class="ch">\n</span><span class="st">(upper)'</span>),</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    (np.<span class="bu">abs</span>(L_cho) <span class="op">&gt;</span> threshold,    <span class="st">'L</span><span class="ch">\n</span><span class="st">(Cholesky)'</span>),</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    (np.<span class="bu">abs</span>(Q_qr) <span class="op">&gt;</span> threshold,     <span class="st">'Q</span><span class="ch">\n</span><span class="st">(orthogonal)'</span>),</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    (np.<span class="bu">abs</span>(R_qr) <span class="op">&gt;</span> threshold,     <span class="st">'R</span><span class="ch">\n</span><span class="st">(upper)'</span>),</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    (np.<span class="bu">abs</span>(P_eig) <span class="op">&gt;</span> threshold,    <span class="st">'P</span><span class="ch">\n</span><span class="st">(eigenvecs)'</span>),</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    (np.<span class="bu">abs</span>(Lam) <span class="op">&gt;</span> threshold,      <span class="st">'Lambda</span><span class="ch">\n</span><span class="st">(diagonal)'</span>),</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    (np.<span class="bu">abs</span>(U_svd) <span class="op">&gt;</span> threshold,    <span class="st">'U</span><span class="ch">\n</span><span class="st">(left sv)'</span>),</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    (np.<span class="bu">abs</span>(Vt) <span class="op">&gt;</span> threshold,       <span class="st">'V^T</span><span class="ch">\n</span><span class="st">(right sv)'</span>),</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">9</span>, figsize<span class="op">=</span>(<span class="dv">13</span>, <span class="fl">2.0</span>))</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax, (pat, label) <span class="kw">in</span> <span class="bu">zip</span>(axes, patterns):</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>    ax.imshow(pat, cmap<span class="op">=</span><span class="st">'Blues'</span>, vmin<span class="op">=</span><span class="dv">0</span>, vmax<span class="op">=</span><span class="dv">1</span>, aspect<span class="op">=</span><span class="st">'auto'</span>)</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>    ax.set_title(label, fontsize<span class="op">=</span><span class="fl">7.5</span>)</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>    ax.set_xticks([])</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>    ax.set_yticks([])</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>plt.suptitle(<span class="st">'Factor sparsity patterns (n = 6)'</span>, fontsize<span class="op">=</span><span class="dv">9</span>, y<span class="op">=</span><span class="fl">1.03</span>)</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div id="fig-app-factorization-overview" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-app-factorization-overview-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="app-b-factorizations_files/figure-html/fig-app-factorization-overview-output-1.png" width="1238" height="203" class="figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-app-factorization-overview-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;27.1: Sparsity patterns of the factor matrices produced by each decomposition for a 6x6 example. Dark cells are non-zero entries; light cells are structural zeros. L (lower triangular), U (upper triangular), Q (orthogonal – dense), R (upper triangular), P (eigenvector matrix – dense), and U/V^T (singular vector matrices – dense).
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="sec-app-lu" class="level2" data-number="27.2">
+<h2 data-number="27.2" class="anchored" data-anchor-id="sec-app-lu"><span class="header-section-number">27.2</span> LU Decomposition</h2>
+<p><strong>Form:</strong> <span class="math inline">\(PA = LU\)</span></p>
+<p>Gaussian elimination with partial pivoting factors a square matrix <span class="math inline">\(A\)</span> into a permutation matrix <span class="math inline">\(P\)</span>, a unit lower-triangular matrix <span class="math inline">\(L\)</span> (ones on diagonal), and an upper-triangular matrix <span class="math inline">\(U\)</span>.</p>
+<section id="structure" class="level3" data-number="27.2.1">
+<h3 data-number="27.2.1" class="anchored" data-anchor-id="structure"><span class="header-section-number">27.2.1</span> Structure</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Factor</th>
+<th>Shape</th>
+<th>Properties</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(P\)</span></td>
+<td><span class="math inline">\((n, n)\)</span></td>
+<td>Permutation; <span class="math inline">\(P^T = P^{-1}\)</span></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(L\)</span></td>
+<td><span class="math inline">\((n, n)\)</span></td>
+<td>Lower triangular; diagonal entries all 1</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(U\)</span></td>
+<td><span class="math inline">\((n, n)\)</span></td>
+<td>Upper triangular; diagonal entries are pivots</td>
+</tr>
+</tbody>
+</table>
+<p>The factorization always exists for any square matrix (no symmetry or positive-definiteness required). After factoring, each additional right-hand side costs <span class="math inline">\(O(n^2)\)</span> via forward and back substitution.</p>
+<hr>
+</section>
+<section id="api" class="level3" data-number="27.2.2">
+<h3 data-number="27.2.2" class="anchored" data-anchor-id="api"><span class="header-section-number">27.2.2</span> API</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 31%">
+<col style="width: 68%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Call</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>np.linalg.solve(A, b)</code></td>
+<td>Solve once; computes LU internally</td>
+</tr>
+<tr class="even">
+<td><code>scipy.linalg.lu_factor(A)</code></td>
+<td>Return packed <code>(lu, piv)</code></td>
+</tr>
+<tr class="odd">
+<td><code>scipy.linalg.lu_solve((lu, piv), b)</code></td>
+<td>Solve for each RHS using stored LU</td>
+</tr>
+<tr class="even">
+<td><code>scipy.linalg.lu(A)</code></td>
+<td>Return explicit <code>(P, L, U)</code> matrices</td>
+</tr>
+</tbody>
+</table>
+<div id="app-b-lu" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.linalg</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">0</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">4</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> rng.standard_normal((n, n))     <span class="co"># shape (4, 4)  general square</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>B <span class="op">=</span> rng.standard_normal((n, <span class="dv">3</span>))     <span class="co"># shape (4, 3)  multiple right-hand sides</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Factor once</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>lu, piv <span class="op">=</span> scipy.linalg.lu_factor(A)        <span class="co"># packed representation</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Solve three right-hand sides cheaply</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> scipy.linalg.lu_solve((lu, piv), B)    <span class="co"># shape (4, 3)</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"||AX - B|| = </span><span class="sc">{</span>np<span class="sc">.</span>linalg<span class="sc">.</span>norm(A <span class="op">@</span> X <span class="op">-</span> B)<span class="sc">:.2e}</span><span class="ss">"</span>)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Inspect factors explicitly</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>P, L, U <span class="op">=</span> scipy.linalg.lu(A)              <span class="co"># P shape (4,4), L shape (4,4), U shape (4,4)</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"||PA - LU|| = </span><span class="sc">{</span>np<span class="sc">.</span>linalg<span class="sc">.</span>norm(P <span class="op">@</span> A <span class="op">-</span> L <span class="op">@</span> U)<span class="sc">:.2e}</span><span class="ss">"</span>)</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"L diagonal (all 1): </span><span class="sc">{</span>np<span class="sc">.</span>diag(L)<span class="sc">.</span><span class="bu">round</span>(<span class="dv">4</span>)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"U diagonal (pivots): </span><span class="sc">{</span>np<span class="sc">.</span>diag(U)<span class="sc">.</span><span class="bu">round</span>(<span class="dv">4</span>)<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>||AX - B|| = 6.03e-16
+||PA - LU|| = 1.16e-16
+L diagonal (all 1): [1. 1. 1. 1.]
+U diagonal (pivots): [-2.325  -1.1992  1.5065 -0.4487]</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="determinant-and-singular-systems" class="level3" data-number="27.2.3">
+<h3 data-number="27.2.3" class="anchored" data-anchor-id="determinant-and-singular-systems"><span class="header-section-number">27.2.3</span> Determinant and Singular Systems</h3>
+<p>Once LU is available, the determinant is the product of the <span class="math inline">\(U\)</span> diagonal (times the permutation sign), without a separate <span class="math inline">\(O(n^3)\)</span> computation:</p>
+<div id="app-b-lu-det" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.linalg</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">1</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> rng.standard_normal((<span class="dv">5</span>, <span class="dv">5</span>))   <span class="co"># shape (5, 5)</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>lu, piv <span class="op">=</span> scipy.linalg.lu_factor(A)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Sign of permutation: count swaps in piv</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> A.shape[<span class="dv">0</span>]</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>sign <span class="op">=</span> (<span class="op">-</span><span class="dv">1</span>) <span class="op">**</span> <span class="bu">int</span>(np.<span class="bu">sum</span>(piv <span class="op">!=</span> np.arange(n)))</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>det_fast <span class="op">=</span> sign <span class="op">*</span> np.prod(np.diag(lu))</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>det_ref  <span class="op">=</span> np.linalg.det(A)</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"det (fast): </span><span class="sc">{</span>det_fast<span class="sc">:.6f}</span><span class="ss">"</span>)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"det (ref) : </span><span class="sc">{</span>det_ref<span class="sc">:.6f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>det (fast): 1.658587
+det (ref) : 1.658587</code></pre>
+</div>
+</div>
+<blockquote class="blockquote">
+<p><code>scipy.linalg.lu_factor</code> returns <code>piv</code> as a 1-D array of pivot indices used by LAPACK’s <code>dgetrf</code>, not a full permutation matrix. Use <code>scipy.linalg.lu(A)</code> when you need <span class="math inline">\(P\)</span>, <span class="math inline">\(L\)</span>, <span class="math inline">\(U\)</span> as separate arrays.</p>
+</blockquote>
+<hr>
+</section>
+<section id="numerical-properties" class="level3" data-number="27.2.4">
+<h3 data-number="27.2.4" class="anchored" data-anchor-id="numerical-properties"><span class="header-section-number">27.2.4</span> Numerical Properties</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 58%">
+<col style="width: 41%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Property</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Stability</td>
+<td>Backward stable with partial pivoting</td>
+</tr>
+<tr class="even">
+<td>Condition sensitivity</td>
+<td><span class="math inline">\(\kappa(A) = \|A\| \cdot \|A^{-1}\|\)</span> governs error</td>
+</tr>
+<tr class="odd">
+<td>Memory</td>
+<td>In-place; <span class="math inline">\(L\)</span> and <span class="math inline">\(U\)</span> share the storage of <code>lu</code></td>
+</tr>
+<tr class="even">
+<td>Fails</td>
+<td>Singular matrix (zero pivot encountered)</td>
+</tr>
+</tbody>
+</table>
+<p>When the condition number <span class="math inline">\(\kappa(A)\)</span> is large, small perturbations in <span class="math inline">\(b\)</span> produce large changes in <span class="math inline">\(x\)</span>. Check <code>np.linalg.cond(A)</code> before trusting the solution.</p>
+<hr>
+</section>
+</section>
+<section id="sec-app-cholesky" class="level2" data-number="27.3">
+<h2 data-number="27.3" class="anchored" data-anchor-id="sec-app-cholesky"><span class="header-section-number">27.3</span> Cholesky Decomposition</h2>
+<p><strong>Form:</strong> <span class="math inline">\(A = LL^T\)</span> (or equivalently <span class="math inline">\(A = U^T U\)</span> with an upper triangular <span class="math inline">\(U\)</span>)</p>
+<p>Cholesky factors a <strong>symmetric positive definite (SPD)</strong> matrix into a lower triangular matrix <span class="math inline">\(L\)</span> whose diagonal entries are positive. It requires roughly half the floating-point operations of LU and is numerically very stable.</p>
+<section id="structure-1" class="level3" data-number="27.3.1">
+<h3 data-number="27.3.1" class="anchored" data-anchor-id="structure-1"><span class="header-section-number">27.3.1</span> Structure</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Factor</th>
+<th>Shape</th>
+<th>Properties</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(L\)</span></td>
+<td><span class="math inline">\((n, n)\)</span></td>
+<td>Lower triangular; positive diagonal</td>
+</tr>
+</tbody>
+</table>
+<p>Existence and uniqueness are guaranteed if and only if <span class="math inline">\(A\)</span> is SPD. In practice, a failed Cholesky is the cheapest way to test whether a matrix is positive definite.</p>
+<hr>
+</section>
+<section id="api-1" class="level3" data-number="27.3.2">
+<h3 data-number="27.3.2" class="anchored" data-anchor-id="api-1"><span class="header-section-number">27.3.2</span> API</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 31%">
+<col style="width: 68%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Call</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>np.linalg.cholesky(A)</code></td>
+<td>Return lower triangular <span class="math inline">\(L\)</span>; raises <code>LinAlgError</code> if not PD</td>
+</tr>
+<tr class="even">
+<td><code>scipy.linalg.cho_factor(A)</code></td>
+<td>Return packed <code>(c, lower)</code> for repeated solves</td>
+</tr>
+<tr class="odd">
+<td><code>scipy.linalg.cho_solve((c, lower), b)</code></td>
+<td>Solve each RHS with stored Cholesky</td>
+</tr>
+</tbody>
+</table>
+<div id="app-b-cholesky" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.linalg</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">0</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">5</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> rng.standard_normal((n, n))      <span class="co"># shape (5, 5)</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> A <span class="op">@</span> A.T <span class="op">+</span> n <span class="op">*</span> np.eye(n)          <span class="co"># shape (5, 5)  SPD</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> rng.standard_normal((n,))        <span class="co"># shape (5,)</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Single solve</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>L <span class="op">=</span> np.linalg.cholesky(A)            <span class="co"># shape (5, 5)  lower triangular</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"||LL^T - A|| = </span><span class="sc">{</span>np<span class="sc">.</span>linalg<span class="sc">.</span>norm(L <span class="op">@</span> L.T <span class="op">-</span> A)<span class="sc">:.2e}</span><span class="ss">"</span>)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"L diagonal (positive): </span><span class="sc">{</span>np<span class="sc">.</span>diag(L)<span class="sc">.</span><span class="bu">round</span>(<span class="dv">4</span>)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Pre-factor for multiple right-hand sides</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>c, lower <span class="op">=</span> scipy.linalg.cho_factor(A)         <span class="co"># packed Cholesky</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> scipy.linalg.cho_solve((c, lower), b)     <span class="co"># shape (5,)</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"||Ax - b||   = </span><span class="sc">{</span>np<span class="sc">.</span>linalg<span class="sc">.</span>norm(A <span class="op">@</span> x <span class="op">-</span> b)<span class="sc">:.2e}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>||LL^T - A|| = 2.88e-15
+L diagonal (positive): [2.3961 3.1016 3.4962 2.5086 2.8318]
+||Ax - b||   = 2.31e-16</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="applications-in-the-book" class="level3" data-number="27.3.3">
+<h3 data-number="27.3.3" class="anchored" data-anchor-id="applications-in-the-book"><span class="header-section-number">27.3.3</span> Applications in the Book</h3>
+<p><strong>Sampling from a multivariate Gaussian <span class="math inline">\(\mathcal{N}(\mu, \Sigma)\)</span>:</strong></p>
+<p>If <span class="math inline">\(\Sigma = LL^T\)</span>, then <span class="math inline">\(x = \mu + L z\)</span> where <span class="math inline">\(z \sim \mathcal{N}(0, I)\)</span> produces samples from <span class="math inline">\(\mathcal{N}(\mu, \Sigma)\)</span>.</p>
+<div id="app-b-cholesky-sampling" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">7</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>n_dim, n_samples <span class="op">=</span> <span class="dv">3</span>, <span class="dv">10000</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Covariance matrix and mean</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>Sigma <span class="op">=</span> np.array([[<span class="fl">2.0</span>, <span class="fl">0.8</span>, <span class="fl">0.3</span>],</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>                  [<span class="fl">0.8</span>, <span class="fl">1.5</span>, <span class="fl">0.1</span>],</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>                  [<span class="fl">0.3</span>, <span class="fl">0.1</span>, <span class="fl">1.0</span>]])    <span class="co"># shape (3, 3)  SPD</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>mu    <span class="op">=</span> np.array([<span class="fl">1.0</span>, <span class="fl">2.0</span>, <span class="fl">0.5</span>])     <span class="co"># shape (3,)</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>L <span class="op">=</span> np.linalg.cholesky(Sigma)         <span class="co"># shape (3, 3)</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>z <span class="op">=</span> rng.standard_normal((n_dim, n_samples))    <span class="co"># shape (3, 10000)</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>samples <span class="op">=</span> mu[:, np.newaxis] <span class="op">+</span> L <span class="op">@</span> z            <span class="co"># shape (3, 10000)</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Verify: empirical covariance should match Sigma</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>Sigma_emp <span class="op">=</span> np.cov(samples)            <span class="co"># shape (3, 3)</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Max error in recovered covariance: </span><span class="sc">{</span>np<span class="sc">.</span><span class="bu">abs</span>(Sigma_emp <span class="op">-</span> Sigma)<span class="sc">.</span><span class="bu">max</span>()<span class="sc">:.4f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Max error in recovered covariance: 0.0404</code></pre>
+</div>
+</div>
+<p><strong>Kalman filter covariance update</strong> uses Cholesky for numerically stable square-root forms. <strong>Sparse SLAM</strong> solves the normal equations via sparse Cholesky (via <code>scikit-sparse</code> or <code>cholmod</code>).</p>
+<hr>
+</section>
+<section id="numerical-properties-1" class="level3" data-number="27.3.4">
+<h3 data-number="27.3.4" class="anchored" data-anchor-id="numerical-properties-1"><span class="header-section-number">27.3.4</span> Numerical Properties</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 58%">
+<col style="width: 41%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Property</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Stability</td>
+<td>Highly stable; no pivoting needed</td>
+</tr>
+<tr class="even">
+<td>Cost</td>
+<td><span class="math inline">\(\approx \frac{1}{3} n^3\)</span> FLOPs (half of LU)</td>
+</tr>
+<tr class="odd">
+<td>Failure mode</td>
+<td>Raises <code>np.linalg.LinAlgError</code> if matrix is not PD</td>
+</tr>
+<tr class="even">
+<td>Near-singular case</td>
+<td>Add small ridge <code>A + eps * np.eye(n)</code> before factoring</td>
+</tr>
+</tbody>
+</table>
+<blockquote class="blockquote">
+<p><strong>Diagonal check:</strong> <code>np.all(np.diag(L) &gt; 0)</code> confirms positive definiteness after a successful Cholesky.</p>
+</blockquote>
+<hr>
+</section>
+</section>
+<section id="sec-app-qr" class="level2" data-number="27.4">
+<h2 data-number="27.4" class="anchored" data-anchor-id="sec-app-qr"><span class="header-section-number">27.4</span> QR Decomposition</h2>
+<p><strong>Form:</strong> <span class="math inline">\(A = QR\)</span></p>
+<p>QR factors any <span class="math inline">\(m \times n\)</span> matrix (<span class="math inline">\(m \ge n\)</span>) into an orthogonal (or unitary) matrix <span class="math inline">\(Q\)</span> and an upper-triangular matrix <span class="math inline">\(R\)</span>.</p>
+<section id="thin-vs-full-qr" class="level3" data-number="27.4.1">
+<h3 data-number="27.4.1" class="anchored" data-anchor-id="thin-vs-full-qr"><span class="header-section-number">27.4.1</span> Thin vs Full QR</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 26%">
+<col style="width: 26%">
+<col style="width: 31%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Mode</th>
+<th><span class="math inline">\(Q\)</span> shape</th>
+<th><span class="math inline">\(R\)</span> shape</th>
+<th>When to use</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Thin (economy)</td>
+<td><span class="math inline">\((m, n)\)</span></td>
+<td><span class="math inline">\((n, n)\)</span></td>
+<td>Least squares, numerical linear algebra</td>
+</tr>
+<tr class="even">
+<td>Full</td>
+<td><span class="math inline">\((m, m)\)</span></td>
+<td><span class="math inline">\((m, n)\)</span></td>
+<td>Completing orthonormal bases, null space</td>
+</tr>
+</tbody>
+</table>
+<p>In the thin form, <span class="math inline">\(Q\)</span> has <strong>orthonormal columns</strong> (<span class="math inline">\(Q^T Q = I_n\)</span>) but is not square, so <span class="math inline">\(Q Q^T \ne I_m\)</span>. In the full form, <span class="math inline">\(Q\)</span> is square and orthogonal (<span class="math inline">\(Q^T Q = Q Q^T = I_m\)</span>).</p>
+<hr>
+</section>
+<section id="api-2" class="level3" data-number="27.4.2">
+<h3 data-number="27.4.2" class="anchored" data-anchor-id="api-2"><span class="header-section-number">27.4.2</span> API</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 31%">
+<col style="width: 68%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Call</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>np.linalg.qr(A)</code></td>
+<td>Thin QR by default; returns <code>(Q, R)</code></td>
+</tr>
+<tr class="even">
+<td><code>np.linalg.qr(A, mode='complete')</code></td>
+<td>Full QR; <span class="math inline">\(Q\)</span> is square <span class="math inline">\((m, m)\)</span></td>
+</tr>
+<tr class="odd">
+<td><code>np.linalg.qr(A, mode='r')</code></td>
+<td><span class="math inline">\(R\)</span> only (faster when <span class="math inline">\(Q\)</span> not needed)</td>
+</tr>
+<tr class="even">
+<td><code>scipy.linalg.qr(A, pivoting=True)</code></td>
+<td>Column-pivoted QR; reveals rank</td>
+</tr>
+</tbody>
+</table>
+<div id="app-b-qr" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">0</span>)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>m, n <span class="op">=</span> <span class="dv">6</span>, <span class="dv">4</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> rng.standard_normal((m, n))      <span class="co"># shape (6, 4)</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Thin QR</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>Q, R <span class="op">=</span> np.linalg.qr(A)              <span class="co"># Q shape (6, 4), R shape (4, 4)</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Thin QR: Q </span><span class="sc">{</span>Q<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">, R </span><span class="sc">{</span>R<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"||A - QR||        = </span><span class="sc">{</span>np<span class="sc">.</span>linalg<span class="sc">.</span>norm(A <span class="op">-</span> Q <span class="op">@</span> R)<span class="sc">:.2e}</span><span class="ss">"</span>)</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"||Q^T Q - I||     = </span><span class="sc">{</span>np<span class="sc">.</span>linalg<span class="sc">.</span>norm(Q.T <span class="op">@</span> Q <span class="op">-</span> np.eye(n))<span class="sc">:.2e}</span><span class="ss">"</span>)</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Full QR</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>Q_full, R_full <span class="op">=</span> np.linalg.qr(A, mode<span class="op">=</span><span class="st">'complete'</span>)  <span class="co"># Q shape (6, 6)</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Full QR: Q </span><span class="sc">{</span>Q_full<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">, R </span><span class="sc">{</span>R_full<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"||Q Q^T - I||     = </span><span class="sc">{</span>np<span class="sc">.</span>linalg<span class="sc">.</span>norm(Q_full <span class="op">@</span> Q_full.T <span class="op">-</span> np.eye(m))<span class="sc">:.2e}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Thin QR: Q (6, 4), R (4, 4)
+||A - QR||        = 1.60e-15
+||Q^T Q - I||     = 1.00e-15
+
+Full QR: Q (6, 6), R (6, 4)
+||Q Q^T - I||     = 1.15e-15</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="qr-for-least-squares" class="level3" data-number="27.4.3">
+<h3 data-number="27.4.3" class="anchored" data-anchor-id="qr-for-least-squares"><span class="header-section-number">27.4.3</span> QR for Least Squares</h3>
+<p>For an overdetermined system <span class="math inline">\(Ax \approx b\)</span> (<span class="math inline">\(m &gt; n\)</span>, full column rank), thin QR gives the least-squares solution without forming the normal equations <span class="math inline">\(A^T A x = A^T b\)</span>:</p>
+<div id="app-b-qr-lstsq" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">3</span>)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>m, n <span class="op">=</span> <span class="dv">20</span>, <span class="dv">4</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> rng.standard_normal((m, n))    <span class="co"># shape (20, 4)</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> rng.standard_normal((m,))      <span class="co"># shape (20,)</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="co"># QR least squares: A = QR =&gt; min||Ax-b|| =&gt; Rx = Q^T b</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>Q, R <span class="op">=</span> np.linalg.qr(A)            <span class="co"># Q shape (20,4), R shape (4,4)</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>x_qr <span class="op">=</span> np.linalg.solve(R, Q.T <span class="op">@</span> b)          <span class="co"># shape (4,)</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Reference via lstsq</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>x_ls, <span class="op">*</span>_ <span class="op">=</span> np.linalg.lstsq(A, b, rcond<span class="op">=</span><span class="va">None</span>)   <span class="co"># shape (4,)</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"||x_qr - x_ls||  = </span><span class="sc">{</span>np<span class="sc">.</span>linalg<span class="sc">.</span>norm(x_qr <span class="op">-</span> x_ls)<span class="sc">:.2e}</span><span class="ss">"</span>)</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"||Ax_qr - b||    = </span><span class="sc">{</span>np<span class="sc">.</span>linalg<span class="sc">.</span>norm(A <span class="op">@</span> x_qr <span class="op">-</span> b)<span class="sc">:.4f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>||x_qr - x_ls||  = 2.84e-16
+||Ax_qr - b||    = 3.9128</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="column-pivoted-qr-and-rank-revelation" class="level3" data-number="27.4.4">
+<h3 data-number="27.4.4" class="anchored" data-anchor-id="column-pivoted-qr-and-rank-revelation"><span class="header-section-number">27.4.4</span> Column-Pivoted QR and Rank Revelation</h3>
+<p><code>scipy.linalg.qr(A, pivoting=True)</code> returns <span class="math inline">\(AP = QR\)</span> where <span class="math inline">\(P\)</span> is a permutation that places the largest pivots first on the diagonal of <span class="math inline">\(R\)</span>. The numerical rank is the number of diagonal entries above a tolerance.</p>
+<div id="app-b-qr-pivoted" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.linalg</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">5</span>)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Rank-2 matrix embedded in R^4</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>U <span class="op">=</span> rng.standard_normal((<span class="dv">5</span>, <span class="dv">2</span>))    <span class="co"># shape (5, 2)</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>V <span class="op">=</span> rng.standard_normal((<span class="dv">2</span>, <span class="dv">4</span>))    <span class="co"># shape (2, 4)</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> U <span class="op">@</span> V                          <span class="co"># shape (5, 4)  rank 2</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>Q, R, piv <span class="op">=</span> scipy.linalg.qr(A, pivoting<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>diag_R <span class="op">=</span> np.<span class="bu">abs</span>(np.diag(R))</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>tol    <span class="op">=</span> diag_R[<span class="dv">0</span>] <span class="op">*</span> <span class="bu">max</span>(A.shape) <span class="op">*</span> np.finfo(<span class="bu">float</span>).eps</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>rank   <span class="op">=</span> <span class="bu">int</span>(np.<span class="bu">sum</span>(diag_R <span class="op">&gt;</span> tol))</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Diagonal of R: </span><span class="sc">{</span>diag_R<span class="sc">.</span><span class="bu">round</span>(<span class="dv">4</span>)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Numerical rank: </span><span class="sc">{</span>rank<span class="sc">}</span><span class="ss">"</span>)   <span class="co"># 2</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Diagonal of R: [5.6351 2.0388 0.     0.    ]
+Numerical rank: 2</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="numerical-properties-2" class="level3" data-number="27.4.5">
+<h3 data-number="27.4.5" class="anchored" data-anchor-id="numerical-properties-2"><span class="header-section-number">27.4.5</span> Numerical Properties</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 58%">
+<col style="width: 41%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Property</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Stability</td>
+<td>Backward stable (Householder reflections or Givens rotations)</td>
+</tr>
+<tr class="even">
+<td>Cost</td>
+<td><span class="math inline">\(O(mn^2 - \frac{1}{3}n^3)\)</span> for <span class="math inline">\(m \ge n\)</span></td>
+</tr>
+<tr class="odd">
+<td>Orthogonality loss</td>
+<td>Accumulates slowly; re-orthogonalize long iteration sequences</td>
+</tr>
+<tr class="even">
+<td>Rank-deficient case</td>
+<td>Use column pivoting (<code>scipy.linalg.qr(A, pivoting=True)</code>)</td>
+</tr>
+</tbody>
+</table>
+<blockquote class="blockquote">
+<p>The thin <span class="math inline">\(Q\)</span> from <code>np.linalg.qr</code> uses Householder reflections internally. It is more stable than the Gram-Schmidt orthogonalization you might write by hand.</p>
+</blockquote>
+<hr>
+</section>
+</section>
+<section id="sec-app-eigen" class="level2" data-number="27.5">
+<h2 data-number="27.5" class="anchored" data-anchor-id="sec-app-eigen"><span class="header-section-number">27.5</span> Eigendecomposition and Spectral Decomposition</h2>
+<section id="eigendecomposition-general-a-plambda-p-1" class="level3" data-number="27.5.1">
+<h3 data-number="27.5.1" class="anchored" data-anchor-id="eigendecomposition-general-a-plambda-p-1"><span class="header-section-number">27.5.1</span> Eigendecomposition (General): <span class="math inline">\(A = P\Lambda P^{-1}\)</span></h3>
+<p>Any <strong>square, diagonalizable</strong> matrix <span class="math inline">\(A\)</span> can be written as <span class="math inline">\(A = P \Lambda P^{-1}\)</span> where the columns of <span class="math inline">\(P\)</span> are the eigenvectors and <span class="math inline">\(\Lambda\)</span> is diagonal with the eigenvalues.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 29%">
+<col style="width: 25%">
+<col style="width: 44%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Factor</th>
+<th>Shape</th>
+<th>Properties</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(P\)</span></td>
+<td><span class="math inline">\((n, n)\)</span></td>
+<td>Columns are right eigenvectors; may be ill-conditioned</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\Lambda\)</span></td>
+<td><span class="math inline">\((n, n)\)</span></td>
+<td>Diagonal; entries may be complex for non-symmetric <span class="math inline">\(A\)</span></td>
+</tr>
+</tbody>
+</table>
+<p><strong>When to use:</strong> discrete-time dynamics (<span class="math inline">\(A^k = P \Lambda^k P^{-1}\)</span>), continuous-time stability (sign of real parts of eigenvalues), PageRank, Markov chains.</p>
+<hr>
+</section>
+<section id="spectral-decomposition-symmetric-a-qlambda-qt" class="level3" data-number="27.5.2">
+<h3 data-number="27.5.2" class="anchored" data-anchor-id="spectral-decomposition-symmetric-a-qlambda-qt"><span class="header-section-number">27.5.2</span> Spectral Decomposition (Symmetric): <span class="math inline">\(A = Q\Lambda Q^T\)</span></h3>
+<p>When <span class="math inline">\(A\)</span> is real symmetric (or complex Hermitian), the Spectral Theorem guarantees:</p>
+<ul>
+<li>All eigenvalues are <strong>real</strong>.</li>
+<li>Eigenvectors can be chosen <strong>orthonormal</strong>: <span class="math inline">\(Q^T Q = Q Q^T = I\)</span>.</li>
+<li>The decomposition is <span class="math inline">\(A = Q \Lambda Q^T\)</span> (no matrix inversion needed).</li>
+</ul>
+<p>This is the numerically preferable form; always use <code>eigh</code> for symmetric matrices.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Factor</th>
+<th>Shape</th>
+<th>Properties</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(Q\)</span></td>
+<td><span class="math inline">\((n, n)\)</span></td>
+<td>Orthogonal; columns are orthonormal eigenvectors</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\Lambda\)</span></td>
+<td><span class="math inline">\((n, n)\)</span></td>
+<td>Diagonal; real, ascending by default</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+<section id="api-3" class="level3" data-number="27.5.3">
+<h3 data-number="27.5.3" class="anchored" data-anchor-id="api-3"><span class="header-section-number">27.5.3</span> API</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 27%">
+<col style="width: 40%">
+<col style="width: 31%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Call</th>
+<th>Returns</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>np.linalg.eig(A)</code></td>
+<td><code>(vals, vecs)</code></td>
+<td>General; eigenvalues may be complex</td>
+</tr>
+<tr class="even">
+<td><code>np.linalg.eigh(A)</code></td>
+<td><code>(vals, vecs)</code></td>
+<td>Symmetric/Hermitian; real, ascending order</td>
+</tr>
+<tr class="odd">
+<td><code>np.linalg.eigvals(A)</code></td>
+<td><code>vals</code></td>
+<td>Eigenvalues only; faster than <code>eig</code></td>
+</tr>
+<tr class="even">
+<td><code>scipy.linalg.eigh(A, B)</code></td>
+<td><code>(vals, vecs)</code></td>
+<td>Generalized problem <span class="math inline">\(Ax = \lambda Bx\)</span></td>
+</tr>
+<tr class="odd">
+<td><code>scipy.sparse.linalg.eigsh(A, k)</code></td>
+<td><code>(vals, vecs)</code></td>
+<td>Top-<span class="math inline">\(k\)</span> from large sparse symmetric <span class="math inline">\(A\)</span></td>
+</tr>
+</tbody>
+</table>
+<div id="app-b-eigh" class="cell" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.linalg</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">0</span>)</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">5</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> rng.standard_normal((n, n))     <span class="co"># shape (5, 5)</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> A <span class="op">@</span> A.T                         <span class="co"># shape (5, 5)  symmetric PSD</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Spectral decomposition</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>vals, Q <span class="op">=</span> np.linalg.eigh(A)         <span class="co"># vals shape (5,) ascending; Q shape (5, 5)</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Eigenvalues (ascending): </span><span class="sc">{</span>vals<span class="sc">.</span><span class="bu">round</span>(<span class="dv">4</span>)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Reconstruct A</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>Lam <span class="op">=</span> np.diag(vals)                 <span class="co"># shape (5, 5)</span></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>A_rec <span class="op">=</span> Q <span class="op">@</span> Lam <span class="op">@</span> Q.T              <span class="co"># shape (5, 5)</span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"||A - Q Lam Q^T||     = </span><span class="sc">{</span>np<span class="sc">.</span>linalg<span class="sc">.</span>norm(A <span class="op">-</span> A_rec)<span class="sc">:.2e}</span><span class="ss">"</span>)</span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"||Q^T Q - I||         = </span><span class="sc">{</span>np<span class="sc">.</span>linalg<span class="sc">.</span>norm(Q.T <span class="op">@</span> Q <span class="op">-</span> np.eye(n))<span class="sc">:.2e}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Eigenvalues (ascending): [0.112  0.2429 3.3676 6.6151 8.0793]
+||A - Q Lam Q^T||     = 1.22e-14
+||Q^T Q - I||         = 1.80e-15</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="general-non-symmetric-eigendecomposition" class="level3" data-number="27.5.4">
+<h3 data-number="27.5.4" class="anchored" data-anchor-id="general-non-symmetric-eigendecomposition"><span class="header-section-number">27.5.4</span> General (Non-Symmetric) Eigendecomposition</h3>
+<div id="app-b-eig-general" class="cell" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">2</span>)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">4</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> rng.standard_normal((n, n))    <span class="co"># shape (4, 4)  general (not symmetric)</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>vals, P <span class="op">=</span> np.linalg.eig(A)         <span class="co"># vals may be complex; P shape (4, 4)</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Eigenvalues: </span><span class="sc">{</span>vals<span class="sc">.</span><span class="bu">round</span>(<span class="dv">3</span>)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Eigenvalues are real: </span><span class="sc">{</span>np<span class="sc">.</span>allclose(vals.imag, <span class="dv">0</span>)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Check A P = P Lambda (element-wise: A @ P[:,i] = vals[i] * P[:,i])</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>residuals <span class="op">=</span> np.linalg.norm(A <span class="op">@</span> P <span class="op">-</span> P <span class="op">@</span> np.diag(vals), axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Eigenvector residuals: </span><span class="sc">{</span>residuals<span class="sc">.</span><span class="bu">round</span>(<span class="dv">6</span>)<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Eigenvalues: [-0.128+1.256j -0.128-1.256j  1.838+0.j     0.631+0.j   ]
+Eigenvalues are real: False
+Eigenvector residuals: [0. 0. 0. 0.]</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="power-of-a-matrix-via-eigendecomposition" class="level3" data-number="27.5.5">
+<h3 data-number="27.5.5" class="anchored" data-anchor-id="power-of-a-matrix-via-eigendecomposition"><span class="header-section-number">27.5.5</span> Power of a Matrix via Eigendecomposition</h3>
+<p><span class="math inline">\(A^k = P \Lambda^k P^{-1}\)</span> (spectral form: <span class="math inline">\(A^k = Q \Lambda^k Q^T\)</span>)</p>
+<div id="app-b-matrix-power" class="cell" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">9</span>)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">3</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> rng.standard_normal((n, n))    <span class="co"># shape (3, 3)</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> A <span class="op">@</span> A.T                        <span class="co"># shape (3, 3)  symmetric PSD</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>k <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Via spectral: A^k = Q Lambda^k Q^T</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>vals, Q <span class="op">=</span> np.linalg.eigh(A)       <span class="co"># vals shape (3,), Q shape (3, 3)</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>Ak_spectral <span class="op">=</span> Q <span class="op">@</span> np.diag(vals<span class="op">**</span>k) <span class="op">@</span> Q.T   <span class="co"># shape (3, 3)</span></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Via repeated multiplication (reference)</span></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>Ak_ref <span class="op">=</span> np.linalg.matrix_power(A, k)      <span class="co"># shape (3, 3)</span></span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"||A^</span><span class="sc">{</span>k<span class="sc">}</span><span class="ss"> via spectral - direct||: </span><span class="sc">{</span>np<span class="sc">.</span>linalg<span class="sc">.</span>norm(Ak_spectral <span class="op">-</span> Ak_ref)<span class="sc">:.2e}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>||A^10 via spectral - direct||: 5.40e-10</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="pitfalls" class="level3" data-number="27.5.6">
+<h3 data-number="27.5.6" class="anchored" data-anchor-id="pitfalls"><span class="header-section-number">27.5.6</span> Pitfalls</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 39%">
+<col style="width: 39%">
+<col style="width: 21%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Pitfall</th>
+<th>Symptom</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Using <code>eig</code> on a symmetric matrix</td>
+<td>Spurious imaginary parts</td>
+<td>Use <code>eigh</code> instead</td>
+</tr>
+<tr class="even">
+<td><code>eigh</code> returns <strong>ascending</strong> order</td>
+<td>First eigenvalue is smallest</td>
+<td>Flip: <code>vals[::-1]</code>, <code>Q[:, ::-1]</code> for descending</td>
+</tr>
+<tr class="odd">
+<td>Eigenvectors not unique</td>
+<td>Sign flip between runs</td>
+<td>Normalize signs; dot product with reference vector</td>
+</tr>
+<tr class="even">
+<td>Ill-conditioned <span class="math inline">\(P\)</span> in <code>eig</code></td>
+<td>Large inversion error</td>
+<td>Condition number of <span class="math inline">\(P\)</span>: <code>np.linalg.cond(P)</code></td>
+</tr>
+<tr class="odd">
+<td><code>eig</code> eigenvalues complex for real <span class="math inline">\(A\)</span></td>
+<td>Complex conjugate pairs</td>
+<td>Appear when <span class="math inline">\(A\)</span> has rotation component</td>
+</tr>
+</tbody>
+</table>
+<blockquote class="blockquote">
+<p><code>np.linalg.eigh</code> sorts eigenvalues in <strong>ascending</strong> order. To get descending (largest first, as in PCA), reverse both arrays: <code>vals = vals[::-1]; Q = Q[:, ::-1]</code>.</p>
+</blockquote>
+<hr>
+</section>
+</section>
+<section id="sec-app-svd" class="level2" data-number="27.6">
+<h2 data-number="27.6" class="anchored" data-anchor-id="sec-app-svd"><span class="header-section-number">27.6</span> Singular Value Decomposition</h2>
+<p><strong>Form:</strong> <span class="math inline">\(A = U \Sigma V^T\)</span></p>
+<p>SVD factors any <span class="math inline">\(m \times n\)</span> matrix into two orthogonal matrices (<span class="math inline">\(U\)</span> and <span class="math inline">\(V\)</span>) and a diagonal matrix <span class="math inline">\(\Sigma\)</span> of <strong>singular values</strong> <span class="math inline">\(\sigma_1 \ge \sigma_2
+\ge \cdots \ge \sigma_k \ge 0\)</span> where <span class="math inline">\(k = \min(m, n)\)</span>.</p>
+<section id="thin-vs-full-svd" class="level3" data-number="27.6.1">
+<h3 data-number="27.6.1" class="anchored" data-anchor-id="thin-vs-full-svd"><span class="header-section-number">27.6.1</span> Thin vs Full SVD</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 9%">
+<col style="width: 16%">
+<col style="width: 33%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Mode</th>
+<th><span class="math inline">\(U\)</span> shape</th>
+<th><span class="math inline">\(\Sigma\)</span> (as 1-D <code>s</code>)</th>
+<th><span class="math inline">\(V^T\)</span> shape</th>
+<th>When to use</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Thin (economy)</td>
+<td><span class="math inline">\((m, k)\)</span></td>
+<td><span class="math inline">\((k,)\)</span></td>
+<td><span class="math inline">\((k, n)\)</span></td>
+<td>PCA, least squares, low-rank approx</td>
+</tr>
+<tr class="even">
+<td>Full</td>
+<td><span class="math inline">\((m, m)\)</span></td>
+<td><span class="math inline">\((k,)\)</span></td>
+<td><span class="math inline">\((n, n)\)</span></td>
+<td>Null space, complete bases</td>
+</tr>
+</tbody>
+</table>
+<p>where <span class="math inline">\(k = \min(m, n)\)</span>. In the thin form, <span class="math inline">\(U\)</span> and <span class="math inline">\(V\)</span> have orthonormal columns; in the full form both are square orthogonal matrices.</p>
+<hr>
+</section>
+<section id="api-4" class="level3" data-number="27.6.2">
+<h3 data-number="27.6.2" class="anchored" data-anchor-id="api-4"><span class="header-section-number">27.6.2</span> API</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 27%">
+<col style="width: 40%">
+<col style="width: 31%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Call</th>
+<th>Returns</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>np.linalg.svd(A, full_matrices=False)</code></td>
+<td><code>(U, s, Vt)</code></td>
+<td>Thin; <code>s</code> is 1-D descending</td>
+</tr>
+<tr class="even">
+<td><code>np.linalg.svd(A, full_matrices=True)</code></td>
+<td><code>(U, s, Vt)</code></td>
+<td>Full; <code>s</code> is still 1-D</td>
+</tr>
+<tr class="odd">
+<td><code>np.linalg.svd(A, compute_uv=False)</code></td>
+<td><code>s</code></td>
+<td>1-D array directly – <strong>not a tuple</strong></td>
+</tr>
+<tr class="even">
+<td><code>scipy.linalg.svd(A, full_matrices=False)</code></td>
+<td><code>(U, s, Vt)</code></td>
+<td>Adds <code>lapack_driver</code> option</td>
+</tr>
+<tr class="odd">
+<td><code>scipy.sparse.linalg.svds(A, k)</code></td>
+<td><code>(U, s, Vt)</code></td>
+<td>Top-<span class="math inline">\(k\)</span>; returns <strong>ascending</strong> order</td>
+</tr>
+</tbody>
+</table>
+<div id="app-b-svd" class="cell" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">0</span>)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>m, n <span class="op">=</span> <span class="dv">6</span>, <span class="dv">4</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> rng.standard_normal((m, n))      <span class="co"># shape (6, 4)</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Thin SVD</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>U, s, Vt <span class="op">=</span> np.linalg.svd(A, full_matrices<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a><span class="co"># U shape (6, 4), s shape (4,) descending, Vt shape (4, 4)</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"U </span><span class="sc">{</span>U<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">, s </span><span class="sc">{</span>s<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">, Vt </span><span class="sc">{</span>Vt<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Singular values: </span><span class="sc">{</span>s<span class="sc">.</span><span class="bu">round</span>(<span class="dv">4</span>)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Reconstruct A from thin factors</span></span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>A_rec <span class="op">=</span> U <span class="op">@</span> np.diag(s) <span class="op">@</span> Vt         <span class="co"># shape (6, 4)</span></span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"||A - U S V^T|| = </span><span class="sc">{</span>np<span class="sc">.</span>linalg<span class="sc">.</span>norm(A <span class="op">-</span> A_rec)<span class="sc">:.2e}</span><span class="ss">"</span>)</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Singular values only -- returns 1-D array directly, NOT a tuple</span></span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>s_only <span class="op">=</span> np.linalg.svd(A, compute_uv<span class="op">=</span><span class="va">False</span>)   <span class="co"># shape (4,)</span></span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"s_only type: </span><span class="sc">{</span><span class="bu">type</span>(s_only)<span class="sc">}</span><span class="ss">, shape: </span><span class="sc">{</span>s_only<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>U (6, 4), s (4,), Vt (4, 4)
+Singular values: [3.0361 2.0335 1.8563 0.8954]
+||A - U S V^T|| = 9.83e-15
+s_only type: &lt;class 'numpy.ndarray'&gt;, shape: (4,)</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="low-rank-approximation" class="level3" data-number="27.6.3">
+<h3 data-number="27.6.3" class="anchored" data-anchor-id="low-rank-approximation"><span class="header-section-number">27.6.3</span> Low-Rank Approximation</h3>
+<p>The best rank-<span class="math inline">\(r\)</span> approximation to <span class="math inline">\(A\)</span> in both the 2-norm and Frobenius norm is <span class="math inline">\(A_r = U_r \Sigma_r V_r^T\)</span> (Eckart-Young theorem).</p>
+<div id="app-b-svd-lowrank" class="cell" data-execution_count="13">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">4</span>)</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>m, n <span class="op">=</span> <span class="dv">50</span>, <span class="dv">40</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> rng.standard_normal((m, n))    <span class="co"># shape (50, 40)</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>U, s, Vt <span class="op">=</span> np.linalg.svd(A, full_matrices<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="co"># U shape (50,40), s shape (40,), Vt shape (40,40)</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> r <span class="kw">in</span> [<span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">20</span>]:</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>    A_r <span class="op">=</span> U[:, :r] <span class="op">@</span> np.diag(s[:r]) <span class="op">@</span> Vt[:r, :]   <span class="co"># shape (50, 40)</span></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>    err <span class="op">=</span> np.linalg.norm(A <span class="op">-</span> A_r, <span class="bu">ord</span><span class="op">=</span><span class="st">'fro'</span>)</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>    frac <span class="op">=</span> (s[:r]<span class="op">**</span><span class="dv">2</span>).<span class="bu">sum</span>() <span class="op">/</span> (s<span class="op">**</span><span class="dv">2</span>).<span class="bu">sum</span>()</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"rank-</span><span class="sc">{</span>r<span class="sc">:2d}</span><span class="ss">: ||A - A_r||_F = </span><span class="sc">{</span>err<span class="sc">:.3f}</span><span class="ss">,  variance captured = </span><span class="sc">{</span>frac<span class="sc">:.3f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>rank- 1: ||A - A_r||_F = 42.357,  variance captured = 0.089
+rank- 5: ||A - A_r||_F = 35.741,  variance captured = 0.351
+rank-10: ||A - A_r||_F = 28.875,  variance captured = 0.577
+rank-20: ||A - A_r||_F = 16.883,  variance captured = 0.855</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="pseudoinverse" class="level3" data-number="27.6.4">
+<h3 data-number="27.6.4" class="anchored" data-anchor-id="pseudoinverse"><span class="header-section-number">27.6.4</span> Pseudoinverse</h3>
+<p><span class="math inline">\(A^+ = V \Sigma^+ U^T\)</span> where <span class="math inline">\(\Sigma^+\)</span> inverts the non-zero singular values.</p>
+<div id="app-b-svd-pinv" class="cell" data-execution_count="14">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">6</span>)</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>m, n <span class="op">=</span> <span class="dv">8</span>, <span class="dv">5</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> rng.standard_normal((m, n))    <span class="co"># shape (8, 5)  full column rank</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> rng.standard_normal((m,))      <span class="co"># shape (8,)</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>U, s, Vt <span class="op">=</span> np.linalg.svd(A, full_matrices<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Pseudoinverse via SVD</span></span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>tol  <span class="op">=</span> s[<span class="dv">0</span>] <span class="op">*</span> <span class="bu">max</span>(m, n) <span class="op">*</span> np.finfo(<span class="bu">float</span>).eps</span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>s_inv <span class="op">=</span> np.where(s <span class="op">&gt;</span> tol, <span class="fl">1.0</span> <span class="op">/</span> s, <span class="fl">0.0</span>)   <span class="co"># shape (5,)</span></span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>A_pinv <span class="op">=</span> Vt.T <span class="op">@</span> np.diag(s_inv) <span class="op">@</span> U.T      <span class="co"># shape (5, 8)</span></span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>x_svd   <span class="op">=</span> A_pinv <span class="op">@</span> b             <span class="co"># shape (5,)</span></span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>x_ref   <span class="op">=</span> np.linalg.pinv(A) <span class="op">@</span> b  <span class="co"># shape (5,)</span></span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"||x_svd - x_ref||       = </span><span class="sc">{</span>np<span class="sc">.</span>linalg<span class="sc">.</span>norm(x_svd <span class="op">-</span> x_ref)<span class="sc">:.2e}</span><span class="ss">"</span>)</span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"least-squares residual  = </span><span class="sc">{</span>np<span class="sc">.</span>linalg<span class="sc">.</span>norm(A <span class="op">@</span> x_svd <span class="op">-</span> b)<span class="sc">:.4f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>||x_svd - x_ref||       = 3.04e-16
+least-squares residual  = 1.2993</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="svd-and-pca" class="level3" data-number="27.6.5">
+<h3 data-number="27.6.5" class="anchored" data-anchor-id="svd-and-pca"><span class="header-section-number">27.6.5</span> SVD and PCA</h3>
+<p>PCA of a zero-mean data matrix <span class="math inline">\(X\)</span> of shape <span class="math inline">\((n, d)\)</span> (<span class="math inline">\(n\)</span> samples, <span class="math inline">\(d\)</span> features) uses the SVD of <span class="math inline">\(X\)</span> directly rather than forming the covariance matrix <span class="math inline">\(X^T X / (n-1)\)</span>:</p>
+<div id="app-b-svd-pca" class="cell" data-execution_count="15">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">42</span>)</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>n, d <span class="op">=</span> <span class="dv">200</span>, <span class="dv">10</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>X_raw <span class="op">=</span> rng.standard_normal((n, d))    <span class="co"># shape (200, 10)</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>X     <span class="op">=</span> X_raw <span class="op">-</span> X_raw.mean(axis<span class="op">=</span><span class="dv">0</span>)     <span class="co"># shape (200, 10)  zero mean</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>U, s, Vt <span class="op">=</span> np.linalg.svd(X, full_matrices<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Vt rows are principal directions; s**2 / (n-1) = eigenvalues of covariance</span></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Verify: singular values of X relate to eigenvalues of X^T X</span></span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>Cov <span class="op">=</span> X.T <span class="op">@</span> X <span class="op">/</span> (n <span class="op">-</span> <span class="dv">1</span>)               <span class="co"># shape (10, 10)</span></span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>evals_cov <span class="op">=</span> np.linalg.eigvalsh(Cov)   <span class="co"># shape (10,) ascending</span></span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>evals_svd <span class="op">=</span> (s<span class="op">**</span><span class="dv">2</span>) <span class="op">/</span> (n <span class="op">-</span> <span class="dv">1</span>)          <span class="co"># shape (10,) descending</span></span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Covariance eigenvalues (desc): </span><span class="sc">{</span>evals_cov[::<span class="op">-</span><span class="dv">1</span>]<span class="sc">.</span><span class="bu">round</span>(<span class="dv">3</span>)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"SVD-based eigenvalues  (desc): </span><span class="sc">{</span>evals_svd<span class="sc">.</span><span class="bu">round</span>(<span class="dv">3</span>)<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Covariance eigenvalues (desc): [1.45  1.233 1.169 1.092 1.021 0.925 0.851 0.801 0.794 0.715]
+SVD-based eigenvalues  (desc): [1.45  1.233 1.169 1.092 1.021 0.925 0.851 0.801 0.794 0.715]</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="numerical-properties-3" class="level3" data-number="27.6.6">
+<h3 data-number="27.6.6" class="anchored" data-anchor-id="numerical-properties-3"><span class="header-section-number">27.6.6</span> Numerical Properties</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 58%">
+<col style="width: 41%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Property</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Stability</td>
+<td>Among the most backward-stable algorithms</td>
+</tr>
+<tr class="even">
+<td>Cost</td>
+<td><span class="math inline">\(O(mn^2)\)</span> for <span class="math inline">\(m \ge n\)</span>; expensive for large dense matrices</td>
+</tr>
+<tr class="odd">
+<td>Sparse / large</td>
+<td>Use <code>scipy.sparse.linalg.svds(A, k)</code> for top-<span class="math inline">\(k\)</span></td>
+</tr>
+<tr class="even">
+<td><code>svds</code> order</td>
+<td><strong>Ascending</strong> (opposite of <code>np.linalg.svd</code>) – always sort after</td>
+</tr>
+<tr class="odd">
+<td>Condition number</td>
+<td><span class="math inline">\(\kappa(A) = \sigma_{\max} / \sigma_{\min}\)</span></td>
+</tr>
+</tbody>
+</table>
+<div id="app-b-svds-order" class="cell" data-execution_count="16">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.sparse.linalg</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">0</span>)</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> rng.standard_normal((<span class="dv">30</span>, <span class="dv">20</span>))    <span class="co"># shape (30, 20)</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>U_sp, s_sp, Vt_sp <span class="op">=</span> scipy.sparse.linalg.svds(A, k<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a><span class="co"># svds returns ASCENDING order -- reverse to get largest first</span></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>idx <span class="op">=</span> np.argsort(s_sp)[::<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>s_sp <span class="op">=</span> s_sp[idx]</span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>U_sp <span class="op">=</span> U_sp[:, idx]</span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>Vt_sp <span class="op">=</span> Vt_sp[idx]</span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>s_ref <span class="op">=</span> np.linalg.svd(A, compute_uv<span class="op">=</span><span class="va">False</span>)[:<span class="dv">5</span>]   <span class="co"># descending, top 5</span></span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"svds (sorted desc):  </span><span class="sc">{</span>s_sp<span class="sc">.</span><span class="bu">round</span>(<span class="dv">4</span>)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"svd  (top 5 desc):   </span><span class="sc">{</span>s_ref<span class="sc">.</span><span class="bu">round</span>(<span class="dv">4</span>)<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>svds (sorted desc):  [9.2868 8.4279 8.2091 7.3689 6.6779]
+svd  (top 5 desc):   [9.2868 8.4279 8.2091 7.3689 6.6779]</code></pre>
+</div>
+</div>
+<blockquote class="blockquote">
+<p><code>scipy.sparse.linalg.svds</code> returns singular values in <strong>ascending</strong> order. Always sort by descending singular value after calling <code>svds</code>.</p>
+</blockquote>
+<hr>
+</section>
+</section>
+<section id="sec-app-factorization-guide" class="level2" data-number="27.7">
+<h2 data-number="27.7" class="anchored" data-anchor-id="sec-app-factorization-guide"><span class="header-section-number">27.7</span> Decision Guide</h2>
+<section id="which-factorization-to-use" class="level3" data-number="27.7.1">
+<h3 data-number="27.7.1" class="anchored" data-anchor-id="which-factorization-to-use"><span class="header-section-number">27.7.1</span> Which Factorization to Use</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 30%">
+<col style="width: 41%">
+<col style="width: 27%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Situation</th>
+<th>Factorization</th>
+<th>Function</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Solve <span class="math inline">\(Ax = b\)</span>, square <span class="math inline">\(A\)</span>, once</td>
+<td>LU (internal)</td>
+<td><code>np.linalg.solve(A, b)</code></td>
+</tr>
+<tr class="even">
+<td>Solve <span class="math inline">\(Ax = b\)</span>, square <span class="math inline">\(A\)</span>, many RHS</td>
+<td>LU explicit</td>
+<td><code>scipy.linalg.lu_factor</code> + <code>lu_solve</code></td>
+</tr>
+<tr class="odd">
+<td>Solve <span class="math inline">\(Ax = b\)</span>, <span class="math inline">\(A\)</span> symmetric PD</td>
+<td>Cholesky</td>
+<td><code>scipy.linalg.cho_factor</code> + <code>cho_solve</code></td>
+</tr>
+<tr class="even">
+<td>Overdetermined <span class="math inline">\(Ax \approx b\)</span> (least squares)</td>
+<td>QR or SVD</td>
+<td><code>np.linalg.lstsq</code> or QR solve</td>
+</tr>
+<tr class="odd">
+<td>All eigenvalues, symmetric dense <span class="math inline">\(A\)</span></td>
+<td>Spectral</td>
+<td><code>np.linalg.eigh</code></td>
+</tr>
+<tr class="even">
+<td>All eigenvalues, non-symmetric <span class="math inline">\(A\)</span></td>
+<td>Eigen</td>
+<td><code>np.linalg.eig</code></td>
+</tr>
+<tr class="odd">
+<td>Top-<span class="math inline">\(k\)</span> eigenvalues, large sparse symmetric</td>
+<td>Lanczos</td>
+<td><code>scipy.sparse.linalg.eigsh(A, k)</code></td>
+</tr>
+<tr class="even">
+<td>All singular values, dense <span class="math inline">\(A\)</span></td>
+<td>SVD</td>
+<td><code>np.linalg.svd(A, full_matrices=False)</code></td>
+</tr>
+<tr class="odd">
+<td>Top-<span class="math inline">\(k\)</span> singular values, large <span class="math inline">\(A\)</span></td>
+<td>Truncated SVD</td>
+<td><code>scipy.sparse.linalg.svds(A, k)</code></td>
+</tr>
+<tr class="even">
+<td>Low-rank approximation</td>
+<td>SVD (Eckart-Young)</td>
+<td>Keep top-<span class="math inline">\(r\)</span> singular triplets</td>
+</tr>
+<tr class="odd">
+<td>PCA of data matrix</td>
+<td>SVD of centered <span class="math inline">\(X\)</span></td>
+<td><code>np.linalg.svd(X, full_matrices=False)</code></td>
+</tr>
+<tr class="even">
+<td>Sample from <span class="math inline">\(\mathcal{N}(\mu, \Sigma)\)</span></td>
+<td>Cholesky of <span class="math inline">\(\Sigma\)</span></td>
+<td><code>np.linalg.cholesky</code></td>
+</tr>
+<tr class="odd">
+<td>Compute pseudoinverse <span class="math inline">\(A^+\)</span></td>
+<td>SVD</td>
+<td><code>np.linalg.pinv(A)</code> or manual</td>
+</tr>
+<tr class="even">
+<td>Reveal numerical rank</td>
+<td>Pivoted QR or SVD</td>
+<td><code>scipy.linalg.qr(A, pivoting=True)</code></td>
+</tr>
+<tr class="odd">
+<td>Matrix exponential <span class="math inline">\(e^A\)</span></td>
+<td>Pade + scaling (SciPy)</td>
+<td><code>scipy.linalg.expm(A)</code></td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+<section id="relationship-between-factorizations" class="level3" data-number="27.7.2">
+<h3 data-number="27.7.2" class="anchored" data-anchor-id="relationship-between-factorizations"><span class="header-section-number">27.7.2</span> Relationship Between Factorizations</h3>
+<div id="cell-fig-app-factorization-relations" class="cell" data-execution_count="17">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.patches <span class="im">as</span> mpatches</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">9</span>, <span class="dv">5</span>))</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>ax.set_xlim(<span class="dv">0</span>, <span class="dv">10</span>)</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>ax.set_ylim(<span class="dv">0</span>, <span class="dv">6</span>)</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>ax.axis(<span class="st">'off'</span>)</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>nodes <span class="op">=</span> {</span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">'SVD'</span>:   (<span class="fl">5.0</span>, <span class="fl">5.0</span>),</span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Spectral'</span>: (<span class="fl">2.0</span>, <span class="fl">3.2</span>),</span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">'QR'</span>:    (<span class="fl">5.0</span>, <span class="fl">3.2</span>),</span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">'LU'</span>:    (<span class="fl">8.0</span>, <span class="fl">3.2</span>),</span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Eigen'</span>: (<span class="fl">2.0</span>, <span class="fl">1.2</span>),</span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Cholesky'</span>: (<span class="fl">8.0</span>, <span class="fl">1.2</span>),</span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a>colors <span class="op">=</span> {</span>
+<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">'SVD'</span>: <span class="st">'#4a90d9'</span>,</span>
+<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Spectral'</span>: <span class="st">'#2ecc71'</span>,</span>
+<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">'QR'</span>: <span class="st">'#2ecc71'</span>,</span>
+<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">'LU'</span>: <span class="st">'#aaaaaa'</span>,</span>
+<span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Eigen'</span>: <span class="st">'#f39c12'</span>,</span>
+<span id="cb32-23"><a href="#cb32-23" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Cholesky'</span>: <span class="st">'#f39c12'</span>,</span>
+<span id="cb32-24"><a href="#cb32-24" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb32-25"><a href="#cb32-25" aria-hidden="true" tabindex="-1"></a>descriptions <span class="op">=</span> {</span>
+<span id="cb32-26"><a href="#cb32-26" aria-hidden="true" tabindex="-1"></a>    <span class="st">'SVD'</span>:      <span class="st">'A = U S V^T</span><span class="ch">\n</span><span class="st">any matrix'</span>,</span>
+<span id="cb32-27"><a href="#cb32-27" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Spectral'</span>: <span class="st">'A = Q Lam Q^T</span><span class="ch">\n</span><span class="st">symmetric'</span>,</span>
+<span id="cb32-28"><a href="#cb32-28" aria-hidden="true" tabindex="-1"></a>    <span class="st">'QR'</span>:       <span class="st">'A = QR</span><span class="ch">\n</span><span class="st">any matrix'</span>,</span>
+<span id="cb32-29"><a href="#cb32-29" aria-hidden="true" tabindex="-1"></a>    <span class="st">'LU'</span>:       <span class="st">'PA = LU</span><span class="ch">\n</span><span class="st">square'</span>,</span>
+<span id="cb32-30"><a href="#cb32-30" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Eigen'</span>:    <span class="st">'A = P Lam P^-1</span><span class="ch">\n</span><span class="st">diagonalizable'</span>,</span>
+<span id="cb32-31"><a href="#cb32-31" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Cholesky'</span>: <span class="st">'A = L L^T</span><span class="ch">\n</span><span class="st">symmetric PD'</span>,</span>
+<span id="cb32-32"><a href="#cb32-32" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb32-33"><a href="#cb32-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-34"><a href="#cb32-34" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> name, (x, y) <span class="kw">in</span> nodes.items():</span>
+<span id="cb32-35"><a href="#cb32-35" aria-hidden="true" tabindex="-1"></a>    box <span class="op">=</span> mpatches.FancyBboxPatch(</span>
+<span id="cb32-36"><a href="#cb32-36" aria-hidden="true" tabindex="-1"></a>        (x <span class="op">-</span> <span class="fl">1.1</span>, y <span class="op">-</span> <span class="fl">0.55</span>), <span class="fl">2.2</span>, <span class="fl">1.1</span>,</span>
+<span id="cb32-37"><a href="#cb32-37" aria-hidden="true" tabindex="-1"></a>        boxstyle<span class="op">=</span><span class="st">'round,pad=0.1'</span>,</span>
+<span id="cb32-38"><a href="#cb32-38" aria-hidden="true" tabindex="-1"></a>        facecolor<span class="op">=</span>colors[name], edgecolor<span class="op">=</span><span class="st">'#333333'</span>,</span>
+<span id="cb32-39"><a href="#cb32-39" aria-hidden="true" tabindex="-1"></a>        linewidth<span class="op">=</span><span class="fl">1.2</span>, alpha<span class="op">=</span><span class="fl">0.85</span>, zorder<span class="op">=</span><span class="dv">3</span>,</span>
+<span id="cb32-40"><a href="#cb32-40" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb32-41"><a href="#cb32-41" aria-hidden="true" tabindex="-1"></a>    ax.add_patch(box)</span>
+<span id="cb32-42"><a href="#cb32-42" aria-hidden="true" tabindex="-1"></a>    ax.text(x, y <span class="op">+</span> <span class="fl">0.12</span>, name, ha<span class="op">=</span><span class="st">'center'</span>, va<span class="op">=</span><span class="st">'center'</span>,</span>
+<span id="cb32-43"><a href="#cb32-43" aria-hidden="true" tabindex="-1"></a>            fontsize<span class="op">=</span><span class="dv">10</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>, color<span class="op">=</span><span class="st">'white'</span>, zorder<span class="op">=</span><span class="dv">4</span>)</span>
+<span id="cb32-44"><a href="#cb32-44" aria-hidden="true" tabindex="-1"></a>    ax.text(x, y <span class="op">-</span> <span class="fl">0.22</span>, descriptions[name], ha<span class="op">=</span><span class="st">'center'</span>, va<span class="op">=</span><span class="st">'center'</span>,</span>
+<span id="cb32-45"><a href="#cb32-45" aria-hidden="true" tabindex="-1"></a>            fontsize<span class="op">=</span><span class="dv">7</span>, color<span class="op">=</span><span class="st">'white'</span>, zorder<span class="op">=</span><span class="dv">4</span>)</span>
+<span id="cb32-46"><a href="#cb32-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-47"><a href="#cb32-47" aria-hidden="true" tabindex="-1"></a>edges <span class="op">=</span> [</span>
+<span id="cb32-48"><a href="#cb32-48" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'SVD'</span>, <span class="st">'Spectral'</span>, <span class="st">'A symmetric</span><span class="ch">\n</span><span class="st">=&gt; U=V=Q'</span>),</span>
+<span id="cb32-49"><a href="#cb32-49" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'SVD'</span>, <span class="st">'QR'</span>,        <span class="st">'thin U gives</span><span class="ch">\n</span><span class="st">orthogonal basis'</span>),</span>
+<span id="cb32-50"><a href="#cb32-50" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'Spectral'</span>, <span class="st">'Eigen'</span>, <span class="st">'special case</span><span class="ch">\n</span><span class="st">Q=P, P^-1=Q^T'</span>),</span>
+<span id="cb32-51"><a href="#cb32-51" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'Spectral'</span>, <span class="st">'Cholesky'</span>, <span class="st">'A PD =&gt;</span><span class="ch">\n</span><span class="st">L from Q,Lam'</span>),</span>
+<span id="cb32-52"><a href="#cb32-52" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb32-53"><a href="#cb32-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-54"><a href="#cb32-54" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> src, dst, label <span class="kw">in</span> edges:</span>
+<span id="cb32-55"><a href="#cb32-55" aria-hidden="true" tabindex="-1"></a>    x0, y0 <span class="op">=</span> nodes[src]</span>
+<span id="cb32-56"><a href="#cb32-56" aria-hidden="true" tabindex="-1"></a>    x1, y1 <span class="op">=</span> nodes[dst]</span>
+<span id="cb32-57"><a href="#cb32-57" aria-hidden="true" tabindex="-1"></a>    ax.annotate(<span class="st">''</span>, xy<span class="op">=</span>(x1, y1 <span class="op">+</span> <span class="fl">0.55</span>), xytext<span class="op">=</span>(x0, y0 <span class="op">-</span> <span class="fl">0.55</span>),</span>
+<span id="cb32-58"><a href="#cb32-58" aria-hidden="true" tabindex="-1"></a>                arrowprops<span class="op">=</span><span class="bu">dict</span>(arrowstyle<span class="op">=</span><span class="st">'-&gt;'</span>, color<span class="op">=</span><span class="st">'#555555'</span>, lw<span class="op">=</span><span class="fl">1.4</span>),</span>
+<span id="cb32-59"><a href="#cb32-59" aria-hidden="true" tabindex="-1"></a>                zorder<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb32-60"><a href="#cb32-60" aria-hidden="true" tabindex="-1"></a>    mx, my <span class="op">=</span> (x0 <span class="op">+</span> x1) <span class="op">/</span> <span class="dv">2</span>, (y0 <span class="op">+</span> y1) <span class="op">/</span> <span class="dv">2</span></span>
+<span id="cb32-61"><a href="#cb32-61" aria-hidden="true" tabindex="-1"></a>    ax.text(mx <span class="op">+</span> <span class="fl">0.15</span>, my, label, ha<span class="op">=</span><span class="st">'left'</span>, va<span class="op">=</span><span class="st">'center'</span>,</span>
+<span id="cb32-62"><a href="#cb32-62" aria-hidden="true" tabindex="-1"></a>            fontsize<span class="op">=</span><span class="fl">6.5</span>, color<span class="op">=</span><span class="st">'#444444'</span>, zorder<span class="op">=</span><span class="dv">4</span>)</span>
+<span id="cb32-63"><a href="#cb32-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-64"><a href="#cb32-64" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">'Matrix factorization relationships'</span>, fontsize<span class="op">=</span><span class="dv">11</span>)</span>
+<span id="cb32-65"><a href="#cb32-65" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb32-66"><a href="#cb32-66" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div id="fig-app-factorization-relations" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-app-factorization-relations-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="app-b-factorizations_files/figure-html/fig-app-factorization-relations-output-1.png" width="854" height="469" class="figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-app-factorization-relations-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;27.2: Relationships among the six major factorizations. SVD is the most general and subsumes several others as special cases. Arrows indicate ‘can be derived from’ or ‘is a special case of’.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="conditioning-and-numerical-stability-at-a-glance" class="level3" data-number="27.7.3">
+<h3 data-number="27.7.3" class="anchored" data-anchor-id="conditioning-and-numerical-stability-at-a-glance"><span class="header-section-number">27.7.3</span> Conditioning and Numerical Stability at a Glance</h3>
+<div id="app-b-conditioning" class="cell" data-execution_count="18">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.linalg</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">0</span>)</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">6</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> rng.standard_normal((n, n))</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> A <span class="op">@</span> A.T <span class="op">+</span> n <span class="op">*</span> np.eye(n)     <span class="co"># shape (6, 6)  SPD</span></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>kappa <span class="op">=</span> np.linalg.cond(A)</span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>P_mat, L, U <span class="op">=</span> scipy.linalg.lu(A)</span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>Q, R <span class="op">=</span> np.linalg.qr(A)</span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>vals, _ <span class="op">=</span> np.linalg.eigh(A)</span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a>U_s, s, Vt <span class="op">=</span> np.linalg.svd(A, full_matrices<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-16"><a href="#cb33-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Condition number kappa(A)      : </span><span class="sc">{</span>kappa<span class="sc">:.2f}</span><span class="ss">"</span>)</span>
+<span id="cb33-17"><a href="#cb33-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"kappa via singular values       : </span><span class="sc">{</span>s[<span class="dv">0</span>]<span class="op">/</span>s[<span class="op">-</span><span class="dv">1</span>]<span class="sc">:.2f}</span><span class="ss">"</span>)</span>
+<span id="cb33-18"><a href="#cb33-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"kappa via eigenvalues (eigh)    : </span><span class="sc">{</span>vals[<span class="op">-</span><span class="dv">1</span>]<span class="op">/</span>vals[<span class="dv">0</span>]<span class="sc">:.2f}</span><span class="ss">"</span>)</span>
+<span id="cb33-19"><a href="#cb33-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"kappa via LU (U diagonal ratio) : </span><span class="sc">{</span>np<span class="sc">.</span><span class="bu">abs</span>(np.diag(U)[<span class="dv">0</span>]<span class="op">/</span>np.diag(U)[<span class="op">-</span><span class="dv">1</span>])<span class="sc">:.2f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Condition number kappa(A)      : 2.67
+kappa via singular values       : 2.67
+kappa via eigenvalues (eigh)    : 2.67
+kappa via LU (U diagonal ratio) : 1.01</code></pre>
+</div>
+</div>
+<blockquote class="blockquote">
+<p>All three estimates of condition number should agree for a well-formed SPD matrix. Large condition numbers (<span class="math inline">\(\kappa \gg 10^6\)</span>) mean the system is nearly singular and solutions will have <span class="math inline">\(\log_{10}(\kappa)\)</span> digits of accuracy lost.</p>
+</blockquote>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./app-a-python-reference.html" class="pagination-link" aria-label="Appendix A: Python / NumPy / SciPy / OpenCV Quick Reference">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Appendix A: Python / NumPy / SciPy / OpenCV Quick Reference</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./app-c-rotations.html" class="pagination-link" aria-label="Appendix C: Rotation Representation Conversions">
+        <span class="nav-page-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Appendix C: Rotation Representation Conversions</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

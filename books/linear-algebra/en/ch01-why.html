@@ -1,0 +1,2185 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>1&nbsp; Why Linear Algebra? – Linear Algebra for ML, CV, and Robotics</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./ch02-linear-systems.html" rel="next">
+<link href="./index.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-12eeb4b20e9f5a2b0bfc604bfaf942bb.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-YYQB7MG50X"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-YYQB7MG50X', { 'anonymize_ip': true});
+</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="custom.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Linear Algebra for ML, CV, and Robotics</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="https://sabioresearch.com/en"> 
+<span class="menu-text"><img src="../../../common-resource/SabioResearchHeader.png" alt="SabioResearch.com"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./ch01-why.html">Part I — Linear Systems and Subspaces</a></li><li class="breadcrumb-item"><a href="./ch01-why.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Why Linear Algebra?</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+        <div class="sidebar-tools-main">
+    <a href="./../../index.html" title="Home" class="quarto-navigation-tool px-1" aria-label="Home"><i class="bi bi-house"></i></a>
+</div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part I — Linear Systems and Subspaces</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch01-why.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Why Linear Algebra?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch02-linear-systems.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Systems of Linear Equations</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch03-row-reduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Row Reduction and Echelon Forms</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch04-vectors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Vectors in ℝⁿ</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part II — Linear Maps and Coordinate Changes</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch05-matrix-equations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Matrix Equations, Column Space, and Linear Independence</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch06-linear-transforms.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Linear Transformations and Their Matrices</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch07-affine-transforms.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Affine Transformations and Homogeneous Coordinates</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part III — 3D Geometry for Robotics and Vision</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch08-rotations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">3D Rotations and SO(3)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch09-rigid-body.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Rigid Body Transformations and SE(3)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch10-camera-models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Camera Models and Projection Matrices</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch11-projective-geometry.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Projective Geometry and Homography</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part IV — Matrix Factorizations and Eigenstructure</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch12-factorizations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">LU, Cholesky, Determinants, and Numerical Conditioning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch13-eigenvalues.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Eigenvalues and the Characteristic Equation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch14-diagonalization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Diagonalization and the Spectral Theorem</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part V — Orthogonality, Projections, and Least Squares</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch15-norms.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Inner Products and Norms</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch16-orthogonality.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Orthogonal Sets, Gram–Schmidt, and QR</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch17-least-squares.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Projections, Pseudoinverse, and Least Squares</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part VI — Decompositions and Statistical Geometry</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch18-svd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Singular Value Decomposition</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch19-covariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Covariance, Statistical Geometry, and the Matrix Square Root</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch20-pca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Principal Component Analysis</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part VII — Optimization, Estimation, and Applied 3D Geometry</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch21-matrix-calculus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Matrix Calculus</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch22-jacobians.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Jacobians, Inverse Kinematics, and Nonlinear Optimization</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch23-state-estimation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">State Estimation and Covariance Propagation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch24-lie-groups.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Lie Groups and Lie Algebras</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch25-epipolar.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Epipolar Geometry</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./app-a-python-reference.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Appendix A: Python / NumPy / SciPy / OpenCV Quick Reference</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./app-b-factorizations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Appendix B: Matrix Factorization Summary</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./app-c-rotations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Appendix C: Rotation Representation Conversions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./app-d-matrix-calculus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Appendix D: Matrix Calculus Identity Reference</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./app-e-notation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Appendix E: Notation Glossary</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./app-f-tensors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Appendix F: Tensor Notation for Deep Learning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">In This Chapter</h2>
+   
+  <ul>
+  <li><a href="#sec-three-problems" id="toc-sec-three-problems" class="nav-link active" data-scroll-target="#sec-three-problems"><span class="header-section-number">1.1</span> The Three Problems This Book Solves</a>
+  <ul class="collapse">
+  <li><a href="#problem-1-amathbfx-mathbfb-solve-exactly" id="toc-problem-1-amathbfx-mathbfb-solve-exactly" class="nav-link" data-scroll-target="#problem-1-amathbfx-mathbfb-solve-exactly"><span class="header-section-number">1.1.1</span> Problem 1: <span class="math inline">\(A\mathbf{x} = \mathbf{b}\)</span> — Solve Exactly</a></li>
+  <li><a href="#problem-2-minlvert-amathbfx---mathbfb-rvert-fit-to-noisy-data" id="toc-problem-2-minlvert-amathbfx---mathbfb-rvert-fit-to-noisy-data" class="nav-link" data-scroll-target="#problem-2-minlvert-amathbfx---mathbfb-rvert-fit-to-noisy-data"><span class="header-section-number">1.1.2</span> Problem 2: <span class="math inline">\(\min\lVert A\mathbf{x} - \mathbf{b} \rVert\)</span> — Fit to Noisy Data</a></li>
+  <li><a href="#problem-3-amathbfv-lambdamathbfv-find-structure" id="toc-problem-3-amathbfv-lambdamathbfv-find-structure" class="nav-link" data-scroll-target="#problem-3-amathbfv-lambdamathbfv-find-structure"><span class="header-section-number">1.1.3</span> Problem 3: <span class="math inline">\(A\mathbf{v} = \lambda\mathbf{v}\)</span> — Find Structure</a></li>
+  <li><a href="#the-three-problems-unify-this-book" id="toc-the-three-problems-unify-this-book" class="nav-link" data-scroll-target="#the-three-problems-unify-this-book"><span class="header-section-number">1.1.4</span> The Three Problems Unify This Book</a></li>
+  </ul></li>
+  <li><a href="#sec-three-mental-models" id="toc-sec-three-mental-models" class="nav-link" data-scroll-target="#sec-three-mental-models"><span class="header-section-number">1.2</span> Matrices as Data, Maps, and Geometry</a>
+  <ul class="collapse">
+  <li><a href="#mental-model-1-matrix-as-data" id="toc-mental-model-1-matrix-as-data" class="nav-link" data-scroll-target="#mental-model-1-matrix-as-data"><span class="header-section-number">1.2.1</span> Mental Model 1 — Matrix as Data</a></li>
+  <li><a href="#mental-model-2-matrix-as-map-function" id="toc-mental-model-2-matrix-as-map-function" class="nav-link" data-scroll-target="#mental-model-2-matrix-as-map-function"><span class="header-section-number">1.2.2</span> Mental Model 2 — Matrix as Map (Function)</a></li>
+  <li><a href="#mental-model-3-matrix-as-geometry" id="toc-mental-model-3-matrix-as-geometry" class="nav-link" data-scroll-target="#mental-model-3-matrix-as-geometry"><span class="header-section-number">1.2.3</span> Mental Model 3 — Matrix as Geometry</a></li>
+  <li><a href="#why-three-models" id="toc-why-three-models" class="nav-link" data-scroll-target="#why-three-models"><span class="header-section-number">1.2.4</span> Why Three Models?</a></li>
+  </ul></li>
+  <li><a href="#sec-reading-map" id="toc-sec-reading-map" class="nav-link" data-scroll-target="#sec-reading-map"><span class="header-section-number">1.3</span> A Reading Map for ML, CV, and Robotics</a>
+  <ul class="collapse">
+  <li><a href="#chapter-importance-by-field" id="toc-chapter-importance-by-field" class="nav-link" data-scroll-target="#chapter-importance-by-field"><span class="header-section-number">1.3.1</span> Chapter Importance by Field</a></li>
+  <li><a href="#fast-tracks" id="toc-fast-tracks" class="nav-link" data-scroll-target="#fast-tracks"><span class="header-section-number">1.3.2</span> Fast Tracks</a></li>
+  <li><a href="#how-chapters-depend-on-each-other" id="toc-how-chapters-depend-on-each-other" class="nav-link" data-scroll-target="#how-chapters-depend-on-each-other"><span class="header-section-number">1.3.3</span> How Chapters Depend on Each Other</a></li>
+  <li><a href="#using-this-book-as-a-reference" id="toc-using-this-book-as-a-reference" class="nav-link" data-scroll-target="#using-this-book-as-a-reference"><span class="header-section-number">1.3.4</span> Using This Book as a Reference</a></li>
+  </ul></li>
+  <li><a href="#sec-python-setup" id="toc-sec-python-setup" class="nav-link" data-scroll-target="#sec-python-setup"><span class="header-section-number">1.4</span> Python Setup</a>
+  <ul class="collapse">
+  <li><a href="#installing-the-required-packages" id="toc-installing-the-required-packages" class="nav-link" data-scroll-target="#installing-the-required-packages"><span class="header-section-number">1.4.1</span> Installing the Required Packages</a></li>
+  <li><a href="#verifying-your-installation" id="toc-verifying-your-installation" class="nav-link" data-scroll-target="#verifying-your-installation"><span class="header-section-number">1.4.2</span> Verifying Your Installation</a></li>
+  <li><a href="#numpy-quick-reference" id="toc-numpy-quick-reference" class="nav-link" data-scroll-target="#numpy-quick-reference"><span class="header-section-number">1.4.3</span> NumPy Quick Reference</a></li>
+  <li><a href="#code-conventions-used-in-this-book" id="toc-code-conventions-used-in-this-book" class="nav-link" data-scroll-target="#code-conventions-used-in-this-book"><span class="header-section-number">1.4.4</span> Code Conventions Used in This Book</a></li>
+  <li><a href="#downloading-the-datasets" id="toc-downloading-the-datasets" class="nav-link" data-scroll-target="#downloading-the-datasets"><span class="header-section-number">1.4.5</span> Downloading the Datasets</a></li>
+  </ul></li>
+  <li><a href="#sec-ch01-exercises" id="toc-sec-ch01-exercises" class="nav-link" data-scroll-target="#sec-ch01-exercises"><span class="header-section-number">1.5</span> Exercises</a></li>
+  <li><a href="#sec-ch01-solutions" id="toc-sec-ch01-solutions" class="nav-link" data-scroll-target="#sec-ch01-solutions"><span class="header-section-number">1.6</span> Solutions</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./ch01-why.html">Part I — Linear Systems and Subspaces</a></li><li class="breadcrumb-item"><a href="./ch01-why.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Why Linear Algebra?</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Why Linear Algebra?</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="sec-three-problems" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="sec-three-problems"><span class="header-section-number">1.1</span> The Three Problems This Book Solves</h2>
+<p>Every technique in this book — whether you are calibrating a camera, fitting a model to sensor data, or finding the dominant direction of motion in a point cloud — reduces to one of three fundamental problems:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 7%">
+<col style="width: 23%">
+<col style="width: 26%">
+<col style="width: 42%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">#</th>
+<th style="text-align: left;">Problem</th>
+<th style="text-align: left;">Notation</th>
+<th style="text-align: left;">When it arises</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: left;"><strong>Exact solve</strong></td>
+<td style="text-align: left;"><span class="math inline">\(A\mathbf{x} = \mathbf{b}\)</span></td>
+<td style="text-align: left;">Exactly <span class="math inline">\(n\)</span> independent constraints for <span class="math inline">\(n\)</span> unknowns</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2</td>
+<td style="text-align: left;"><strong>Least squares</strong></td>
+<td style="text-align: left;"><span class="math inline">\(\min\lVert A\mathbf{x} - \mathbf{b} \rVert\)</span></td>
+<td style="text-align: left;">More measurements than unknowns; best-fit solution</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3</td>
+<td style="text-align: left;"><strong>Eigenvalue</strong></td>
+<td style="text-align: left;"><span class="math inline">\(A\mathbf{v} = \lambda\mathbf{v}\)</span></td>
+<td style="text-align: left;">Find directions the matrix only stretches, never rotates</td>
+</tr>
+</tbody>
+</table>
+<p>Every subsequent chapter deepens one of these. Let us visit each one now with a concrete example, just enough to make the shape of the problem recognizable.</p>
+<hr>
+<section id="problem-1-amathbfx-mathbfb-solve-exactly" class="level3" data-number="1.1.1">
+<h3 data-number="1.1.1" class="anchored" data-anchor-id="problem-1-amathbfx-mathbfb-solve-exactly"><span class="header-section-number">1.1.1</span> Problem 1: <span class="math inline">\(A\mathbf{x} = \mathbf{b}\)</span> — Solve Exactly</h3>
+<p><strong>The situation.</strong> You have <span class="math inline">\(n\)</span> unknowns and exactly <span class="math inline">\(n\)</span> independent constraints. There is precisely one answer.</p>
+<p><strong>Where it appears.</strong></p>
+<ul>
+<li><em>Trilateration</em>: A mobile robot receives distance measurements from three beacons at known locations. Each measurement constrains the robot to a circle. Two circles intersect at (at most) two points; a third resolves the ambiguity. After linearizing, you solve a <span class="math inline">\(3 \times 2\)</span> system — but the core is still <span class="math inline">\(A\mathbf{x} = \mathbf{b}\)</span>.</li>
+<li><em>Frame conversion</em>: Given a 3-D point expressed in camera coordinates, compute the same point in world coordinates. The conversion is a matrix equation, solved in one step.</li>
+<li><em>Inverse kinematics (simplified)</em>: Given a desired end-effector position for a 2-DoF planar arm, find the two joint angles that achieve it.</li>
+</ul>
+<p><strong>Worked example.</strong> Two walls of a warehouse are equipped with ultrasonic sensors. From the signal travel times you derive two distance constraints on the robot’s <span class="math inline">\((x, y)\)</span> position:</p>
+<p><span class="math display">\[\begin{bmatrix} 2 &amp; -1 \\ 1 &amp; 3 \end{bmatrix}
+\begin{bmatrix} x \\ y \end{bmatrix}
+= \begin{bmatrix} 3 \\ 10 \end{bmatrix}\]</span></p>
+<div id="81c24d3c" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> np.array([[<span class="fl">2.0</span>, <span class="op">-</span><span class="fl">1.0</span>],</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>              [<span class="fl">1.0</span>,  <span class="fl">3.0</span>]])</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> np.array([<span class="fl">3.0</span>, <span class="fl">10.0</span>])</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.linalg.solve(A, b)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Robot position: x = </span><span class="sc">{</span>x[<span class="dv">0</span>]<span class="sc">:.4f}</span><span class="ss">, y = </span><span class="sc">{</span>x[<span class="dv">1</span>]<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>residual <span class="op">=</span> np.linalg.norm(A <span class="op">@</span> x <span class="op">-</span> b)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Residual ||Ax - b|| = </span><span class="sc">{</span>residual<span class="sc">:.2e}</span><span class="ss">"</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Residual ≈ machine epsilon — this is an exact solve</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Robot position: x = 2.7143, y = 2.4286
+Residual ||Ax - b|| = 4.44e-16</code></pre>
+</div>
+</div>
+<p>The residual is essentially zero — floating-point machine epsilon. That is what <em>exact solve</em> means. Notice that <code>numpy.linalg.solve</code> does not check whether a unique solution exists; you must do that yourself (Chapter 3 shows how).</p>
+<p><strong>The three cases of <span class="math inline">\(A\mathbf{x} = \mathbf{b}\)</span>.</strong></p>
+<div id="43025617" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">3</span>, figsize<span class="op">=</span>(<span class="dv">13</span>, <span class="dv">4</span>))</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>x_range <span class="op">=</span> np.linspace(<span class="op">-</span><span class="dv">2</span>, <span class="dv">8</span>, <span class="dv">400</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>blue, red <span class="op">=</span> <span class="st">'#4a90d9'</span>, <span class="st">'tomato'</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Panel 1: Unique solution</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> axes[<span class="dv">0</span>]</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> np.array([[<span class="fl">2.</span>, <span class="op">-</span><span class="fl">1.</span>], [<span class="fl">1.</span>, <span class="fl">3.</span>]])</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> np.array([<span class="fl">3.</span>, <span class="fl">10.</span>])</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>sol <span class="op">=</span> np.linalg.solve(A, b)</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>ax.plot(x_range, (<span class="dv">3</span>  <span class="op">-</span> <span class="dv">2</span><span class="op">*</span>x_range) <span class="op">/</span> (<span class="op">-</span><span class="dv">1</span>), color<span class="op">=</span>blue, lw<span class="op">=</span><span class="dv">2</span>, label<span class="op">=</span><span class="vs">r'</span><span class="dv">$</span><span class="vs">2x - y = 3</span><span class="dv">$</span><span class="vs">'</span>)</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>ax.plot(x_range, (<span class="dv">10</span> <span class="op">-</span> <span class="dv">1</span><span class="op">*</span>x_range) <span class="op">/</span>   <span class="dv">3</span>,  color<span class="op">=</span>red,  lw<span class="op">=</span><span class="dv">2</span>, label<span class="op">=</span><span class="vs">r'</span><span class="dv">$</span><span class="vs">x </span><span class="op">+</span><span class="vs"> 3y = 10</span><span class="dv">$</span><span class="vs">'</span>)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>ax.plot(<span class="op">*</span>sol, <span class="st">'ko'</span>, ms<span class="op">=</span><span class="dv">8</span>, zorder<span class="op">=</span><span class="dv">5</span>, label<span class="op">=</span><span class="vs">rf'</span><span class="dv">$</span><span class="kw">(</span><span class="sc">{</span>sol[<span class="dv">0</span>]<span class="sc">:.2f}</span><span class="vs">,</span><span class="ch">\,</span><span class="sc">{</span>sol[<span class="dv">1</span>]<span class="sc">:.2f}</span><span class="kw">)</span><span class="dv">$</span><span class="vs">'</span>)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">'Unique solution</span><span class="ch">\n</span><span class="st">(lines intersect)'</span>, fontsize<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>ax.legend(fontsize<span class="op">=</span><span class="dv">8</span>)</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Panel 2: No solution (parallel lines)</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> axes[<span class="dv">1</span>]</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>ax.plot(x_range, (<span class="dv">3</span> <span class="op">-</span> <span class="dv">2</span><span class="op">*</span>x_range) <span class="op">/</span> (<span class="op">-</span><span class="dv">1</span>), color<span class="op">=</span>blue, lw<span class="op">=</span><span class="dv">2</span>, label<span class="op">=</span><span class="vs">r'</span><span class="dv">$</span><span class="vs">2x - y = 3</span><span class="dv">$</span><span class="vs">'</span>)</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>ax.plot(x_range, (<span class="dv">7</span> <span class="op">-</span> <span class="dv">2</span><span class="op">*</span>x_range) <span class="op">/</span> (<span class="op">-</span><span class="dv">1</span>), color<span class="op">=</span>red,  lw<span class="op">=</span><span class="dv">2</span>, label<span class="op">=</span><span class="vs">r'</span><span class="dv">$</span><span class="vs">2x - y = 7</span><span class="dv">$</span><span class="vs">'</span>)</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">'No solution</span><span class="ch">\n</span><span class="st">(parallel lines, det $A$ = 0)'</span>, fontsize<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>ax.legend(fontsize<span class="op">=</span><span class="dv">8</span>)</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Panel 3: Infinitely many solutions (coincident lines)</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> axes[<span class="dv">2</span>]</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>ax.plot(x_range, (<span class="dv">3</span> <span class="op">-</span> <span class="dv">2</span><span class="op">*</span>x_range) <span class="op">/</span> (<span class="op">-</span><span class="dv">1</span>), color<span class="op">=</span>blue, lw<span class="op">=</span><span class="dv">3</span>,   label<span class="op">=</span><span class="vs">r'</span><span class="dv">$</span><span class="vs">2x - y = 3</span><span class="dv">$</span><span class="vs">'</span>)</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>ax.plot(x_range, (<span class="dv">6</span> <span class="op">-</span> <span class="dv">4</span><span class="op">*</span>x_range) <span class="op">/</span> (<span class="op">-</span><span class="dv">2</span>), color<span class="op">=</span>red,  lw<span class="op">=</span><span class="fl">1.5</span>,</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>        ls<span class="op">=</span><span class="st">'--'</span>, label<span class="op">=</span><span class="vs">r'</span><span class="dv">$</span><span class="vs">4x - 2y = 6</span><span class="dv">$</span><span class="vs">'</span>)</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">'Infinitely many solutions</span><span class="ch">\n</span><span class="st">(coincident lines)'</span>, fontsize<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>ax.legend(fontsize<span class="op">=</span><span class="dv">8</span>)</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax <span class="kw">in</span> axes:</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>    ax.set_xlim(<span class="op">-</span><span class="dv">2</span>, <span class="dv">8</span>)<span class="op">;</span> ax.set_ylim(<span class="op">-</span><span class="dv">4</span>, <span class="dv">8</span>)</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>    ax.axhline(<span class="dv">0</span>, color<span class="op">=</span><span class="st">'#333333'</span>, lw<span class="op">=</span><span class="fl">0.4</span>, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>    ax.axvline(<span class="dv">0</span>, color<span class="op">=</span><span class="st">'#333333'</span>, lw<span class="op">=</span><span class="fl">0.4</span>, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>    ax.grid(<span class="va">True</span>, alpha<span class="op">=</span><span class="fl">0.2</span>)</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>    ax.set_xlabel(<span class="st">'$x$'</span>)<span class="op">;</span> ax.set_ylabel(<span class="st">'$y$'</span>)</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>fig.suptitle(<span class="vs">r'</span><span class="dv">$</span><span class="vs">A</span><span class="dv">\m</span><span class="vs">athbf{x}=</span><span class="dv">\m</span><span class="vs">athbf{b}</span><span class="dv">$</span><span class="vs">: the three cases'</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="ch01-why_files/figure-html/cell-3-output-1.png" width="1237" height="381" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="problem-2-minlvert-amathbfx---mathbfb-rvert-fit-to-noisy-data" class="level3" data-number="1.1.2">
+<h3 data-number="1.1.2" class="anchored" data-anchor-id="problem-2-minlvert-amathbfx---mathbfb-rvert-fit-to-noisy-data"><span class="header-section-number">1.1.2</span> Problem 2: <span class="math inline">\(\min\lVert A\mathbf{x} - \mathbf{b} \rVert\)</span> — Fit to Noisy Data</h3>
+<p><strong>The situation.</strong> You have <em>more</em> equations than unknowns (<span class="math inline">\(m &gt; n\)</span>, overdetermined). No exact solution exists — the measurements contradict each other slightly because of noise. Find the <span class="math inline">\(\mathbf{x}\)</span> that minimizes total squared error.</p>
+<p><strong>Where it appears.</strong></p>
+<ul>
+<li><em>Camera calibration</em>: 60 checkerboard corners, 6 unknown pose parameters per image. Minimize the reprojection error over all corners.</li>
+<li><em>LIDAR plane fitting</em>: 10,000 range points; fit a single plane (<span class="math inline">\(n = 3\)</span> parameters). Far more data than unknowns — use them all to fight noise.</li>
+<li><em>Any regression</em>: Predict crop yield from sensor readings. More data points than model parameters is good; it makes the estimate robust.</li>
+</ul>
+<p><strong>Why not just pick two equations and solve exactly?</strong> Any two equations give an exact solution, but a different pair gives a different answer. Least squares uses <em>all</em> measurements simultaneously, weighting each equally, and finds the single <span class="math inline">\(\mathbf{x}\)</span> that is closest to satisfying them all.</p>
+<p><strong>Worked example.</strong> A temperature sensor drifts linearly over time. We model the temperature as <span class="math inline">\(T(t) = mt + c\)</span> and want to recover <span class="math inline">\(m\)</span> and <span class="math inline">\(c\)</span> from 20 noisy readings.</p>
+<div id="84a04780" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">42</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>t     <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">10</span>, <span class="dv">20</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>noise <span class="op">=</span> rng.normal(<span class="dv">0</span>, <span class="fl">0.4</span>, size<span class="op">=</span><span class="dv">20</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>T_obs <span class="op">=</span> <span class="fl">2.3</span> <span class="op">*</span> t <span class="op">+</span> <span class="fl">1.7</span> <span class="op">+</span> noise          <span class="co"># true: m = 2.3, c = 1.7</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Build A: each row is [t_i, 1]</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> np.column_stack([t, np.ones(<span class="bu">len</span>(t))])   <span class="co"># shape (20, 2)</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Solve: find [m, c] that minimises ||A @ [m,c] - T_obs||</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>x, residuals, rank, sv <span class="op">=</span> np.linalg.lstsq(A, T_obs, rcond<span class="op">=</span><span class="va">None</span>)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>m_fit, c_fit <span class="op">=</span> x</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Fitted:  m = </span><span class="sc">{</span>m_fit<span class="sc">:.4f}</span><span class="ss">,  c = </span><span class="sc">{</span>c_fit<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"True:    m = 2.3000,  c = 1.7000"</span>)</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Rank of A: </span><span class="sc">{</span>rank<span class="sc">}</span><span class="ss">  (full rank = 2, good)"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Fitted:  m = 2.3193,  c = 1.5904
+True:    m = 2.3000,  c = 1.7000
+Rank of A: 2  (full rank = 2, good)</code></pre>
+</div>
+</div>
+<p><strong>Effect of noise level on the fit.</strong></p>
+<div id="0ac8d3a0" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">11</span>, <span class="dv">4</span>))</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">10</span>, <span class="dv">20</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax, sigma, label <span class="kw">in</span> <span class="bu">zip</span>(axes,</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>                            [<span class="fl">0.4</span>, <span class="fl">2.0</span>],</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>                            [<span class="st">'Low noise (σ = 0.4)'</span>, <span class="st">'High noise (σ = 2.0)'</span>]):</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    rng <span class="op">=</span> np.random.default_rng(<span class="dv">42</span>)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    T <span class="op">=</span> <span class="fl">2.3</span> <span class="op">*</span> t <span class="op">+</span> <span class="fl">1.7</span> <span class="op">+</span> rng.normal(<span class="dv">0</span>, sigma, <span class="dv">20</span>)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    A <span class="op">=</span> np.column_stack([t, np.ones(<span class="dv">20</span>)])</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    x, _, _, _ <span class="op">=</span> np.linalg.lstsq(A, T, rcond<span class="op">=</span><span class="va">None</span>)</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    ax.scatter(t, T, color<span class="op">=</span><span class="st">'#4a90d9'</span>, s<span class="op">=</span><span class="dv">30</span>, alpha<span class="op">=</span><span class="fl">0.8</span>, label<span class="op">=</span><span class="st">'Observations'</span>)</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    t_line <span class="op">=</span> np.array([t[<span class="dv">0</span>], t[<span class="op">-</span><span class="dv">1</span>]])</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    ax.plot(t_line, x[<span class="dv">0</span>]<span class="op">*</span>t_line <span class="op">+</span> x[<span class="dv">1</span>], color<span class="op">=</span><span class="st">'tomato'</span>, lw<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>            label<span class="op">=</span><span class="vs">rf'Fit: </span><span class="dv">$</span><span class="vs">T = </span><span class="sc">{</span>x[<span class="dv">0</span>]<span class="sc">:.2f}</span><span class="vs">t </span><span class="op">+</span><span class="vs"> </span><span class="sc">{</span>x[<span class="dv">1</span>]<span class="sc">:.2f}</span><span class="dv">$</span><span class="vs">'</span>)</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    ax.plot(t_line, <span class="fl">2.3</span><span class="op">*</span>t_line <span class="op">+</span> <span class="fl">1.7</span>, color<span class="op">=</span><span class="st">'#2ecc71'</span>, lw<span class="op">=</span><span class="fl">1.5</span>, ls<span class="op">=</span><span class="st">'--'</span>,</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>            label<span class="op">=</span><span class="st">'True line'</span>)</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>    ax.set_xlabel(<span class="st">'Time (s)'</span>)<span class="op">;</span> ax.set_ylabel(<span class="st">'Temperature (°C)'</span>)</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>    ax.set_title(label, fontsize<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    ax.legend(fontsize<span class="op">=</span><span class="dv">8</span>)<span class="op">;</span> ax.grid(<span class="va">True</span>, alpha<span class="op">=</span><span class="fl">0.2</span>)</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>fig.suptitle(<span class="vs">r'</span><span class="dv">$\m</span><span class="vs">in</span><span class="ch">\!\|</span><span class="vs">A</span><span class="dv">\m</span><span class="vs">athbf{x}-</span><span class="dv">\m</span><span class="vs">athbf{b}</span><span class="ch">\|</span><span class="dv">$</span><span class="vs">: least-squares fit'</span>,</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>             fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="ch01-why_files/figure-html/cell-5-output-1.png" width="1046" height="381" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="problem-3-amathbfv-lambdamathbfv-find-structure" class="level3" data-number="1.1.3">
+<h3 data-number="1.1.3" class="anchored" data-anchor-id="problem-3-amathbfv-lambdamathbfv-find-structure"><span class="header-section-number">1.1.3</span> Problem 3: <span class="math inline">\(A\mathbf{v} = \lambda\mathbf{v}\)</span> — Find Structure</h3>
+<p><strong>The situation.</strong> You want the <em>natural directions</em> of a matrix — the vectors that a matrix only stretches or compresses, never rotates. These directions reveal the underlying geometry of the data or system.</p>
+<p><strong>Where it appears.</strong></p>
+<ul>
+<li><em>Principal Component Analysis (PCA)</em>: The eigenvectors of the data covariance matrix point in the directions of maximum variance. Used in dimensionality reduction, visualization, and anomaly detection.</li>
+<li><em>Control stability</em>: The eigenvalues of a robot controller’s state-transition matrix determine whether small errors decay to zero or grow without bound. <span class="math inline">\(|\lambda_i| &lt; 1\)</span> for all <span class="math inline">\(i\)</span> means stable; any <span class="math inline">\(|\lambda_i| &gt; 1\)</span> means unstable.</li>
+<li><em>Vibration modes</em>: In a mechanical linkage, the eigenvectors of the stiffness matrix are the natural vibration modes — the shapes the structure prefers to oscillate in.</li>
+</ul>
+<p><strong>Worked example.</strong> A 2-D point cloud of robot position estimates has been contaminated by correlated noise. The covariance matrix captures the shape and orientation of the noise ellipse.</p>
+<div id="7ed36a36" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Covariance matrix of 2-D position estimates</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>Sigma <span class="op">=</span> np.array([[<span class="fl">3.0</span>, <span class="fl">1.5</span>],</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>                  [<span class="fl">1.5</span>, <span class="fl">1.0</span>]])</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co"># eigh is for real symmetric/Hermitian matrices (guaranteed real eigenvalues)</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>eigenvalues, eigenvectors <span class="op">=</span> np.linalg.eigh(Sigma)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Eigenvalues  (variance along each principal axis):"</span>)</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(eigenvalues)</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Eigenvectors (columns = principal directions):"</span>)</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(eigenvectors)</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Verify: A v = λ v</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">2</span>):</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    v   <span class="op">=</span> eigenvectors[:, i]</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    lam <span class="op">=</span> eigenvalues[i]</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    err <span class="op">=</span> np.linalg.norm(Sigma <span class="op">@</span> v <span class="op">-</span> lam <span class="op">*</span> v)</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">||Σ v</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss"> - λ</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss"> v</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">|| = </span><span class="sc">{</span>err<span class="sc">:.2e}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Eigenvalues  (variance along each principal axis):
+[0.19722436 3.80277564]
+
+Eigenvectors (columns = principal directions):
+[[ 0.47185793 -0.8816746 ]
+ [-0.8816746  -0.47185793]]
+
+||Σ v0 - λ0 v0|| = 1.37e-16
+
+||Σ v1 - λ1 v1|| = 2.22e-16</code></pre>
+</div>
+</div>
+<p><strong>Eigenvectors reveal the noise ellipse orientation.</strong></p>
+<div id="709a8b5c" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>Sigma <span class="op">=</span> np.array([[<span class="fl">3.0</span>, <span class="fl">1.5</span>], [<span class="fl">1.5</span>, <span class="fl">1.0</span>]])</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>evals, evecs <span class="op">=</span> np.linalg.eigh(Sigma)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">0</span>)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>pts <span class="op">=</span> rng.multivariate_normal([<span class="dv">0</span>, <span class="dv">0</span>], Sigma, <span class="dv">300</span>)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">5</span>, <span class="dv">5</span>))</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>ax.scatter(pts[:, <span class="dv">0</span>], pts[:, <span class="dv">1</span>], alpha<span class="op">=</span><span class="fl">0.3</span>, s<span class="op">=</span><span class="dv">10</span>, color<span class="op">=</span><span class="st">'#4a90d9'</span>, label<span class="op">=</span><span class="st">'Samples'</span>)</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, color <span class="kw">in</span> <span class="bu">enumerate</span>([<span class="st">'tomato'</span>, <span class="st">'#2ecc71'</span>]):</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    v <span class="op">=</span> evecs[:, i] <span class="op">*</span> np.sqrt(evals[i]) <span class="op">*</span> <span class="dv">2</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    ax.annotate(<span class="st">''</span>, xy<span class="op">=</span>v, xytext<span class="op">=-</span>v,</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>                arrowprops<span class="op">=</span><span class="bu">dict</span>(arrowstyle<span class="op">=</span><span class="st">'&lt;-&gt;'</span>, color<span class="op">=</span>color, lw<span class="op">=</span><span class="fl">2.5</span>))</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    ax.text(<span class="op">*</span>(v <span class="op">*</span> <span class="fl">1.15</span>), <span class="vs">rf'</span><span class="dv">$</span><span class="er">\</span><span class="vs">lambda_</span><span class="sc">{</span>i<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="vs">=</span><span class="sc">{</span>evals[i]<span class="sc">:.2f}</span><span class="dv">$</span><span class="vs">'</span>,</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>            color<span class="op">=</span>color, fontsize<span class="op">=</span><span class="dv">9</span>)</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>ax.set_aspect(<span class="st">'equal'</span>)</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>ax.grid(<span class="va">True</span>, alpha<span class="op">=</span><span class="fl">0.2</span>)</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>ax.set_xlim(<span class="op">-</span><span class="dv">6</span>, <span class="dv">6</span>)<span class="op">;</span> ax.set_ylim(<span class="op">-</span><span class="dv">6</span>, <span class="dv">6</span>)</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="vs">r'</span><span class="dv">$</span><span class="vs">A</span><span class="dv">\m</span><span class="vs">athbf{v}=</span><span class="er">\</span><span class="vs">lambda</span><span class="dv">\m</span><span class="vs">athbf{v}</span><span class="dv">$</span><span class="vs">: eigenvectors of </span><span class="dv">$\S</span><span class="vs">igma</span><span class="dv">$</span><span class="vs">'</span>)</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">'$x$'</span>)<span class="op">;</span> ax.set_ylabel(<span class="st">'$y$'</span>)</span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="ch01-why_files/figure-html/cell-7-output-1.png" width="459" height="469" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="the-three-problems-unify-this-book" class="level3" data-number="1.1.4">
+<h3 data-number="1.1.4" class="anchored" data-anchor-id="the-three-problems-unify-this-book"><span class="header-section-number">1.1.4</span> The Three Problems Unify This Book</h3>
+<p>The table below maps every chapter to the problem it deepens:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 47%">
+<col style="width: 52%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Problem</th>
+<th style="text-align: left;">Chapters</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(A\mathbf{x} = \mathbf{b}\)</span></td>
+<td style="text-align: left;">2, 3, 5, 7, 9, 10, 11, 12</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(\min\lVert A\mathbf{x} - \mathbf{b} \rVert\)</span></td>
+<td style="text-align: left;">15, 16, 17, 18, 22, 23</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(A\mathbf{v} = \lambda\mathbf{v}\)</span></td>
+<td style="text-align: left;">13, 14, 19, 20, 24</td>
+</tr>
+</tbody>
+</table>
+<p>Many chapters bridge two problems — SVD (Chapter 18) simultaneously provides the best low-rank approximation (Problem 2) and the principal directions (Problem 3). Lie groups (Chapter 24) generalize <span class="math inline">\(A\mathbf{x} = \mathbf{b}\)</span> to curved manifolds. Whenever you feel lost, return to this table and ask: <em>which of the three problems does this serve?</em></p>
+</section>
+</section>
+<section id="sec-three-mental-models" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="sec-three-mental-models"><span class="header-section-number">1.2</span> Matrices as Data, Maps, and Geometry</h2>
+<p>A matrix is just a rectangular array of numbers — but it plays three completely different roles in ML, CV, and robotics. Confusing the roles is a common source of bugs. This section gives you all three mental models up front.</p>
+<hr>
+<section id="mental-model-1-matrix-as-data" class="level3" data-number="1.2.1">
+<h3 data-number="1.2.1" class="anchored" data-anchor-id="mental-model-1-matrix-as-data"><span class="header-section-number">1.2.1</span> Mental Model 1 — Matrix as Data</h3>
+<p>The most literal interpretation: a matrix is a table of measured values.</p>
+<p><strong>Grayscale image.</strong> A 480 × 640 grayscale image is a <span class="math inline">\(480 \times 640\)</span> matrix. Entry <span class="math inline">\((i, j)\)</span> is the intensity of the pixel at row <span class="math inline">\(i\)</span>, column <span class="math inline">\(j\)</span>, an integer in <span class="math inline">\([0, 255]\)</span>.</p>
+<div id="0109e306" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate a small grayscale image (in practice: cv2.imread or plt.imread)</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">0</span>)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>img <span class="op">=</span> rng.integers(<span class="dv">0</span>, <span class="dv">256</span>, size<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">8</span>), dtype<span class="op">=</span>np.uint8)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Type:  </span><span class="sc">{</span><span class="bu">type</span>(img)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Shape: </span><span class="sc">{</span>img<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">   ← (rows, cols) = (height, width)"</span>)</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Dtype: </span><span class="sc">{</span>img<span class="sc">.</span>dtype<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Pixel values:</span><span class="ch">\n</span><span class="sc">{</span>img<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Type:  &lt;class 'numpy.ndarray'&gt;
+Shape: (6, 8)   ← (rows, cols) = (height, width)
+Dtype: uint8
+
+Pixel values:
+[[ 95 130 194 217 207 235  15 163]
+ [ 33 215 217 130 248 189  16  69]
+ [184 232 205  78 169  61 125  10]
+ [ 29 240  66  19 182  39  59   4]
+ [ 59  81 222  44 120 122  50 208]
+ [ 78  28  64 166 121  89 170 233]]</code></pre>
+</div>
+</div>
+<p><strong>Colour (RGB) image.</strong> Add a third axis: shape <span class="math inline">\((H, W, 3)\)</span>. Channel 0 is red, 1 is green, 2 is blue. This is technically a <em>tensor</em> (3-D array), but the 2-D slices are still matrices.</p>
+<div id="4bbe72f6" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">0</span>)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>img_rgb <span class="op">=</span> rng.integers(<span class="dv">0</span>, <span class="dv">256</span>, size<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">8</span>, <span class="dv">3</span>), dtype<span class="op">=</span>np.uint8)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"RGB image shape: </span><span class="sc">{</span>img_rgb<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">  ← (H, W, channels)"</span>)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>red_channel <span class="op">=</span> img_rgb[:, :, <span class="dv">0</span>]           <span class="co"># a 6×8 matrix</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Red channel:     </span><span class="sc">{</span>red_channel<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>RGB image shape: (6, 8, 3)  ← (H, W, channels)
+Red channel:     (6, 8)</code></pre>
+</div>
+</div>
+<p><strong>Point cloud.</strong> A collection of <span class="math inline">\(N\)</span> 3-D points from a depth sensor is stored as an <span class="math inline">\(N \times 3\)</span> matrix — one row per point, columns are <span class="math inline">\((x, y, z)\)</span>.</p>
+<div id="f590488f" class="cell" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">0</span>)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">1000</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>points_xyz <span class="op">=</span> rng.standard_normal((N, <span class="dv">3</span>))    <span class="co"># N × 3 matrix</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Point cloud shape: </span><span class="sc">{</span>points_xyz<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">  ← (N_points, 3)"</span>)</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"First three points:</span><span class="ch">\n</span><span class="sc">{</span>points_xyz[:<span class="dv">3</span>]<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Point cloud shape: (1000, 3)  ← (N_points, 3)
+First three points:
+[[ 0.12573022 -0.13210486  0.64042265]
+ [ 0.10490012 -0.53566937  0.36159505]
+ [ 1.30400005  0.94708096 -0.70373524]]</code></pre>
+</div>
+</div>
+<p><strong>The key insight:</strong> operations on data — crop, resize, blur, transform — almost always reduce to matrix arithmetic. When a convolution is slow, you are paying for matrix multiplications that have not yet been fused by your hardware.</p>
+<hr>
+</section>
+<section id="mental-model-2-matrix-as-map-function" class="level3" data-number="1.2.2">
+<h3 data-number="1.2.2" class="anchored" data-anchor-id="mental-model-2-matrix-as-map-function"><span class="header-section-number">1.2.2</span> Mental Model 2 — Matrix as Map (Function)</h3>
+<p>A matrix <span class="math inline">\(W \in \mathbb{R}^{m \times n}\)</span> is a <em>function</em> that takes an <span class="math inline">\(n\)</span>-dimensional vector and returns an <span class="math inline">\(m\)</span>-dimensional vector:</p>
+<p><span class="math display">\[\mathbf{y} = W\mathbf{x}, \qquad \mathbf{x} \in \mathbb{R}^n,\; \mathbf{y} \in \mathbb{R}^m\]</span></p>
+<p>Every fully connected layer of a neural network is exactly this — plus a bias and a nonlinearity.</p>
+<div id="3364415f" class="cell" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="co"># One fully-connected layer: 8 inputs → 4 outputs</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">1</span>)</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>W <span class="op">=</span> rng.standard_normal((<span class="dv">4</span>, <span class="dv">8</span>))    <span class="co"># weight matrix, shape (4, 8)</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> rng.standard_normal(<span class="dv">4</span>)         <span class="co"># bias vector,   shape (4,)</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> rng.standard_normal(<span class="dv">8</span>)         <span class="co"># input vector,  shape (8,)</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>y_pre <span class="op">=</span> W <span class="op">@</span> x <span class="op">+</span> b              <span class="co"># pre-activation, shape (4,)</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>y     <span class="op">=</span> np.maximum(<span class="dv">0</span>, y_pre)   <span class="co"># ReLU activation</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Input shape:  </span><span class="sc">{</span>x<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Weight shape: </span><span class="sc">{</span>W<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Output shape: </span><span class="sc">{</span>y<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Input shape:  (8,)
+Weight shape: (4, 8)
+Output shape: (4,)</code></pre>
+</div>
+</div>
+<p><strong>A three-layer network.</strong> Chain three matrices:</p>
+<div id="6fb38ad5" class="cell" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">1</span>)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Architecture: 784 → 256 → 128 → 10</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>W1 <span class="op">=</span> rng.standard_normal((<span class="dv">256</span>, <span class="dv">784</span>)) <span class="op">*</span> <span class="fl">0.01</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>W2 <span class="op">=</span> rng.standard_normal((<span class="dv">128</span>, <span class="dv">256</span>)) <span class="op">*</span> <span class="fl">0.01</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>W3 <span class="op">=</span> rng.standard_normal(( <span class="dv">10</span>, <span class="dv">128</span>)) <span class="op">*</span> <span class="fl">0.01</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>x  <span class="op">=</span> rng.standard_normal(<span class="dv">784</span>)               <span class="co"># one MNIST pixel vector</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>h1 <span class="op">=</span> np.maximum(<span class="dv">0</span>, W1 <span class="op">@</span> x)             <span class="co"># shape (256,)</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>h2 <span class="op">=</span> np.maximum(<span class="dv">0</span>, W2 <span class="op">@</span> h1)            <span class="co"># shape (128,)</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>logits <span class="op">=</span> W3 <span class="op">@</span> h2                        <span class="co"># shape (10,)  ← class scores</span></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Logits: </span><span class="sc">{</span>logits<span class="sc">.</span><span class="bu">round</span>(<span class="dv">4</span>)<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Logits: [ 0.0002 -0.0008  0.0006  0.0016  0.0004  0.0002  0.0014 -0.0016 -0.0006
+  0.0016]</code></pre>
+</div>
+</div>
+<p>The entire forward pass of this network is three matrix–vector multiplies. The backward pass (backpropagation) is three more. Linear algebra is not something used <em>alongside</em> deep learning — it <em>is</em> deep learning.</p>
+<p><strong>What each row of <span class="math inline">\(W\)</span> does.</strong> Row <span class="math inline">\(i\)</span> of <span class="math inline">\(W\)</span> is a <em>template</em> (also called a <em>filter</em> or <em>feature detector</em>). The output <span class="math inline">\(y_i = W[i, :] \cdot \mathbf{x}\)</span> is how strongly the input matches that template — a dot product, which Chapter 4 explains geometrically.</p>
+<hr>
+</section>
+<section id="mental-model-3-matrix-as-geometry" class="level3" data-number="1.2.3">
+<h3 data-number="1.2.3" class="anchored" data-anchor-id="mental-model-3-matrix-as-geometry"><span class="header-section-number">1.2.3</span> Mental Model 3 — Matrix as Geometry</h3>
+<p>A matrix can encode a <em>rigid body transformation</em> — a rotation, translation, scaling, or any combination — that moves 3-D objects in space.</p>
+<p><strong>Rotation matrix.</strong> A <span class="math inline">\(3 \times 3\)</span> matrix <span class="math inline">\(R\)</span> that rotates vectors without stretching them. Example: rotate 45° around the <span class="math inline">\(z\)</span>-axis.</p>
+<div id="b87a2ce2" class="cell" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>theta <span class="op">=</span> np.pi <span class="op">/</span> <span class="dv">4</span>   <span class="co"># 45 degrees</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>Rz <span class="op">=</span> np.array([</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    [ np.cos(theta), <span class="op">-</span>np.sin(theta), <span class="dv">0</span>],</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    [ np.sin(theta),  np.cos(theta), <span class="dv">0</span>],</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    [<span class="dv">0</span>,               <span class="dv">0</span>,             <span class="dv">1</span>]</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> np.array([<span class="fl">1.0</span>, <span class="fl">0.0</span>, <span class="fl">0.0</span>])   <span class="co"># unit vector along x</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>p_rotated <span class="op">=</span> Rz <span class="op">@</span> p</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Original:  </span><span class="sc">{</span>p<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Rotated:   </span><span class="sc">{</span>p_rotated<span class="sc">.</span><span class="bu">round</span>(<span class="dv">4</span>)<span class="sc">}</span><span class="ss">"</span>)  <span class="co"># ≈ [0.707, 0.707, 0]</span></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a><span class="co"># A rotation matrix preserves lengths</span></span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"||p|| = </span><span class="sc">{</span>np<span class="sc">.</span>linalg<span class="sc">.</span>norm(p)<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"||Rz p|| = </span><span class="sc">{</span>np<span class="sc">.</span>linalg<span class="sc">.</span>norm(p_rotated)<span class="sc">:.4f}</span><span class="ss">"</span>)   <span class="co"># same</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Original:  [1. 0. 0.]
+Rotated:   [0.7071 0.7071 0.    ]
+||p|| = 1.0000
+||Rz p|| = 1.0000</code></pre>
+</div>
+</div>
+<p><strong>The 4×4 homogeneous transformation matrix.</strong> Rotation and translation together. This is <em>the</em> fundamental data structure of robotics — every robot joint, every camera pose, and every object in the scene is described by one of these.</p>
+<div id="7b958a31" class="cell" data-execution_count="13">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="co"># A camera located at [1, 2, 0.5] metres, rotated 30° around z</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>theta <span class="op">=</span> np.pi <span class="op">/</span> <span class="dv">6</span>   <span class="co"># 30 degrees</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>R <span class="op">=</span> np.array([</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    [ np.cos(theta), <span class="op">-</span>np.sin(theta), <span class="dv">0</span>],</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    [ np.sin(theta),  np.cos(theta), <span class="dv">0</span>],</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>    [<span class="dv">0</span>,               <span class="dv">0</span>,             <span class="dv">1</span>]</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.array([<span class="fl">1.0</span>, <span class="fl">2.0</span>, <span class="fl">0.5</span>])   <span class="co"># translation</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Assemble 4×4 homogeneous matrix</span></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> np.eye(<span class="dv">4</span>)</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>T[:<span class="dv">3</span>, :<span class="dv">3</span>] <span class="op">=</span> R</span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>T[:<span class="dv">3</span>,  <span class="dv">3</span>] <span class="op">=</span> t</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"4×4 transformation matrix T:"</span>)</span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(T.<span class="bu">round</span>(<span class="dv">4</span>))</span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Transform a 3D point P = [0, 0, 3] (in local/camera frame)</span></span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a><span class="co"># to world frame using homogeneous coordinates</span></span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>P_local <span class="op">=</span> np.array([<span class="fl">0.0</span>, <span class="fl">0.0</span>, <span class="fl">3.0</span>, <span class="fl">1.0</span>])   <span class="co"># homogeneous: append 1</span></span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>P_world <span class="op">=</span> T <span class="op">@</span> P_local</span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Point in local frame: </span><span class="sc">{</span>P_local[:<span class="dv">3</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Point in world frame: </span><span class="sc">{</span>P_world[:<span class="dv">3</span>]<span class="sc">.</span><span class="bu">round</span>(<span class="dv">4</span>)<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>4×4 transformation matrix T:
+[[ 0.866 -0.5    0.     1.   ]
+ [ 0.5    0.866  0.     2.   ]
+ [ 0.     0.     1.     0.5  ]
+ [ 0.     0.     0.     1.   ]]
+
+Point in local frame: [0. 0. 3.]
+Point in world frame: [1.  2.  3.5]</code></pre>
+</div>
+</div>
+<p><strong>Why append a 1?</strong> The extra coordinate makes translation into a matrix multiply — without it, pure matrix multiplication cannot translate (it always maps zero to zero). Chapter 7 proves this and explains the full machinery of homogeneous coordinates.</p>
+<p><strong>Visualising the three mental models together.</strong></p>
+<div id="f7079cb0" class="cell" data-execution_count="14">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.gridspec <span class="im">as</span> gridspec</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">7</span>)</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> plt.figure(figsize<span class="op">=</span>(<span class="dv">13</span>, <span class="dv">4</span>))</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>gs  <span class="op">=</span> gridspec.GridSpec(<span class="dv">1</span>, <span class="dv">3</span>, figure<span class="op">=</span>fig, wspace<span class="op">=</span><span class="fl">0.35</span>)</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a><span class="co"># ── Panel 1: Matrix as Data ──────────────────────────────────────────────</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>ax1 <span class="op">=</span> fig.add_subplot(gs[<span class="dv">0</span>])</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>img <span class="op">=</span> rng.integers(<span class="dv">30</span>, <span class="dv">220</span>, (<span class="dv">8</span>, <span class="dv">10</span>), dtype<span class="op">=</span>np.uint8)</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>ax1.imshow(img, cmap<span class="op">=</span><span class="st">'gray'</span>, vmin<span class="op">=</span><span class="dv">0</span>, vmax<span class="op">=</span><span class="dv">255</span>)</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>ax1.set_title(<span class="st">'Data: 8×10 image matrix'</span>, pad<span class="op">=</span><span class="dv">8</span>)</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>ax1.set_xlabel(<span class="st">'column  j'</span>)</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>ax1.set_ylabel(<span class="st">'row  i'</span>)</span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a><span class="co"># ── Panel 2: Matrix as Map ───────────────────────────────────────────────</span></span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>ax2 <span class="op">=</span> fig.add_subplot(gs[<span class="dv">1</span>])</span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>xs  <span class="op">=</span> np.linspace(<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">6</span>)</span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>pts <span class="op">=</span> np.column_stack([xs, np.zeros(<span class="dv">6</span>)])</span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>W2  <span class="op">=</span> np.array([[np.cos(<span class="fl">0.8</span>), <span class="op">-</span>np.sin(<span class="fl">0.8</span>)],</span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>                [np.sin(<span class="fl">0.8</span>),  np.cos(<span class="fl">0.8</span>)]]) <span class="op">*</span> <span class="fl">1.4</span></span>
+<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a>mapped <span class="op">=</span> pts <span class="op">@</span> W2.T</span>
+<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> p, mp <span class="kw">in</span> <span class="bu">zip</span>(pts, mapped):</span>
+<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a>    ax2.annotate(<span class="st">''</span>, xy<span class="op">=</span>mp, xytext<span class="op">=</span>p,</span>
+<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a>                 arrowprops<span class="op">=</span><span class="bu">dict</span>(arrowstyle<span class="op">=</span><span class="st">'-&gt;'</span>, color<span class="op">=</span><span class="st">'#2ecc71'</span>, lw<span class="op">=</span><span class="fl">1.5</span>))</span>
+<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a>ax2.scatter(pts[:,<span class="dv">0</span>],    pts[:,<span class="dv">1</span>],    color<span class="op">=</span><span class="st">'#4a90d9'</span>, s<span class="op">=</span><span class="dv">50</span>, zorder<span class="op">=</span><span class="dv">5</span>, label<span class="op">=</span><span class="st">'input'</span>)</span>
+<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a>ax2.scatter(mapped[:,<span class="dv">0</span>], mapped[:,<span class="dv">1</span>], color<span class="op">=</span><span class="st">'#2ecc71'</span>, s<span class="op">=</span><span class="dv">50</span>, zorder<span class="op">=</span><span class="dv">5</span>, label<span class="op">=</span><span class="st">'output'</span>)</span>
+<span id="cb24-29"><a href="#cb24-29" aria-hidden="true" tabindex="-1"></a>ax2.set_xlim(<span class="op">-</span><span class="fl">2.5</span>, <span class="fl">2.5</span>)<span class="op">;</span> ax2.set_ylim(<span class="op">-</span><span class="dv">2</span>, <span class="dv">2</span>)<span class="op">;</span> ax2.set_aspect(<span class="st">'equal'</span>)</span>
+<span id="cb24-30"><a href="#cb24-30" aria-hidden="true" tabindex="-1"></a>ax2.axhline(<span class="dv">0</span>, color<span class="op">=</span><span class="st">'#333333'</span>, lw<span class="op">=</span><span class="fl">0.4</span>, alpha<span class="op">=</span><span class="fl">0.4</span>)</span>
+<span id="cb24-31"><a href="#cb24-31" aria-hidden="true" tabindex="-1"></a>ax2.axvline(<span class="dv">0</span>, color<span class="op">=</span><span class="st">'#333333'</span>, lw<span class="op">=</span><span class="fl">0.4</span>, alpha<span class="op">=</span><span class="fl">0.4</span>)</span>
+<span id="cb24-32"><a href="#cb24-32" aria-hidden="true" tabindex="-1"></a>ax2.set_title(<span class="vs">r'Map: </span><span class="dv">$\m</span><span class="vs">athbf{y}=W</span><span class="dv">\m</span><span class="vs">athbf{x}</span><span class="dv">$</span><span class="vs">'</span>, pad<span class="op">=</span><span class="dv">8</span>)</span>
+<span id="cb24-33"><a href="#cb24-33" aria-hidden="true" tabindex="-1"></a>ax2.legend(fontsize<span class="op">=</span><span class="dv">8</span>)</span>
+<span id="cb24-34"><a href="#cb24-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-35"><a href="#cb24-35" aria-hidden="true" tabindex="-1"></a><span class="co"># ── Panel 3: Matrix as Geometry ──────────────────────────────────────────</span></span>
+<span id="cb24-36"><a href="#cb24-36" aria-hidden="true" tabindex="-1"></a>ax3 <span class="op">=</span> fig.add_subplot(gs[<span class="dv">2</span>], projection<span class="op">=</span><span class="st">'3d'</span>)</span>
+<span id="cb24-37"><a href="#cb24-37" aria-hidden="true" tabindex="-1"></a>origin <span class="op">=</span> np.zeros(<span class="dv">3</span>)</span>
+<span id="cb24-38"><a href="#cb24-38" aria-hidden="true" tabindex="-1"></a>theta  <span class="op">=</span> np.pi <span class="op">/</span> <span class="dv">5</span></span>
+<span id="cb24-39"><a href="#cb24-39" aria-hidden="true" tabindex="-1"></a>R      <span class="op">=</span> np.array([[np.cos(theta), <span class="op">-</span>np.sin(theta), <span class="dv">0</span>],</span>
+<span id="cb24-40"><a href="#cb24-40" aria-hidden="true" tabindex="-1"></a>                   [np.sin(theta),  np.cos(theta), <span class="dv">0</span>],</span>
+<span id="cb24-41"><a href="#cb24-41" aria-hidden="true" tabindex="-1"></a>                   [<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>]])</span>
+<span id="cb24-42"><a href="#cb24-42" aria-hidden="true" tabindex="-1"></a>t_vec  <span class="op">=</span> np.array([<span class="fl">0.5</span>, <span class="fl">0.3</span>, <span class="fl">0.8</span>])</span>
+<span id="cb24-43"><a href="#cb24-43" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, (col, lab) <span class="kw">in</span> <span class="bu">enumerate</span>(<span class="bu">zip</span>([<span class="st">'tomato'</span>, <span class="st">'#2ecc71'</span>, <span class="st">'#4a90d9'</span>], [<span class="st">'x'</span>,<span class="st">'y'</span>,<span class="st">'z'</span>])):</span>
+<span id="cb24-44"><a href="#cb24-44" aria-hidden="true" tabindex="-1"></a>    ax3.quiver(<span class="op">*</span>origin,         <span class="op">*</span>R[:,i]<span class="op">*</span><span class="fl">0.6</span>, color<span class="op">=</span>col, lw<span class="op">=</span><span class="dv">2</span>, arrow_length_ratio<span class="op">=</span><span class="fl">0.3</span>)</span>
+<span id="cb24-45"><a href="#cb24-45" aria-hidden="true" tabindex="-1"></a>    ax3.quiver(<span class="op">*</span>(origin<span class="op">+</span>t_vec), <span class="op">*</span>R[:,i]<span class="op">*</span><span class="fl">0.6</span>, color<span class="op">=</span>col, lw<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb24-46"><a href="#cb24-46" aria-hidden="true" tabindex="-1"></a>               arrow_length_ratio<span class="op">=</span><span class="fl">0.3</span>, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb24-47"><a href="#cb24-47" aria-hidden="true" tabindex="-1"></a>ax3.scatter(<span class="op">*</span>origin,         color<span class="op">=</span><span class="st">'#333333'</span>, s<span class="op">=</span><span class="dv">30</span>)</span>
+<span id="cb24-48"><a href="#cb24-48" aria-hidden="true" tabindex="-1"></a>ax3.scatter(<span class="op">*</span>(origin<span class="op">+</span>t_vec), color<span class="op">=</span><span class="st">'#333333'</span>, s<span class="op">=</span><span class="dv">30</span>)</span>
+<span id="cb24-49"><a href="#cb24-49" aria-hidden="true" tabindex="-1"></a>ax3.set_title(<span class="st">'Geometry: 4×4 SE(3)</span><span class="ch">\n</span><span class="st">transform'</span>, pad<span class="op">=</span><span class="dv">4</span>)</span>
+<span id="cb24-50"><a href="#cb24-50" aria-hidden="true" tabindex="-1"></a>ax3.set_xlabel(<span class="st">'X'</span>, labelpad<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb24-51"><a href="#cb24-51" aria-hidden="true" tabindex="-1"></a>ax3.set_ylabel(<span class="st">'Y'</span>, labelpad<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb24-52"><a href="#cb24-52" aria-hidden="true" tabindex="-1"></a>ax3.set_zlabel(<span class="st">'Z'</span>, labelpad<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb24-53"><a href="#cb24-53" aria-hidden="true" tabindex="-1"></a>ax3.tick_params(labelsize<span class="op">=</span><span class="dv">7</span>)</span>
+<span id="cb24-54"><a href="#cb24-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-55"><a href="#cb24-55" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
+<span id="cb24-56"><a href="#cb24-56" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>C:\Users\james.choi\AppData\Local\Temp\ipykernel_8348\2920969.py:55: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
+  fig.tight_layout()</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="ch01-why_files/figure-html/cell-15-output-2.png" width="1043" height="330" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="why-three-models" class="level3" data-number="1.2.4">
+<h3 data-number="1.2.4" class="anchored" data-anchor-id="why-three-models"><span class="header-section-number">1.2.4</span> Why Three Models?</h3>
+<p>The reason to keep all three in mind is that a single algorithm often involves all of them at once. Camera calibration, for example:</p>
+<ol type="1">
+<li>Stores the checkerboard corner coordinates as a <strong>data matrix</strong> (<span class="math inline">\(N \times 3\)</span>).</li>
+<li>Applies the projection matrix as a <strong>map</strong> from 3-D world to 2-D pixel coordinates.</li>
+<li>Expresses the camera’s position and orientation as a <strong>geometric</strong> <span class="math inline">\(4 \times 4\)</span> transform.</li>
+</ol>
+<p>If you only think “matrix = table of numbers,” the projection step looks magical. If you only think “matrix = function,” you lose track of what the columns of <span class="math inline">\(K\)</span> mean physically. Fluency means switching between the three views fluidly.</p>
+</section>
+</section>
+<section id="sec-reading-map" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="sec-reading-map"><span class="header-section-number">1.3</span> A Reading Map for ML, CV, and Robotics</h2>
+<p>This book is structured to be read cover-to-cover <em>or</em> used as a reference. The following map tells you which chapters are load-bearing for each field so you can prioritize intelligently.</p>
+<hr>
+<section id="chapter-importance-by-field" class="level3" data-number="1.3.1">
+<h3 data-number="1.3.1" class="anchored" data-anchor-id="chapter-importance-by-field"><span class="header-section-number">1.3.1</span> Chapter Importance by Field</h3>
+<p>The table below rates each chapter on a three-star scale for the three target fields. ★★★ = essential foundation; ★★ = strongly recommended; ★ = useful but skippable on a first pass.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 12%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Ch</th>
+<th>Title</th>
+<th style="text-align: center;">ML</th>
+<th style="text-align: center;">CV</th>
+<th style="text-align: center;">Robotics</th>
+<th>Core Concept</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>Why Linear Algebra?</td>
+<td style="text-align: center;">★★★</td>
+<td style="text-align: center;">★★★</td>
+<td style="text-align: center;">★★★</td>
+<td>Orientation and mental models</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>Systems of Linear Equations</td>
+<td style="text-align: center;">★★</td>
+<td style="text-align: center;">★★</td>
+<td style="text-align: center;">★★★</td>
+<td><span class="math inline">\(A\mathbf{x}=\mathbf{b}\)</span>; sensor fusion</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>Row Reduction and Echelon Forms</td>
+<td style="text-align: center;">★★</td>
+<td style="text-align: center;">★★</td>
+<td style="text-align: center;">★★★</td>
+<td>Rank, null space, observability</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>Vectors in ℝⁿ</td>
+<td style="text-align: center;">★★★</td>
+<td style="text-align: center;">★★★</td>
+<td style="text-align: center;">★★★</td>
+<td>Dot product, basis, coordinates</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>Matrix Equations and Column Space</td>
+<td style="text-align: center;">★★★</td>
+<td style="text-align: center;">★★</td>
+<td style="text-align: center;">★★</td>
+<td>Feature collinearity, block matrices</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>Linear Transformations</td>
+<td style="text-align: center;">★★</td>
+<td style="text-align: center;">★★★</td>
+<td style="text-align: center;">★★</td>
+<td>Image warping, change of basis</td>
+</tr>
+<tr class="odd">
+<td>7</td>
+<td>Affine &amp; Homogeneous Coordinates</td>
+<td style="text-align: center;">★</td>
+<td style="text-align: center;">★★★</td>
+<td style="text-align: center;">★★★</td>
+<td>Rigid body representation</td>
+</tr>
+<tr class="even">
+<td>8</td>
+<td>Rotations in 3D</td>
+<td style="text-align: center;">★</td>
+<td style="text-align: center;">★★★</td>
+<td style="text-align: center;">★★★</td>
+<td>SO(3), Euler, quaternions</td>
+</tr>
+<tr class="odd">
+<td>9</td>
+<td>Rigid Body Kinematics</td>
+<td style="text-align: center;">★</td>
+<td style="text-align: center;">★★</td>
+<td style="text-align: center;">★★★</td>
+<td>SE(3), FK, velocity kinematics</td>
+</tr>
+<tr class="even">
+<td>10</td>
+<td>Camera Models</td>
+<td style="text-align: center;">★</td>
+<td style="text-align: center;">★★★</td>
+<td style="text-align: center;">★★</td>
+<td>Intrinsics, distortion, projection</td>
+</tr>
+<tr class="odd">
+<td>11</td>
+<td>Projective Geometry</td>
+<td style="text-align: center;">★</td>
+<td style="text-align: center;">★★★</td>
+<td style="text-align: center;">★</td>
+<td>Homography, lines at infinity</td>
+</tr>
+<tr class="even">
+<td>12</td>
+<td>LU, QR, and Cholesky</td>
+<td style="text-align: center;">★★★</td>
+<td style="text-align: center;">★★</td>
+<td style="text-align: center;">★★★</td>
+<td>Structured solvers, stability</td>
+</tr>
+<tr class="odd">
+<td>13</td>
+<td>Eigenvalues and Eigenvectors</td>
+<td style="text-align: center;">★★★</td>
+<td style="text-align: center;">★★</td>
+<td style="text-align: center;">★★★</td>
+<td>Spectral decomposition</td>
+</tr>
+<tr class="even">
+<td>14</td>
+<td>Diagonalization</td>
+<td style="text-align: center;">★★★</td>
+<td style="text-align: center;">★</td>
+<td style="text-align: center;">★★</td>
+<td>Matrix powers, Markov chains</td>
+</tr>
+<tr class="odd">
+<td>15</td>
+<td>Norms and Distances</td>
+<td style="text-align: center;">★★★</td>
+<td style="text-align: center;">★★★</td>
+<td style="text-align: center;">★★</td>
+<td>Loss functions, regularization</td>
+</tr>
+<tr class="even">
+<td>16</td>
+<td>Orthogonality</td>
+<td style="text-align: center;">★★★</td>
+<td style="text-align: center;">★★</td>
+<td style="text-align: center;">★★★</td>
+<td>Projections, Gram-Schmidt</td>
+</tr>
+<tr class="odd">
+<td>17</td>
+<td>Least Squares</td>
+<td style="text-align: center;">★★★</td>
+<td style="text-align: center;">★★★</td>
+<td style="text-align: center;">★★★</td>
+<td>The workhorse of applied math</td>
+</tr>
+<tr class="even">
+<td>18</td>
+<td>SVD</td>
+<td style="text-align: center;">★★★</td>
+<td style="text-align: center;">★★★</td>
+<td style="text-align: center;">★★★</td>
+<td>Low-rank approx, pseudoinverse</td>
+</tr>
+<tr class="odd">
+<td>19</td>
+<td>Covariance Matrices</td>
+<td style="text-align: center;">★★★</td>
+<td style="text-align: center;">★★</td>
+<td style="text-align: center;">★★★</td>
+<td>Uncertainty representation</td>
+</tr>
+<tr class="even">
+<td>20</td>
+<td>PCA</td>
+<td style="text-align: center;">★★★</td>
+<td style="text-align: center;">★★</td>
+<td style="text-align: center;">★</td>
+<td>Dimensionality reduction</td>
+</tr>
+<tr class="odd">
+<td>21</td>
+<td>Matrix Calculus</td>
+<td style="text-align: center;">★★★</td>
+<td style="text-align: center;">★★</td>
+<td style="text-align: center;">★★</td>
+<td>Backprop, gradient derivation</td>
+</tr>
+<tr class="even">
+<td>22</td>
+<td>Jacobians and Linearization</td>
+<td style="text-align: center;">★★</td>
+<td style="text-align: center;">★★</td>
+<td style="text-align: center;">★★★</td>
+<td>Velocity kinematics, EKF</td>
+</tr>
+<tr class="odd">
+<td>23</td>
+<td>State Estimation</td>
+<td style="text-align: center;">★★</td>
+<td style="text-align: center;">★★</td>
+<td style="text-align: center;">★★★</td>
+<td>Kalman filter, sensor fusion</td>
+</tr>
+<tr class="even">
+<td>24</td>
+<td>Lie Groups and Lie Algebras</td>
+<td style="text-align: center;">★</td>
+<td style="text-align: center;">★★</td>
+<td style="text-align: center;">★★★</td>
+<td>Optimization on manifolds</td>
+</tr>
+<tr class="odd">
+<td>25</td>
+<td>Epipolar Geometry</td>
+<td style="text-align: center;">★</td>
+<td style="text-align: center;">★★★</td>
+<td style="text-align: center;">★★</td>
+<td>Stereo, structure-from-motion</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+<section id="fast-tracks" class="level3" data-number="1.3.2">
+<h3 data-number="1.3.2" class="anchored" data-anchor-id="fast-tracks"><span class="header-section-number">1.3.2</span> Fast Tracks</h3>
+<p>If you are working in one specific field, these reading orders let you build fluency quickly before circling back for depth.</p>
+<p><strong>Machine Learning track</strong> (neural networks, optimization, statistical learning):</p>
+<blockquote class="blockquote">
+<p>1 → 4 → 5 → 13 → 14 → 15 → 17 → 18 → 20 → 21</p>
+</blockquote>
+<p>After this track you can implement backpropagation from scratch, understand why batch normalization works, and read papers that use SVD-based compression.</p>
+<p><strong>Computer Vision track</strong> (calibration, detection, reconstruction):</p>
+<blockquote class="blockquote">
+<p>1 → 4 → 6 → 7 → 10 → 11 → 17 → 18 → 25</p>
+</blockquote>
+<p>After this track you can calibrate a stereo camera, implement RANSAC-based homography estimation, and understand the essential matrix derivation.</p>
+<p><strong>Robotics track</strong> (kinematics, planning, estimation):</p>
+<blockquote class="blockquote">
+<p>1 → 4 → 7 → 8 → 9 → 12 → 17 → 22 → 23 → 24</p>
+</blockquote>
+<p>After this track you can implement a full-body kinematic solver, write an EKF for IMU/GPS fusion, and understand why Lie groups replace Euler angles in modern motion planning.</p>
+<hr>
+</section>
+<section id="how-chapters-depend-on-each-other" class="level3" data-number="1.3.3">
+<h3 data-number="1.3.3" class="anchored" data-anchor-id="how-chapters-depend-on-each-other"><span class="header-section-number">1.3.3</span> How Chapters Depend on Each Other</h3>
+<p>The dependency graph below is a simplified guide — you can read ahead and return, but these are the conceptually critical prerequisites.</p>
+<pre><code>Ch 1 (orientation)
+  └─ Ch 2 (Ax=b) ─── Ch 3 (rank) ─── Ch 5 (column space)
+  └─ Ch 4 (vectors) ─┬─ Ch 6 (transforms) ─── Ch 7 (homogeneous)
+                     │     └─ Ch 8 (rotations) ─── Ch 9 (rigid body)
+                     │           └─ Ch 10 (cameras)
+                     │                 └─ Ch 11 (projective)
+                     │                       └─ Ch 25 (epipolar)
+                     ├─ Ch 15 (norms) ─── Ch 16 (ortho) ─── Ch 17 (lstsq)
+                     │                                           └─ Ch 12 (factorizations)
+                     └─ Ch 13 (eigenvalues) ─┬─ Ch 14 (diag)
+                                             ├─ Ch 18 (SVD) ─── Ch 19 (cov) ─── Ch 20 (PCA)
+                                             └─ Ch 22 (Jacobians) ─┬─ Ch 23 (estimation)
+                                                                    └─ Ch 24 (Lie groups)</code></pre>
+<p>Ch 21 (matrix calculus) can be read any time after Ch 13; it connects to both Ch 17 and Ch 22.</p>
+<hr>
+</section>
+<section id="using-this-book-as-a-reference" class="level3" data-number="1.3.4">
+<h3 data-number="1.3.4" class="anchored" data-anchor-id="using-this-book-as-a-reference"><span class="header-section-number">1.3.4</span> Using This Book as a Reference</h3>
+<p>Each chapter is designed to stand alone for look-up. When you hit a bug or notation you do not recognize:</p>
+<ol type="1">
+<li><strong>Check Appendix E (notation)</strong> — every symbol used in the book is defined there.</li>
+<li><strong>Check the relevant chapter</strong> — each section opens with its own motivation so you can read it without reading the whole chapter.</li>
+<li><strong>Check the application section</strong> — the worked example in each App section uses the same code patterns you are likely debugging.</li>
+</ol>
+<p>The index cross-references every concept by name, and the appendices collect the most-used identities for quick look-up:</p>
+<ul>
+<li><strong>Appendix B</strong> — matrix factorizations reference card</li>
+<li><strong>Appendix C</strong> — rotation representations comparison (Euler, quaternion, rotation matrix, axis-angle)</li>
+<li><strong>Appendix D</strong> — matrix calculus identities</li>
+<li><strong>Appendix F</strong> — tensors and index notation for readers who need to read ML papers</li>
+</ul>
+</section>
+</section>
+<section id="sec-python-setup" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="sec-python-setup"><span class="header-section-number">1.4</span> Python Setup</h2>
+<p>All code in this book is Python 3.10 or later. Every code block is self-contained and executes directly inside the rendered book via Quarto’s Jupyter engine.</p>
+<hr>
+<section id="installing-the-required-packages" class="level3" data-number="1.4.1">
+<h3 data-number="1.4.1" class="anchored" data-anchor-id="installing-the-required-packages"><span class="header-section-number">1.4.1</span> Installing the Required Packages</h3>
+<p>Run this once in your terminal:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install numpy scipy matplotlib opencv-python open3d sympy scikit-learn</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<hr>
+</section>
+<section id="verifying-your-installation" class="level3" data-number="1.4.2">
+<h3 data-number="1.4.2" class="anchored" data-anchor-id="verifying-your-installation"><span class="header-section-number">1.4.2</span> Verifying Your Installation</h3>
+<p>Paste this block and run it. All lines should print without error.</p>
+<div id="314ad672" class="cell" data-execution_count="15">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys, numpy, scipy, matplotlib, cv2, open3d, sympy, sklearn</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Python      </span><span class="sc">{</span>sys<span class="sc">.</span>version<span class="sc">.</span>split()[<span class="dv">0</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"NumPy       </span><span class="sc">{</span>numpy<span class="sc">.</span>__version__<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"SciPy       </span><span class="sc">{</span>scipy<span class="sc">.</span>__version__<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Matplotlib  </span><span class="sc">{</span>matplotlib<span class="sc">.</span>__version__<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"OpenCV      </span><span class="sc">{</span>cv2<span class="sc">.</span>__version__<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Open3D      </span><span class="sc">{</span>open3d<span class="sc">.</span>__version__<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"SymPy       </span><span class="sc">{</span>sympy<span class="sc">.</span>__version__<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"scikit-learn </span><span class="sc">{</span>sklearn<span class="sc">.</span>__version__<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">All imports OK."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<hr>
+</section>
+<section id="numpy-quick-reference" class="level3" data-number="1.4.3">
+<h3 data-number="1.4.3" class="anchored" data-anchor-id="numpy-quick-reference"><span class="header-section-number">1.4.3</span> NumPy Quick Reference</h3>
+<p>The three operations you will use in nearly every chapter:</p>
+<div id="c561b312" class="cell" data-execution_count="16">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 1 — Creating arrays</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> np.array([[<span class="dv">1</span>, <span class="dv">2</span>], [<span class="dv">3</span>, <span class="dv">4</span>]], dtype<span class="op">=</span><span class="bu">float</span>)   <span class="co"># from nested list</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>v <span class="op">=</span> np.array([<span class="fl">5.0</span>, <span class="fl">6.0</span>])</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>I <span class="op">=</span> np.eye(<span class="dv">3</span>)                                  <span class="co"># identity matrix</span></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>Z <span class="op">=</span> np.zeros((<span class="dv">4</span>, <span class="dv">4</span>))                           <span class="co"># zero matrix</span></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a><span class="co"># 2 — Matrix multiplication  (always use @ for matrices, not *)</span></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>y  <span class="op">=</span> A <span class="op">@</span> v            <span class="co"># matrix-vector product, shape (2,)</span></span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>B  <span class="op">=</span> A <span class="op">@</span> A            <span class="co"># matrix-matrix product, shape (2,2)</span></span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>s  <span class="op">=</span> v <span class="op">@</span> v            <span class="co"># dot product when both are 1-D, returns scalar</span></span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a><span class="co"># 3 — Solving linear systems</span></span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>b  <span class="op">=</span> np.array([<span class="fl">1.0</span>, <span class="fl">2.0</span>])</span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a>x  <span class="op">=</span> np.linalg.solve(A, b)           <span class="co"># exact solve: A x = b</span></span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a>xp, res, rank, sv <span class="op">=</span> np.linalg.lstsq(A, b, rcond<span class="op">=</span><span class="va">None</span>)  <span class="co"># least squares</span></span>
+<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"A @ x = </span><span class="sc">{</span>A <span class="op">@</span> x<span class="sc">}</span><span class="ss">  (should equal b = </span><span class="sc">{</span>b<span class="sc">}</span><span class="ss">)"</span>)</span>
+<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Condition number: </span><span class="sc">{</span>np<span class="sc">.</span>linalg<span class="sc">.</span>cond(A)<span class="sc">:.2f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>A @ x = [1. 2.]  (should equal b = [1. 2.])
+Condition number: 14.93</code></pre>
+</div>
+</div>
+<p><strong>Shape discipline.</strong> NumPy makes it easy to confuse 1-D arrays <code>(n,)</code> with 2-D column vectors <code>(n, 1)</code>. This book always uses 1-D arrays for vectors and calls out the shape explicitly in comments.</p>
+<div id="a9076ecd" class="cell" data-execution_count="17">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 1-D array  ← used throughout this book for vectors</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>v1 <span class="op">=</span> np.array([<span class="fl">1.0</span>, <span class="fl">2.0</span>, <span class="fl">3.0</span>])         <span class="co"># shape (3,)</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 2-D column vector  ← only when matrix algebra requires it</span></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>v2 <span class="op">=</span> v1.reshape(<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>)                  <span class="co"># shape (3, 1)</span></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>v3 <span class="op">=</span> v1[:, np.newaxis]                  <span class="co"># same thing, shape (3, 1)</span></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"1-D: </span><span class="sc">{</span>v1<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">   2-D column: </span><span class="sc">{</span>v2<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>1-D: (3,)   2-D column: (3, 1)</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="code-conventions-used-in-this-book" class="level3" data-number="1.4.4">
+<h3 data-number="1.4.4" class="anchored" data-anchor-id="code-conventions-used-in-this-book"><span class="header-section-number">1.4.4</span> Code Conventions Used in This Book</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Convention</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>A</code>, <code>B</code>, <code>R</code>, <code>W</code></td>
+<td>matrices (capital letters)</td>
+</tr>
+<tr class="even">
+<td><code>x</code>, <code>y</code>, <code>b</code>, <code>v</code></td>
+<td>vectors (lowercase letters)</td>
+</tr>
+<tr class="odd">
+<td><code>n</code>, <code>m</code>, <code>k</code></td>
+<td>integer dimensions</td>
+</tr>
+<tr class="even">
+<td><code>rng = np.random.default_rng(seed)</code></td>
+<td>reproducible random state</td>
+</tr>
+<tr class="odd">
+<td><code># shape (m, n)</code></td>
+<td>comment after every array creation</td>
+</tr>
+<tr class="even">
+<td><code>round(4)</code></td>
+<td>limit print noise in examples</td>
+</tr>
+</tbody>
+</table>
+<p>Plot functions in this book follow this template — light mode, inline output:</p>
+<div id="435f0ebd" class="cell" data-execution_count="18">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_something():</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>    fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">4</span>))</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">2</span> <span class="op">*</span> np.pi, <span class="dv">200</span>)</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>    ax.plot(x, np.sin(x), color<span class="op">=</span><span class="st">'#4a90d9'</span>, lw<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>    ax.set_xlabel(<span class="st">'x'</span>)<span class="op">;</span> ax.set_ylabel(<span class="st">'sin(x)'</span>)</span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>    ax.set_title(<span class="st">'Example plot'</span>)</span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>    ax.grid(<span class="va">True</span>, alpha<span class="op">=</span><span class="fl">0.2</span>)</span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>    plt.tight_layout()</span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>    plt.show()</span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a>plot_something()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="ch01-why_files/figure-html/cell-19-output-1.png" width="566" height="374" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Quarto captures the <code>plt.show()</code> output and renders it inline in the book.</p>
+<hr>
+</section>
+<section id="downloading-the-datasets" class="level3" data-number="1.4.5">
+<h3 data-number="1.4.5" class="anchored" data-anchor-id="downloading-the-datasets"><span class="header-section-number">1.4.5</span> Downloading the Datasets</h3>
+<p>Several chapters use real datasets (depth images, point clouds, calibration targets, IMU logs). Appendix A contains the full download instructions and directory layout. For now, all you need to know is that when a code block references a file such as <code>data/realsense_depth.png</code>, you will find the download command for that file in Appendix A.</p>
+</section>
+</section>
+<section id="sec-ch01-exercises" class="level2" data-number="1.5">
+<h2 data-number="1.5" class="anchored" data-anchor-id="sec-ch01-exercises"><span class="header-section-number">1.5</span> Exercises</h2>
+<p>Work through these before reading the solutions. They are designed to expose the assumptions that most people hold silently — and get wrong.</p>
+<hr>
+<p><strong>1.1</strong> You call <code>numpy.linalg.solve(A, b)</code> on a <span class="math inline">\(2 \times 2\)</span> system and get a numerical answer. How do you know whether the answer is correct? What specific number should you compute, and what threshold should alarm you?</p>
+<p><strong>1.2</strong> A dataset has 100 observations and 50 features. You want to fit a linear model. Write down the matrix dimensions of <span class="math inline">\(A\)</span>, <span class="math inline">\(\mathbf{x}\)</span>, and <span class="math inline">\(\mathbf{b}\)</span> in the least-squares formulation <span class="math inline">\(\min \|A\mathbf{x} - \mathbf{b}\|\)</span>. Is the system overdetermined, underdetermined, or square?</p>
+<p><strong>1.3</strong> Consider the <span class="math inline">\(2 \times 2\)</span> rotation matrix <span class="math display">\[R = \begin{pmatrix} \cos\theta &amp; -\sin\theta \\ \sin\theta &amp; \cos\theta \end{pmatrix}\]</span> Without using Python, compute <span class="math inline">\(R^T R\)</span>. What does your answer tell you about how rotation matrices transform lengths?</p>
+<p><strong>1.4</strong> A neural network’s first layer maps 512-dimensional inputs to 128-dimensional outputs. Write this as <span class="math inline">\(\mathbf{y} = W\mathbf{x} + \mathbf{b}\)</span>. What is the shape of <span class="math inline">\(W\)</span>? If you process a mini-batch of 32 samples simultaneously, what shape is the input matrix <span class="math inline">\(X\)</span>, and how does the equation change?</p>
+<p><strong>1.5</strong> The mental-model-2 section says “row <span class="math inline">\(i\)</span> of <span class="math inline">\(W\)</span> is a template.” Using the matrix <span class="math display">\[W = \begin{pmatrix} 1 &amp; 0 \\ 0 &amp; 1 \\ 1 &amp; 1 \end{pmatrix}, \quad
+\mathbf{x} = \begin{pmatrix} 3 \\ 5 \end{pmatrix}\]</span> compute <span class="math inline">\(W\mathbf{x}\)</span> by hand. Interpret each output as a dot product with a row template. What does each row “detect”?</p>
+<p><strong>1.6</strong> <em>(Conceptual)</em> The 4×4 homogeneous transformation code in §1.2 appends a <code>1</code> to 3-D points before multiplying by <span class="math inline">\(T\)</span>. If you accidentally appended <code>0</code> instead of <code>1</code>, what part of the transformation would be lost? Why?</p>
+<p><strong>1.7</strong> <em>(Harder)</em> You have two matrices <span class="math inline">\(A \in \mathbb{R}^{3 \times 5}\)</span> and <span class="math inline">\(B \in \mathbb{R}^{5 \times 2}\)</span>. Is the product <span class="math inline">\(AB\)</span> defined? What is its shape? Now someone tells you <span class="math inline">\(AB = C\)</span> and asks you to solve for <span class="math inline">\(B\)</span> given <span class="math inline">\(A\)</span> and <span class="math inline">\(C\)</span>. Is this always possible? When is it not?</p>
+<hr>
+</section>
+<section id="sec-ch01-solutions" class="level2" data-number="1.6">
+<h2 data-number="1.6" class="anchored" data-anchor-id="sec-ch01-solutions"><span class="header-section-number">1.6</span> Solutions</h2>
+<hr>
+<p><strong>Solution 1.1</strong></p>
+<p>The number to compute is the <em>condition number</em>:</p>
+<div id="39e44665" class="cell" data-execution_count="19">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> np.array([[<span class="fl">3.0</span>, <span class="fl">1.0</span>],</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>              [<span class="fl">1.0</span>, <span class="fl">2.0</span>]])</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> np.array([<span class="fl">9.0</span>, <span class="fl">8.0</span>])</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.linalg.solve(A, b)</span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>kappa <span class="op">=</span> np.linalg.cond(A)</span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Solution:        </span><span class="sc">{</span>x<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Condition number: </span><span class="sc">{</span>kappa<span class="sc">:.2f}</span><span class="ss">"</span>)</span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Residual:        </span><span class="sc">{</span>np<span class="sc">.</span>linalg<span class="sc">.</span>norm(A <span class="op">@</span> x <span class="op">-</span> b)<span class="sc">:.2e}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Solution:        [2. 3.]
+Condition number: 2.62
+Residual:        0.00e+00</code></pre>
+</div>
+</div>
+<p>The condition number <span class="math inline">\(\kappa(A) = \|A\| \cdot \|A^{-1}\|\)</span> tells you how many digits of accuracy you lose. A rough rule: if <span class="math inline">\(\kappa \approx 10^k\)</span>, you lose about <span class="math inline">\(k\)</span> decimal digits from the machine precision of <span class="math inline">\(\approx 10^{-16}\)</span>.</p>
+<ul>
+<li><span class="math inline">\(\kappa &lt; 100\)</span>: safe</li>
+<li><span class="math inline">\(\kappa \sim 10^6\)</span>: lose ~6 digits — answers are accurate to ~10 significant figures in double precision</li>
+<li><span class="math inline">\(\kappa &gt; 10^{12}\)</span>: alarm — results may be meaningless</li>
+</ul>
+<p>Always compute <code>np.linalg.cond(A)</code> before trusting a linear solve. Also verify <code>np.linalg.norm(A @ x - b)</code> is near machine zero (<span class="math inline">\(&lt; 10^{-10}\)</span> for double).</p>
+<hr>
+<p><strong>Solution 1.2</strong></p>
+<p>The least-squares setup for 100 observations, 50 features:</p>
+<ul>
+<li><span class="math inline">\(A \in \mathbb{R}^{100 \times 50}\)</span> — design matrix: one row per observation, one column per feature</li>
+<li><span class="math inline">\(\mathbf{x} \in \mathbb{R}^{50}\)</span> — the coefficient vector (what we solve for)</li>
+<li><span class="math inline">\(\mathbf{b} \in \mathbb{R}^{100}\)</span> — the target vector (one observed value per row)</li>
+</ul>
+<p>The system is <strong>overdetermined</strong>: there are 100 equations but only 50 unknowns. No exact solution exists in general, so we minimize <span class="math inline">\(\|A\mathbf{x} - \mathbf{b}\|^2\)</span>.</p>
+<div id="3148bb3d" class="cell" data-execution_count="20">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">0</span>)</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> rng.standard_normal((<span class="dv">100</span>, <span class="dv">50</span>))   <span class="co"># shape (100, 50)</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> rng.standard_normal(<span class="dv">100</span>)         <span class="co"># shape (100,)</span></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>x, residuals, rank, sv <span class="op">=</span> np.linalg.lstsq(A, b, rcond<span class="op">=</span><span class="va">None</span>)</span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"A shape: </span><span class="sc">{</span>A<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"x shape: </span><span class="sc">{</span>x<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"b shape: </span><span class="sc">{</span>b<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Rank:    </span><span class="sc">{</span>rank<span class="sc">}</span><span class="ss">  (out of </span><span class="sc">{</span><span class="bu">min</span>(A.shape[<span class="dv">0</span>], A.shape[<span class="dv">1</span>])<span class="sc">}</span><span class="ss"> possible)"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>A shape: (100, 50)
+x shape: (50,)
+b shape: (100,)
+Rank:    50  (out of 50 possible)</code></pre>
+</div>
+</div>
+<hr>
+<p><strong>Solution 1.3</strong></p>
+<p><span class="math display">\[R^T R = \begin{pmatrix} \cos\theta &amp; \sin\theta \\ -\sin\theta &amp; \cos\theta \end{pmatrix}
+\begin{pmatrix} \cos\theta &amp; -\sin\theta \\ \sin\theta &amp; \cos\theta \end{pmatrix}\]</span></p>
+<p>Computing entry <span class="math inline">\((1,1)\)</span>: <span class="math inline">\(\cos^2\theta + \sin^2\theta = 1\)</span>. Entry <span class="math inline">\((1,2)\)</span>: <span class="math inline">\(-\cos\theta\sin\theta + \sin\theta\cos\theta = 0\)</span>. By symmetry, <span class="math inline">\(R^T R = I\)</span>.</p>
+<p>This means <span class="math inline">\(R^T = R^{-1}\)</span> — rotation matrices are <em>orthogonal</em>. An orthogonal matrix preserves inner products: <span class="math inline">\(\|R\mathbf{v}\|^2 = (R\mathbf{v})^T(R\mathbf{v})
+= \mathbf{v}^T R^T R \mathbf{v} = \mathbf{v}^T \mathbf{v} = \|\mathbf{v}\|^2\)</span>. Rotation neither stretches nor compresses — it just changes direction.</p>
+<div id="d776eac9" class="cell" data-execution_count="21">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>theta <span class="op">=</span> np.pi <span class="op">/</span> <span class="dv">3</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>R <span class="op">=</span> np.array([[np.cos(theta), <span class="op">-</span>np.sin(theta)],</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>              [np.sin(theta),  np.cos(theta)]])</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.<span class="bu">round</span>(R.T <span class="op">@</span> R, <span class="dv">10</span>))   <span class="co"># should print [[1, 0], [0, 1]]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[ 1. -0.]
+ [-0.  1.]]</code></pre>
+</div>
+</div>
+<hr>
+<p><strong>Solution 1.4</strong></p>
+<p>For a single input vector:</p>
+<ul>
+<li><span class="math inline">\(W \in \mathbb{R}^{128 \times 512}\)</span> — weight matrix (output dimension × input dimension)</li>
+<li><span class="math inline">\(\mathbf{x} \in \mathbb{R}^{512}\)</span> — input vector</li>
+<li><span class="math inline">\(\mathbf{b} \in \mathbb{R}^{128}\)</span> — bias vector</li>
+<li><span class="math inline">\(\mathbf{y} = W\mathbf{x} + \mathbf{b} \in \mathbb{R}^{128}\)</span></li>
+</ul>
+<p>For a mini-batch of 32 samples, stack inputs as columns (or rows — PyTorch uses rows by convention):</p>
+<p><strong>Column convention</strong> (math-natural): - <span class="math inline">\(X \in \mathbb{R}^{512 \times 32}\)</span> — each column is one sample - <span class="math inline">\(Y = WX + \mathbf{b}\mathbf{1}^T \in \mathbb{R}^{128 \times 32}\)</span></p>
+<p><strong>Row convention</strong> (PyTorch/NumPy natural): - <span class="math inline">\(X \in \mathbb{R}^{32 \times 512}\)</span> — each row is one sample - <span class="math inline">\(Y = XW^T + \mathbf{b} \in \mathbb{R}^{32 \times 128}\)</span></p>
+<div id="8efcf2fd" class="cell" data-execution_count="22">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>W <span class="op">=</span> np.random.randn(<span class="dv">128</span>, <span class="dv">512</span>) <span class="op">*</span> <span class="fl">0.01</span>   <span class="co"># shape (128, 512)</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> np.zeros(<span class="dv">128</span>)                       <span class="co"># shape (128,)</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> np.random.randn(<span class="dv">32</span>, <span class="dv">512</span>)            <span class="co"># batch of 32, shape (32, 512) — row convention</span></span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>Y <span class="op">=</span> X <span class="op">@</span> W.T <span class="op">+</span> b     <span class="co"># shape (32, 128)</span></span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"W: </span><span class="sc">{</span>W<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">, X: </span><span class="sc">{</span>X<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">, Y: </span><span class="sc">{</span>Y<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>W: (128, 512), X: (32, 512), Y: (32, 128)</code></pre>
+</div>
+</div>
+<p>The key point: <code>W.shape</code> is always <code>(out_features, in_features)</code> in PyTorch convention. When you see <code>nn.Linear(512, 128)</code>, the stored weight matrix is <span class="math inline">\(128 \times 512\)</span>.</p>
+<hr>
+<p><strong>Solution 1.5</strong></p>
+<p><span class="math display">\[W\mathbf{x} = \begin{pmatrix} 1 &amp; 0 \\ 0 &amp; 1 \\ 1 &amp; 1 \end{pmatrix}
+\begin{pmatrix} 3 \\ 5 \end{pmatrix}
+= \begin{pmatrix} 1\cdot3 + 0\cdot5 \\ 0\cdot3 + 1\cdot5 \\ 1\cdot3 + 1\cdot5 \end{pmatrix}
+= \begin{pmatrix} 3 \\ 5 \\ 8 \end{pmatrix}\]</span></p>
+<p>Interpretation:</p>
+<ul>
+<li><strong>Row 1</strong> = <span class="math inline">\([1, 0]\)</span>: detects the first component. Output 3 = “how much of <span class="math inline">\(x_1\)</span> is present.”</li>
+<li><strong>Row 2</strong> = <span class="math inline">\([0, 1]\)</span>: detects the second component. Output 5 = “how much of <span class="math inline">\(x_2\)</span> is present.”</li>
+<li><strong>Row 3</strong> = <span class="math inline">\([1, 1]\)</span>: detects the <em>sum</em> of both components. Output 8 = “total energy.”</li>
+</ul>
+<p>This is the template interpretation: each row acts as a pattern, and the output is the dot product of the input with that pattern. In a trained network, rows of <span class="math inline">\(W\)</span> become learned feature detectors — edges, textures, semantic concepts — through gradient descent, not hand design.</p>
+<hr>
+<p><strong>Solution 1.6</strong></p>
+<p>If you append <code>0</code> instead of <code>1</code>:</p>
+<div id="a4e22326" class="cell" data-execution_count="23">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>theta <span class="op">=</span> np.pi <span class="op">/</span> <span class="dv">6</span></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>R <span class="op">=</span> np.array([[np.cos(theta), <span class="op">-</span>np.sin(theta), <span class="dv">0</span>],</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>              [np.sin(theta),  np.cos(theta), <span class="dv">0</span>],</span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>              [<span class="dv">0</span>,              <span class="dv">0</span>,             <span class="dv">1</span>]])</span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.array([<span class="fl">1.0</span>, <span class="fl">2.0</span>, <span class="fl">0.5</span>])</span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> np.eye(<span class="dv">4</span>)</span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a>T[:<span class="dv">3</span>, :<span class="dv">3</span>] <span class="op">=</span> R</span>
+<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a>T[:<span class="dv">3</span>,  <span class="dv">3</span>] <span class="op">=</span> t</span>
+<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-13"><a href="#cb42-13" aria-hidden="true" tabindex="-1"></a>P_with_one  <span class="op">=</span> np.array([<span class="fl">0.0</span>, <span class="fl">0.0</span>, <span class="fl">3.0</span>, <span class="fl">1.0</span>])   <span class="co"># correct</span></span>
+<span id="cb42-14"><a href="#cb42-14" aria-hidden="true" tabindex="-1"></a>P_with_zero <span class="op">=</span> np.array([<span class="fl">0.0</span>, <span class="fl">0.0</span>, <span class="fl">3.0</span>, <span class="fl">0.0</span>])   <span class="co"># wrong</span></span>
+<span id="cb42-15"><a href="#cb42-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-16"><a href="#cb42-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"With 1 (point):"</span>,     (T <span class="op">@</span> P_with_one)[:<span class="dv">3</span>].<span class="bu">round</span>(<span class="dv">4</span>))</span>
+<span id="cb42-17"><a href="#cb42-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"With 0 (direction):"</span>, (T <span class="op">@</span> P_with_zero)[:<span class="dv">3</span>].<span class="bu">round</span>(<span class="dv">4</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>With 1 (point): [1.  2.  3.5]
+With 0 (direction): [0. 0. 3.]</code></pre>
+</div>
+</div>
+<p>The fourth column of <span class="math inline">\(T\)</span> is <span class="math inline">\([t_x, t_y, t_z, 1]^T\)</span>. When the homogeneous coordinate is 1, it gets multiplied by the translation and added. When it is 0, translation is suppressed — you are treating the vector as a <em>direction</em>, not a <em>point</em>.</p>
+<p>This is not just a book quirk: it is the standard convention in all robotics and graphics frameworks. Position vectors carry <code>1</code>; direction vectors (surface normals, velocity vectors) carry <code>0</code>. Mixing them up is a common source of silent numerical errors — the code runs, but the translated result is wrong by exactly the translation offset. Chapter 7 develops this distinction rigorously.</p>
+<hr>
+<p><strong>Solution 1.7</strong></p>
+<p><strong>Is <span class="math inline">\(AB\)</span> defined?</strong> Yes. <span class="math inline">\(A \in \mathbb{R}^{3 \times 5}\)</span>, <span class="math inline">\(B \in \mathbb{R}^{5 \times 2}\)</span> — inner dimensions match (both 5). <span class="math inline">\(C = AB \in \mathbb{R}^{3 \times 2}\)</span>.</p>
+<p><strong>Can we solve for <span class="math inline">\(B\)</span>?</strong> We need <span class="math inline">\(AB = C\)</span>, i.e., <span class="math inline">\(A\mathbf{b}_j = \mathbf{c}_j\)</span> for each column <span class="math inline">\(j = 1, 2\)</span>. This is two systems of 3 equations in 5 unknowns — each system is <em>underdetermined</em> (more unknowns than equations).</p>
+<div id="3c778a89" class="cell" data-execution_count="24">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">42</span>)</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> rng.standard_normal((<span class="dv">3</span>, <span class="dv">5</span>))   <span class="co"># shape (3, 5)</span></span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>B_true <span class="op">=</span> rng.standard_normal((<span class="dv">5</span>, <span class="dv">2</span>))</span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>C <span class="op">=</span> A <span class="op">@</span> B_true                     <span class="co"># shape (3, 2)</span></span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Minimum-norm least-squares solution for each column</span></span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a>B_hat <span class="op">=</span> np.linalg.lstsq(A, C, rcond<span class="op">=</span><span class="va">None</span>)[<span class="dv">0</span>]</span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"A:     </span><span class="sc">{</span>A<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"C:     </span><span class="sc">{</span>C<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb44-13"><a href="#cb44-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"B_hat: </span><span class="sc">{</span>B_hat<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb44-14"><a href="#cb44-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Residual A @ B_hat - C: </span><span class="sc">{</span>np<span class="sc">.</span>linalg<span class="sc">.</span>norm(A <span class="op">@</span> B_hat <span class="op">-</span> C)<span class="sc">:.2e}</span><span class="ss">"</span>)</span>
+<span id="cb44-15"><a href="#cb44-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"B_hat == B_true?  Not in general — infinitely many solutions exist."</span>)</span>
+<span id="cb44-16"><a href="#cb44-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"||B_true||: </span><span class="sc">{</span>np<span class="sc">.</span>linalg<span class="sc">.</span>norm(B_true)<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb44-17"><a href="#cb44-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"||B_hat||:  </span><span class="sc">{</span>np<span class="sc">.</span>linalg<span class="sc">.</span>norm(B_hat)<span class="sc">:.4f}</span><span class="ss">  ← lstsq returns minimum-norm solution"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>A:     (3, 5)
+C:     (3, 2)
+B_hat: (5, 2)
+Residual A @ B_hat - C: 6.58e-15
+B_hat == B_true?  Not in general — infinitely many solutions exist.
+||B_true||: 2.1835
+||B_hat||:  2.1062  ← lstsq returns minimum-norm solution</code></pre>
+</div>
+</div>
+<p>When is a unique solution impossible? When the system is underdetermined (more unknowns than equations) or when <span class="math inline">\(A\)</span> does not have full column rank. Here, <span class="math inline">\(A\)</span> is <span class="math inline">\(3 \times 5\)</span> — it has at most rank 3, but <span class="math inline">\(B\)</span> lives in <span class="math inline">\(\mathbb{R}^{5 \times 2}\)</span>, so there is a 2-dimensional null space of solutions for each column. The <code>lstsq</code> function returns the minimum-norm solution among the infinitely many that satisfy <span class="math inline">\(AB = C\)</span> exactly.</p>
+<p>This situation — underdetermined systems, null spaces, minimum-norm solutions — is central to Chapters 3, 16, 17, and 18.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./index.html" class="pagination-link" aria-label="Preface">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Preface</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./ch02-linear-systems.html" class="pagination-link" aria-label="Systems of Linear Equations">
+        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Systems of Linear Equations</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
