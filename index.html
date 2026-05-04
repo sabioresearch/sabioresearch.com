@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Docs</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, sans-serif;
+      background: #0f1117;
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+    }
+    h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.02em; }
+    p { color: #94a3b8; font-size: 1rem; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      width: 100%;
+      max-width: 480px;
+    }
+    a {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 2rem 1rem;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      background: #1a1f2e;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    a:hover { border-color: #3b82f6; background: #1e2840; }
+    .flag { font-size: 2.5rem; }
+    .label { font-size: 1rem; font-weight: 600; }
+    .sublabel { font-size: 0.8rem; color: #64748b; }
+  </style>
+</head>
+<body>
+  <div style="text-align:center">
+    <h1>Documentation</h1>
+    <p>Select your language</p>
+  </div>
+  <div class="grid">
+    <a href="en/">
+      <span class="flag">🇺🇸</span>
+      <span class="label">English</span>
+    </a>
+    <a href="kr/">
+      <span class="flag">🇰🇷</span>
+      <span class="label">한국어</span>
+    </a>
+    <a href="pt/">
+      <span class="flag">🇧🇷</span>
+      <span class="label">Português</span>
+    </a>
+    <a href="jp/">
+      <span class="flag">🇯🇵</span>
+      <span class="label">日本語</span>
+    </a>
+  </div>
+</body>
+</html>
