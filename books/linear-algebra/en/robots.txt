@@ -1,2 +1,1 @@
-User-agent: *
-Disallow: /
+Sitemap: https://sabioresearch.com/books/linear-algebra/en/sitemap.xml
